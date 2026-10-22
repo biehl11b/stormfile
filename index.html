@@ -1,0 +1,1509 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>StormFile</title>
+<meta name="description" content="Understand your insurance and get claim-ready before a hurricane.">
+<meta name="theme-color" content="#0d5c7a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="StormFile">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+html,body{margin:0}
+body{font-size:14px;-webkit-text-size-adjust:100%}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: single-column phone app, sticky header + fixed bottom tab bar; storm-advisory palette (slate water, warning amber) */
+:root{
+  --bg:#eef2f4; --surface:#ffffff; --surface-2:#e3e9ed; --line:#cfd8de;
+  --fg:#14212b; --muted:#566673; --accent:#0d5c7a; --accent-fg:#ffffff;
+  --amber:#c27a00; --amber-bg:#fff3d6; --red:#b3261e; --red-bg:#fde7e5; --green:#1f7a4a; --green-bg:#e2f4e9;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c151b; --surface:#14212a; --surface-2:#1c2c37; --line:#2a3d4a;
+  --fg:#e6eef3; --muted:#93a6b3; --accent:#4fb3d9; --accent-fg:#06131a;
+  --amber:#f2b33d; --amber-bg:#3a2c0e; --red:#ff8a80; --red-bg:#3d1714; --green:#6fd39a; --green-bg:#11301f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c151b; --surface:#14212a; --surface-2:#1c2c37; --line:#2a3d4a;
+  --fg:#e6eef3; --muted:#93a6b3; --accent:#4fb3d9; --accent-fg:#06131a;
+  --amber:#f2b33d; --amber-bg:#3a2c0e; --red:#ff8a80; --red-bg:#3d1714; --green:#6fd39a; --green-bg:#11301f; color-scheme:dark}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+*{box-sizing:border-box}
+.app{max-width:520px;margin:0 auto;min-height:100%;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+.brand span{color:var(--amber)}
+.sample-pill{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;background:var(--amber-bg);color:var(--amber);padding:4px 8px;border-radius:999px;white-space:nowrap}
+main{padding-block:16px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.1;margin:0;text-wrap:balance}
+h1{font-size:30px;text-transform:uppercase;letter-spacing:.01em}
+h2{font-size:22px;text-transform:uppercase;letter-spacing:.02em}
+h3{font-size:18px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:380px){.grid2{grid-template-columns:1fr}}
+button,.btn{font:inherit;font-weight:600;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);padding:10px 14px;cursor:pointer;min-height:44px}
+button.primary{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+button.ghost{background:transparent}
+button.small-btn{min-height:34px;padding:6px 10px;font-size:13px}
+button:focus-visible,input:focus-visible,select:focus-visible,label.upload:focus-within{outline:3px solid var(--amber);outline-offset:2px}
+input,select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-width:0}
+label.field{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);min-width:0}
+label.upload{display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px dashed var(--accent);color:var(--accent);border-radius:10px;padding:12px;font-weight:600;cursor:pointer;min-height:44px;text-align:center}
+label.upload input{position:absolute;width:1px;height:1px;opacity:0}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.ok{background:var(--green-bg);color:var(--green)} .warn{background:var(--amber-bg);color:var(--amber)} .bad{background:var(--red-bg);color:var(--red)}
+.info{background:var(--surface-2);color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
+.alert{border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;border-left:6px solid currentColor}
+.alert.bad{border-left-color:var(--red)} .alert.warn{border-left-color:var(--amber)} .alert.ok{border-left-color:var(--green)}
+.alert p{color:var(--fg)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding-block:10px;border-bottom:1px solid var(--line);align-items:baseline}
+.kv:last-child{border-bottom:0}
+.kv .k{min-width:0}
+.kv .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;white-space:nowrap}
+.src{font-size:12px;color:var(--accent);font-family:var(--mono);background:none;border:0;padding:0;min-height:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.quote{font-size:13px;background:var(--surface-2);border-radius:8px;padding:10px 12px;color:var(--muted);font-style:italic}
+.meter{height:10px;background:var(--surface-2);border-radius:999px;overflow:hidden;position:relative}
+.meter i{display:block;height:100%;border-radius:999px}
+.ring{width:108px;height:108px;flex:none}
+.score-wrap{display:flex;gap:16px;align-items:center}
+.task{display:flex;gap:12px;align-items:flex-start;padding-block:10px;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:0}
+.check{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:14px;font-weight:700}
+.check.done{background:var(--green);border-color:var(--green);color:var(--surface)}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap}
+.thumbs img{width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.room{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.room-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;width:100%;background:var(--surface);border:0;border-radius:0;text-align:left}
+.room-body{padding:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.levels button{font-size:13px;padding:8px 4px;min-height:52px;line-height:1.15}
+.levels button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.notif{display:flex;gap:10px;background:var(--surface-2);border-radius:12px;padding:10px 12px}
+.notif .ic{width:30px;height:30px;border-radius:8px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-family:var(--display);font-weight:700;flex:none}
+.cone{width:100%;height:auto;border-radius:10px;background:var(--surface-2)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+nav.tabs .inner{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs button{border:0;border-radius:0;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;font-size:11px;font-weight:600;min-height:60px}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--accent)}
+.overlay{position:fixed;inset:0;background:rgba(8,16,22,.55);z-index:20;display:grid;place-items:center;padding:24px}
+.overlay .card{max-width:420px;width:100%}
+.spinner{width:40px;height:40px;border-radius:50%;border:4px solid var(--surface-2);border-top-color:var(--accent);animation:spin 1s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spinner{animation:none}}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;z-index:30}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td:last-child{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
+.tblwrap{overflow-x:auto}
+.foot{font-size:12px;color:var(--muted);text-align:center;padding-block:4px 8px}
+header.top{flex-direction:column;align-items:stretch;gap:8px}
+.switch-row{display:flex;gap:8px;align-items:center}
+.switch-row select{flex:1;font-weight:600;background:var(--surface-2)}
+.prop{display:flex;gap:12px;align-items:center;justify-content:space-between;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-weight:400}
+.prop[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.prop .sc{font-family:var(--mono);font-size:18px;font-variant-numeric:tabular-nums}
+.typetag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--accent)}
+#menuBtn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;text-align:left;background:var(--surface-2)}
+#menuBtn .caret{transition:transform .15s}
+#menuBtn[aria-expanded="true"] .caret{transform:rotate(180deg)}
+#menu{display:flex;flex-direction:column;gap:8px;max-height:70vh;overflow-y:auto;padding-block:4px 6px}
+.mprop{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
+.mprop[aria-current="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.mlinks{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mlinks button{min-height:38px;padding:6px;font-size:13px}
+.mline{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.mline span:last-child{text-align:right;min-width:0}
+#fbBtn{background:var(--amber-bg);color:var(--amber);border-color:transparent}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices button{min-height:40px;padding:8px 12px;font-size:14px;font-weight:600}
+.choices button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-height:90px;resize:vertical}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+details.add summary{cursor:pointer;font-weight:600;color:var(--accent);list-style:none;min-height:44px;display:flex;align-items:center}
+details.add summary::-webkit-details-marker{display:none}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header class="top">
+    <div class="row" style="flex-wrap:nowrap">
+      <div class="brand">Storm<span>File</span></div>
+      <div class="row" style="gap:8px;flex-wrap:nowrap"><span class="sample-pill" id="samplePill">Sample data</span><button class="small-btn" id="fbBtn">Feedback</button><button class="small-btn" id="backHome" hidden>← Home</button></div>
+    </div>
+    <button id="menuBtn" aria-expanded="false" aria-controls="menu"><span class="stack" style="gap:0;min-width:0"><span class="label">Property</span><strong id="menuName"></strong></span><span class="caret" aria-hidden="true">▾</span></button>
+    <div id="menu" hidden></div>
+  </header>
+  <main id="view"></main>
+</div>
+
+<nav class="tabs" aria-label="Main">
+  <div class="inner">
+    <button data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</button>
+    <button data-tab="policy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Policy</button>
+    <button data-tab="inventory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 6l1.5-2h5L16 6"/></svg><span id="tabRooms">Rooms</span></button>
+    <button data-tab="storm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12m-2.5 0a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0-5 0"/><path d="M14 4c-5 0-9 3-9 7M10 20c5 0 9-3 9-7"/></svg>Storm</button>
+    <button data-tab="claim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>Claim</button>
+  </div>
+</nav>
+
+<script>
+(function(){
+const YEAR = 2026;
+const CPI = 0.031;
+const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2,9);
+
+/* ---------- Sample policies, as the AI reader would return them ---------- */
+const HOME_POLICY = {
+  carrier:'Gulf Harbor Mutual (sample)', form:'HO-3 Homeowners', number:'HO3-4471-SAMPLE',
+  renewal:'2027-06-01', agent:'Sample Agency · (228) 555-0142', claimPhone:'1-800-555-0199',
+  coverages:[
+    {key:'A',name:'Your house',plain:'Pays to rebuild the house itself',limit:285000,src:'Dec. page, line A'},
+    {key:'B',name:'Other structures',plain:'Fence, shed, detached garage',limit:28500,src:'Dec. page, line B'},
+    {key:'C',name:'Your stuff',plain:'Furniture, clothes, electronics. Pays the price of a new item.',limit:142500,src:'Endorsement HO 04 90, p. 1'},
+    {key:'D',name:'Hotel and food',plain:'Extra living costs if you can’t stay home',limit:57000,src:'Section I, Coverage D, p. 4'},
+    {key:'E',name:'Liability',plain:'If someone is hurt on your property and sues',limit:300000,src:'Dec. page, line E'}
+  ],
+  deductibles:{allPerils:2500, hurricanePct:5}, inflationGuardPct:4, roofRCYears:15,
+  ale:{months:12, civilWeeks:2, src:'Section I, Coverage D \u2013 Loss of Use, p. 4',
+    civilRule:'Pays up to 2 weeks when a government order keeps you out because of damage nearby from a cause this policy covers, like wind.'},
+  notCovered:[
+    {sev:'bad',title:'Flood or storm surge',plain:'Rising water from any source is excluded. You need a separate flood policy (NFIP or private).',src:'Section I Exclusions, A.3, p. 11',quote:'We do not insure for loss caused by water damage, meaning flood, surface water, waves, tidal water…'},
+    {sev:'warn',title:'Code upgrades when rebuilding',plain:'No "ordinance or law" coverage. If the county requires a higher foundation or new wiring, you pay the difference.',src:'Section I Exclusions, A.1, p. 10',quote:'Ordinance or Law, meaning any ordinance or law requiring or regulating the construction…'},
+    {sev:'warn',title:'Sewer or drain backup',plain:'Water backing up through drains is excluded. An endorsement costs about $50–$100 a year.',src:'Section I Exclusions, A.3.c, p. 11',quote:'Water or water-borne material which backs up through sewers or drains…'},
+    {sev:'warn',title:'Cars, campers and trailers',plain:'Motor vehicles, campers and trailers are not covered. They need an auto or RV policy with comprehensive coverage. Boats pay at most $1,500.',src:'Section I, Property Not Covered, p. 3',quote:'We do not cover motor vehicles\u2026 trailers, campers\u2026 Watercraft limited to $1,500\u2026'},
+    {sev:'warn',title:'Mold is capped',plain:'Mold cleanup pays at most $10,000, even after a covered roof leak.',src:'Endorsement HO 04 27, p. 2',quote:'The most we will pay for "fungi", wet or dry rot, or bacteria is $10,000…'}
+  ],
+  covered:[
+    {title:'Wind and hail',plain:'Covered, but a 5% hurricane deductible applies to named storms.',src:'Hurricane Deductible Endorsement, p. 1'},
+    {title:'Fallen trees',plain:'Damage to the house from a tree is covered. Tree removal pays up to $1,000.',src:'Section I, Additional Coverages, p. 5'}
+  ]
+};
+const RENTAL_POLICY = {
+  carrier:'Gulf Harbor Mutual (sample)', form:'DP-3 Landlord Dwelling', number:'DP3-2218-SAMPLE',
+  renewal:'2027-03-01', agent:'Sample Agency · (228) 555-0142', claimPhone:'1-800-555-0199',
+  coverages:[
+    {key:'A',name:'The rental house',plain:'Pays to rebuild the house',limit:210000,src:'Dec. page, line A'},
+    {key:'B',name:'Other structures',plain:'Fence, shed, carport',limit:21000,src:'Dec. page, line B'},
+    {key:'C',name:'Your property at the rental',plain:'Appliances, blinds and yard equipment you own. Paid at used value.',limit:15000,src:'Dec. page, line C'},
+    {key:'D',name:'Lost rent',plain:'Rent you lose while the house is being repaired',limit:21000,src:'Coverage D – Fair Rental Value, p. 3'},
+    {key:'L',name:'Liability',plain:'If a tenant or guest is hurt and sues',limit:300000,src:'Liability Endorsement DL 24 01'}
+  ],
+  deductibles:{allPerils:2500, hurricanePct:2}, inflationGuardPct:0,
+  notCovered:[
+    {sev:'bad',title:'Flood or storm surge',plain:'Excluded. This rental has a separate NFIP flood policy on file.',src:'General Exclusions, A.3, p. 9',quote:'We do not insure for loss caused by flood, surface water, waves…'},
+    {sev:'warn',title:'Your tenant’s belongings',plain:'Not covered at all. Your tenant needs their own renter’s insurance.',src:'Coverage C, p. 2',quote:'We cover property usual to the maintenance of the dwelling and owned by you…'},
+    {sev:'warn',title:'Empty for more than 60 days',plain:'If the house sits vacant over 60 days, vandalism and broken glass are no longer covered.',src:'Conditions, Vacancy, p. 12',quote:'If the dwelling has been vacant for more than 60 consecutive days…'},
+    {sev:'warn',title:'Your property is paid at used value',plain:'Coverage C pays what a 6-year-old refrigerator is worth today, not the cost of a new one.',src:'Loss Settlement, p. 10',quote:'Personal property at actual cash value at the time of loss…'}
+  ],
+  covered:[
+    {title:'Wind and hail',plain:'Covered, with a 2% hurricane deductible.',src:'Windstorm Deductible Endorsement'},
+    {title:'Lost rent',plain:'Pays the monthly rent while repairs keep the house empty.',src:'Coverage D, p. 3'}
+  ]
+};
+const BUSINESS_POLICY = {
+  carrier:'Gulf Harbor Mutual (sample)', form:'Businessowners Policy (BOP)', number:'BOP-9035-SAMPLE',
+  renewal:'2027-01-15', agent:'Sample Agency · (228) 555-0142', claimPhone:'1-800-555-0199',
+  coverages:[
+    {key:'BLD',name:'Building',plain:'Pays to repair or rebuild the building',limit:420000,src:'Dec. page, Building'},
+    {key:'BPP',name:'Equipment and inventory',plain:'Kitchen equipment, furniture, stock, computers',limit:160000,src:'Dec. page, Business Personal Property'},
+    {key:'BI',name:'Lost income',plain:'Lost profit plus bills you keep paying (payroll, loans) while closed for repairs',limit:180000,src:'Business Income, p. 6'},
+    {key:'EE',name:'Extra expense',plain:'Costs to reopen faster, like a temporary location or rental equipment',limit:25000,src:'Extra Expense, p. 7'},
+    {key:'L',name:'Liability',plain:'If a customer is hurt and sues',limit:1000000,src:'Section II, p. 18'}
+  ],
+  deductibles:{allPerils:1000, hurricanePct:3}, inflationGuardPct:2, coinsurancePct:80, waitHours:72,
+  notCovered:[
+    {sev:'bad',title:'Flood or storm surge',plain:'Excluded. Federal flood insurance for businesses tops out at $500,000 building and $500,000 contents.',src:'Exclusions, B.1.g, p. 14',quote:'Flood, surface water, waves, tides, tidal waves, overflow of any body of water…'},
+    {sev:'warn',title:'Power outage from off-site damage',plain:'If the storm knocks out the power grid but your building is fine, lost income is not covered.',src:'Exclusions, B.1.e, p. 14',quote:'The failure of power, communication, water or other utility service supplied to the described premises…'},
+    {sev:'warn',title:'Food spoilage',plain:'Food that spoils during a power outage is not covered without a spoilage endorsement.',src:'Exclusions, B.2.d, p. 15',quote:'Spoilage of perishable goods due to… power outage…'},
+    {sev:'warn',title:'First 72 hours closed',plain:'Lost income starts paying 72 hours after the damage. The first 3 days are on you.',src:'Business Income, waiting period, p. 6',quote:'We will not pay for any loss during the first 72 hours…'}
+  ],
+  covered:[
+    {title:'Wind and hail',plain:'Covered, with a 3% named storm deductible.',src:'Named Storm Deductible Endorsement'},
+    {title:'Lost income after damage',plain:'Up to 12 months, once the building is damaged by a covered cause.',src:'Business Income, p. 6'}
+  ]
+};
+
+const TYPES = {
+  home:{label:'Home',building:'A',contents:'C',loss:'D',buildingName:'House coverage',contentsName:'Your stuff',lossName:'Hotel & food',
+    lossHelp:'Log every hotel night, meal and extra mile while you can’t live at home.',roomsTitle:'Rooms & photos',tab:'Rooms',area:'room',
+    itemHint:'e.g. Dining table',mapLabel:'Your home',policy:HOME_POLICY,
+    rooms:['Living room','Kitchen','Primary bedroom','Bathrooms','Garage']},
+  rental:{label:'Rental',building:'A',contents:'C',loss:'D',buildingName:'House coverage',contentsName:'Your property there',lossName:'Lost rent',
+    lossHelp:'Log each month of rent you lose while the house can’t be rented.',roomsTitle:'What you own at the rental',tab:'Rooms',area:'area',
+    itemHint:'e.g. Washer',mapLabel:'Your rental',policy:RENTAL_POLICY,
+    rooms:['Kitchen appliances','Laundry','HVAC & water heater','Yard & exterior']},
+  business:{label:'Business',building:'BLD',contents:'BPP',loss:'BI',buildingName:'Building coverage',contentsName:'Equipment & inventory',lossName:'Lost income & extra costs',
+    lossHelp:'Log lost sales, payroll you keep paying, and extra costs like a temporary location.',roomsTitle:'Areas & equipment',tab:'Areas',area:'area',
+    itemHint:'e.g. Commercial ice machine',mapLabel:'Your business',policy:BUSINESS_POLICY,
+    rooms:['Front of house','Equipment','Stock room','Office']}
+};
+
+const room = (name, items=[], photos=0) => ({id:uid(), name, photos, items:items.map(([n,v,y,r])=>({n,v,y,r:r||''})), open:false});
+const blankClaim = () => ({number:'',adjuster:'',adjPhone:'',dateOfLoss:'',log:[],receipts:[],status:'home',orderDate:'',mileRate:0.70});
+
+const clone = o => JSON.parse(JSON.stringify(o));
+const newPolicy = type => Object.assign(clone(TYPES[type].policy), {id:uid()});
+const DEFAULT_STATE = () => {
+  const hp = Object.assign(clone(HOME_POLICY),{id:uid()}), rp = Object.assign(clone(RENTAL_POLICY),{id:uid()}), bp = Object.assign(clone(BUSINESS_POLICY),{id:uid()});
+  bp.locations = 2;
+  const home = {id:uid(), type:'home', name:'Our house', address:'Gulf Coast, MS', inPath:true, policyId:hp.id,
+    info:{sqft:1850, cps:172, localInfl:5.8, flood:'none'}, exterior:[], manual:{}, claim:blankClaim(),
+    upgrades:[{n:'Roof replacement (architectural shingles)',v:14800,y:2019,r:'Contractor invoice'},{n:'HVAC system, 4-ton',v:7600,y:2022,r:''},{n:'Impact windows (14)',v:12400,y:2023,r:'Contractor invoice'}],
+    vehicles:[{n:'2021 Ford F-150',kind:'Car or truck',cov:'auto-comp'},{n:'2019 travel trailer, 24 ft',kind:'Camper or RV',cov:'none'},{n:'Bass boat and trailer',kind:'Boat',cov:'home-limited'}],
+    rooms:[room('Living room',[['Samsung 65" TV',1100,2023,'Best Buy receipt'],['Leather sectional',2400,2021,'Furniture store receipt'],['Coffee table',350,2019],['Area rug 8x10',420,2022]],2),
+           room('Kitchen',[['Refrigerator, French door',2200,2022],['Microwave',240,2024],['Cookware set',380,2020]],1),
+           room('Primary bedroom',[['King bed and frame',1900,2021]]), room('Bedroom 2'),
+           room('Garage',[['Riding mower',2900,2020]]), room('Bathrooms')]};
+  const rental = {id:uid(), type:'rental', name:'Rental house', address:'Baton Rouge, LA', inPath:false, policyId:rp.id,
+    info:{sqft:1400, cps:160, localInfl:5.1, flood:'nfip', rent:1650, tenant:'Sample tenant · (225) 555-0118', renterProof:false},
+    exterior:[], manual:{}, claim:blankClaim(),
+    rooms:[room('Kitchen appliances',[['Refrigerator',1400,2020],['Electric range',900,2020],['Dishwasher',650,2021]],1),
+           room('Laundry',[['Washer',750,2022],['Dryer',700,2022]]), room('HVAC & water heater',[['3-ton AC unit',5200,2018],['Water heater, 50 gal',1300,2021],['Thermostat',180,2021]],1),
+           room('Yard & exterior')]};
+  const biz = {id:uid(), type:'business', name:'Coastal Grill', address:'Gulfport, MS', inPath:true, policyId:bp.id,
+    info:{sqft:3200, cps:190, localInfl:5.8, flood:'none', monthlyNeed:26000, monthsClosed:8, stockReport:''},
+    exterior:[], manual:{}, claim:blankClaim(),
+    rooms:[room('Dining room',[['Tables and chairs (seats 80)',9600,2021],['TVs (4)',2400,2022],['Host stand and decor',1800,2021]],2),
+           room('Kitchen equipment',[['6-burner commercial range',6500,2021],['Walk-in cooler',14000,2019],['Fryers (2)',4200,2022],['Hood system',11000,2019]],1),
+           room('Bar',[['Ice machine',3800,2023]]), room('Office',[['POS system',3800,2023],['Laptop and printer',1400,2024],['Safe',900,2019]])]};
+  const biz2 = {id:uid(), type:'business', name:'Coastal Grill – Long Beach', address:'Long Beach, MS', inPath:true, policyId:bp.id,
+    info:{sqft:2400, cps:190, localInfl:5.8, flood:'nfip', monthlyNeed:18000, monthsClosed:8, stockReport:'Stock report · Sept 2026'},
+    exterior:[], manual:{}, claim:blankClaim(),
+    rooms:[room('Dining room',[['Tables and chairs (seats 50)',6200,2022],['Patio furniture',2800,2023],['TVs (2)',1200,2022]],1),
+           room('Kitchen equipment',[['Flat-top grill',3900,2022],['Reach-in coolers (2)',5600,2022],['Fryer',2100,2022]],1),
+           room('Office',[['POS system',3200,2023]])]};
+  return {sample:true, tab:'home', current:home.id, threat:'none', policyReads:3, policies:[hp,rp,bp], properties:[home,rental,biz,biz2]};
+};
+
+let S;
+function load(){
+  try{ const raw = localStorage.getItem('stormfile_v4'); S = raw ? JSON.parse(raw) : DEFAULT_STATE(); }
+  catch(e){ S = DEFAULT_STATE(); }
+  if(!S.properties || !S.properties.length || !S.policies) S = DEFAULT_STATE();
+  S.properties.forEach(p=>{ p.upgrades = p.upgrades||[]; p.vehicles = p.vehicles||[]; p.claim = Object.assign(blankClaim(), p.claim); });
+}
+function save(){ try{ localStorage.setItem('stormfile_v4', JSON.stringify(S)); }catch(e){} }
+const cur = () => S.properties.find(p=>p.id===S.current) || S.properties[0];
+const polOf = P => (P && P.policyId) ? (S.policies.find(x=>x.id===P.policyId) || null) : null;
+const usersOf = id => S.properties.filter(x=>x.policyId===id);
+const polLabel = p => `${p.form} · ${p.number}`;
+
+/* ---------- Calculations ---------- */
+const itemToday = it => it.v * Math.pow(1+CPI, Math.max(0, YEAR - it.y));
+function invTotals(P){
+  let today=0, count=0;
+  P.rooms.forEach(r => r.items.forEach(it => { today+=itemToday(it); count++; }));
+  return {today,count};
+}
+const roomPhotos = r => r.photos + (r.photoData||[]).length;
+const BIG = 1000;
+function missingReceipts(P){
+  const items = []; P.rooms.forEach(r=>r.items.forEach(it=>{ if(it.v>=BIG && !it.r) items.push(it.n); }));
+  (P.upgrades||[]).forEach(u=>{ if(!u.r) items.push(u.n); });
+  return items;
+}
+const VCOV = {
+  'auto-comp':{t:'Auto policy with comprehensive',tone:'ok',why:'Flood, wind and falling trees are covered, minus your deductible.'},
+  'auto-liab':{t:'Liability only',tone:'bad',why:'Storm and flood damage to the vehicle is not covered without comprehensive.'},
+  'rv':{t:'RV or boat policy',tone:'ok',why:'Check that it includes comprehensive or "physical damage" coverage.'},
+  'home-limited':{t:'Only on homeowners',tone:'warn',why:'Homeowners pays at most $1,500 for a boat and nothing for campers or vehicles.'},
+  'none':{t:'Not insured',tone:'bad',why:'A storm loss here comes entirely out of pocket.'}
+};
+const VKINDS = ['Car or truck','Camper or RV','Boat','Golf cart or ATV','Trailer'];
+const CATS = {home:['Lodging','Extra meals','Mileage','Pet boarding','Laundry','Storage','Other'],
+  rental:['Lost rent','Repairs to prevent more damage','Other'],
+  business:['Lost sales','Payroll','Temporary location','Equipment rental','Other']};
+const roomDone = r => roomPhotos(r)>0 && r.items.length>=3;
+function hurDedOf(pol, building){
+  const d = pol.deductibles || {};
+  if(d.hurricanePct) return building*d.hurricanePct/100;
+  if(d.hurricaneFlat) return d.hurricaneFlat;
+  return d.allPerils || 0;
+}
+function hurDedLabel(pol, cfg){
+  const d = pol.deductibles || {};
+  if(d.hurricanePct) return `Hurricane deductible (${d.hurricanePct}% of ${cfg.buildingName.toLowerCase()})`;
+  if(d.hurricaneFlat) return 'Hurricane deductible (flat amount)';
+  return 'Hurricane deductible (no separate one found, so the regular deductible applies)';
+}
+function calc(P){
+  if(!polOf(P)) return null;
+  const cfg = TYPES[P.type], pol = polOf(P), i = P.info;
+  const lim = k => (pol.coverages.find(c=>c.key===k)||{limit:0}).limit;
+  const building = lim(cfg.building), contents = lim(cfg.contents), loss = lim(cfg.loss);
+  const rebuild = i.sqft * i.cps;
+  const r = {building, contents, loss, rebuild,
+    rebuildNext: rebuild*(1+i.localInfl/100), buildingNext: building*(1+pol.inflationGuardPct/100),
+    hurDed: hurDedOf(pol, building), inv: invTotals(P), ratio: rebuild ? building/rebuild : 1};
+  if(P.type==='rental'){ r.rentNeed = (i.rent||0)*12; }
+  if(P.type==='business'){
+    r.noCoins = !pol.coinsurancePct;
+    r.coinsReq = rebuild*(pol.coinsurancePct||0)/100;
+    r.coinsOK = building >= r.coinsReq;
+    r.coinsFactor = r.coinsReq ? Math.min(1, building/r.coinsReq) : 1;
+    r.examplePaid = Math.max(0, 100000*r.coinsFactor - pol.deductibles.allPerils);
+    r.biNeed = (i.monthlyNeed||0)*(i.monthsClosed||0);
+  }
+  return r;
+}
+const buildingOK = (P,c) => !!c && (P.type==='business' ? c.coinsOK : c.ratio>=1);
+function tasks(P){
+  const c = calc(P), cfg = TYPES[P.type];
+  const done = P.rooms.filter(roomDone).length;
+  const list = [
+    {title:'Upload the policy',why:'So StormFile can explain the coverage',done:!!polOf(P),w:20,go:'policy'},
+    {title:'Decide on flood coverage',why:P.info.flood==='none'?'No flood policy. New ones take 30 days to start.':'Flood decision on file',done:P.info.flood!=='none',w:15,go:'policy'},
+    {title:'Photograph the outside',why:'Roof and all four sides. This is your dated "before" proof.',done:P.exterior.length>=4,w:15,progress:`${P.exterior.length} of 4 photos`,go:'inventory'},
+    {title:`Document every ${cfg.area}`,why:`At least one photo and 3 items per ${cfg.area}`,done:done===P.rooms.length,w:30,progress:`${done} of ${P.rooms.length}`,frac:P.rooms.length?done/P.rooms.length:0,go:'inventory'},
+    {title:'Fix the building coverage gap',
+     why: !c ? 'Upload the policy first' : P.type==='business'
+       ? (c.noCoins?'No coinsurance rule found on the policy':c.coinsOK?`Meets the ${polOf(P).coinsurancePct}% coinsurance rule`:`Below the ${polOf(P).coinsurancePct}% coinsurance rule. Claims get cut.`)
+       : (c.ratio>=1?'Coverage keeps up with rebuild cost':`Rebuilding costs ${fmt(c.rebuild-c.building)} more than the coverage`),
+     done:buildingOK(P,c),w:10,go:'policy'}
+  ];
+  const miss = missingReceipts(P);
+  list.push({title:'Save receipts for big-ticket items',why:miss.length?`${miss.length} item${miss.length>1?'s':''} over $1,000 or home upgrades without a receipt`:'Receipts on file for everything over $1,000',done:!miss.length,w:10,go:'inventory'});
+  const badV = (P.vehicles||[]).filter(v=>VCOV[v.cov].tone!=='ok');
+  if((P.vehicles||[]).length) list.push({title:'Insure vehicles and campers for storms',why:badV.length?`${badV.map(v=>v.n).join(', ')} not fully covered`:'All vehicles have storm coverage',done:!badV.length,w:5,go:'inventory'});
+  if(P.type==='rental') list.push({title:'Get proof of tenant’s renter’s insurance',why:'Your policy doesn’t cover their belongings',done:!!P.info.renterProof,w:10,go:'policy'});
+  if(P.type==='business'){
+    list.push({title:'Upload a stock report',why:'Inventory changes weekly. A recent report proves what was on the shelves.',done:!!P.info.stockReport,w:10,go:'inventory'});
+    list.push({title:'Check lost-income coverage',why:!c?'Upload the policy first':c.loss>=c.biNeed?'Covers your estimated closure':`${fmt(c.biNeed-c.loss)} short if closed ${P.info.monthsClosed} months`,done:!!c&&c.loss>=c.biNeed,w:10,go:'policy'});
+  }
+  return list;
+}
+function score(P){
+  const ts = tasks(P), tot = ts.reduce((s,t)=>s+t.w,0);
+  return Math.round(ts.reduce((s,t)=> s + (t.done ? t.w : (t.frac ? t.w*t.frac : 0)), 0) / tot * 100);
+}
+const tone = r => r>=1 ? 'ok' : r>=0.9 ? 'warn' : 'bad';
+const toneVar = t => t==='ok'?'green':t==='warn'?'amber':'red';
+
+/* ---------- Storm levels ---------- */
+const LEVELS = {
+  none:{name:'All clear',short:'All clear',cadence:'Weekly, only if tasks are unfinished',tone:'ok',msg:'No storms are forecast to reach this property.'},
+  preseason:{name:'Pre-season (May)',short:'Pre-season',cadence:'A few times a week',tone:'info',msg:'Hurricane season starts June 1. This is the best time to finish your records.'},
+  forecast:{name:'Storm forecast toward you',short:'Forecast',cadence:'Once a day',tone:'warn',msg:'Tropical Storm Delia (sample) is forecast to reach the Mississippi coast in about 5 days.'},
+  watch:{name:'Hurricane watch',short:'Watch',cadence:'Twice a day',tone:'bad',msg:'Hurricane conditions are possible here within 48 hours.'},
+  warning:{name:'Hurricane warning',short:'Warning',cadence:'Twice a day until landfall',tone:'bad',msg:'Hurricane conditions are expected within 36 hours. Finish the final checklist now.'},
+  after:{name:'Storm has passed',short:'After',cadence:'Claim mode',tone:'info',msg:'The storm has moved inland. Only go back once officials say it is safe.'}
+};
+const active = () => ['forecast','watch','warning','after'].includes(S.threat);
+const levelFor = P => (active() && !P.inPath) ? 'none' : S.threat;
+
+/* ---------- Views ---------- */
+function ringSVG(pct){
+  const r=46, c=2*Math.PI*r, off=c*(1-pct/100);
+  const col = pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+  return `<svg class="ring" viewBox="0 0 108 108" role="img" aria-label="Storm readiness ${pct} of 100">
+    <circle cx="54" cy="54" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="10"/>
+    <circle cx="54" cy="54" r="${r}" fill="none" stroke="${col}" stroke-width="10" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 54 54)"/>
+    <text x="54" y="58" text-anchor="middle" fill="var(--fg)" font-family="IBM Plex Mono, monospace" font-size="24" font-weight="500">${pct}</text>
+    <text x="54" y="76" text-anchor="middle" fill="var(--muted)" font-family="IBM Plex Sans, sans-serif" font-size="10">of 100</text>
+  </svg>`;
+}
+
+function viewHome(){
+  const P = cur(), cfg = TYPES[P.type], sc = score(P), lv = LEVELS[levelFor(P)], c = calc(P), ts = tasks(P);
+  const next = ts.filter(t=>!t.done);
+  return `
+  <section class="stack">
+    <p class="label">${esc(cfg.label)} · ${esc(P.address)}</p>
+    <h1>${esc(P.name)}</h1>
+    ${S.renaming?'':`<button class="src" data-act="rename" style="align-self:flex-start">Edit name and city</button>`}
+  </section>
+  ${S.renaming ? `<div class="card" style="border-color:var(--accent)">
+    <h2>About this property</h2>
+    <label class="field">Name<input id="rnName" value="${esc(P.name)}" placeholder="e.g. Our house"></label>
+    <div class="grid2">
+      <label class="field">Type<select id="rnType"><option value="home" ${P.type==='home'?'selected':''}>Home I live in</option><option value="rental" ${P.type==='rental'?'selected':''}>Rental I own</option><option value="business" ${P.type==='business'?'selected':''}>Business</option></select></label>
+      <label class="field">City, state<input id="rnAddr" value="${esc(P.address==='Add your city'?'':P.address)}" placeholder="Pass Christian, MS"></label>
+    </div>
+    <button class="primary" data-act="saveName">Save and add the policy</button>
+  </div>` : ''}
+  ${INSTALLED ? '' : `<div class="card" style="border-color:var(--accent)">
+    <h2>Install StormFile on your phone</h2>
+    ${INSTALL_EVT ? `<p class="small">Add StormFile to your home screen so it opens like any other app, full screen, even without signal.</p>
+      <button class="primary" data-act="install">Install app</button>`
+    : IS_IOS ? `<ol class="steps small"><li>Make sure this is open in <strong>Safari</strong>.</li><li>Tap the <strong>Share</strong> button (square with an arrow).</li><li>Scroll down and tap <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li><li>Open StormFile from the new icon.</li></ol>`
+    : `<ol class="steps small"><li>Open this in <strong>Chrome</strong>.</li><li>Tap the <strong>\u22EE</strong> menu, then <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li><li>Open StormFile from the new icon.</li></ol>`}
+    <p class="small muted">Your information is saved only on this phone. If you install the app, open it from the icon from then on so your records stay in one place.</p>
+  </div>`}
+  ${S.hideWelcome ? '' : `<div class="card" style="border-color:var(--amber);background:var(--amber-bg)">
+    <div class="row"><span class="label" style="color:var(--amber)">Test version</span><button class="src" data-act="hideWelcome">Hide</button></div>
+    <h2>Thanks for testing StormFile</h2>
+    <p class="small">StormFile helps Gulf Coast homeowners understand their insurance and get ready for a hurricane claim. Everything here is sample data. Nothing you enter leaves this phone.</p>
+    <ol class="steps small">
+      <li>Open <strong>Policy</strong> to see a sample policy explained in plain English.</li>
+      <li>Tap the property name at the top to switch to the rental or the restaurant.</li>
+      <li>On <strong>Storm</strong>, tap Forecast, Watch and Warning to see the alerts change.</li>
+      <li>On <strong>Claim</strong>, set the situation to "Under a mandatory evacuation order."</li>
+    </ol>
+    <button class="primary" data-go="feedback">Give feedback (2 minutes)</button>
+  </div>`}
+  ${S.ownStarted ? '' : `<div class="card" style="border-color:var(--accent)">
+    <h2>Use your own home</h2>
+    <p class="small">Set up your real home, rental or business. Have your declarations page handy. Everything you enter is saved only on this phone, never sent anywhere.</p>
+    <button class="primary" data-act="startOwn">Start with my own property</button>
+    <p class="small muted">This removes the sample properties. You can add more places later.</p>
+  </div>`}
+  ${!LIVE ? '' : `<div class="card" style="border-color:var(--accent)">
+    <h2>Try it with a real policy</h2>
+    <p class="small">Upload a photo or PDF of a homeowners, landlord or business <strong>declarations page</strong>. StormFile reads it and shows what\u2019s covered in plain English.</p>
+    <label class="upload">Upload declarations page<input type="file" id="decUploadNew" accept="image/*,application/pdf"></label>
+    <p class="small muted">Adds it as a new property. Read on your Claude account; the file isn\u2019t saved.</p>
+  </div>`}
+  <div class="card">
+    <div class="score-wrap">
+      ${ringSVG(sc)}
+      <div class="stack" style="min-width:0">
+        <span class="chip ${lv.tone==='info'?'info':lv.tone}" style="align-self:flex-start"><span class="dot"></span>${esc(lv.name)}</span>
+        <p class="small">${sc>=80?'Records are in good shape.':sc>=50?'Partway there. A few tasks left before a storm.':'If a storm hit today, this claim would be hard to prove.'}</p>
+        <button class="small-btn ghost" data-go="storm" style="align-self:flex-start">Storm alerts</button>
+      </div>
+    </div>
+  </div>
+  ${c ? `<div class="grid2">
+    <div class="card"><span class="label">${esc(cfg.buildingName)}</span>
+      <span class="num" style="font-size:20px">${fmt(c.building)}</span>
+      ${P.type==='business'
+        ? `<span class="chip ${c.noCoins?'info':c.coinsOK?'ok':'bad'}">${c.noCoins?'No coinsurance rule found':c.coinsOK?'Meets '+polOf(P).coinsurancePct+'% rule':'Below '+polOf(P).coinsurancePct+'% rule'}</span>`
+        : `<span class="chip ${tone(c.ratio)}">${c.ratio>=1?'Enough to rebuild':fmt(c.rebuild-c.building)+' short'}</span>`}</div>
+    <div class="card"><span class="label">Hurricane deductible</span>
+      <span class="num" style="font-size:20px">${fmt(c.hurDed)}</span>
+      <span class="chip warn">Paid before insurance</span></div>
+  </div>`:''}
+  <div class="card">
+    <div class="row"><h2>Next steps</h2><span class="muted small">${next.length} left</span></div>
+    <div>
+    ${ts.map(t=>`<div class="task">
+      <span class="check ${t.done?'done':''}" aria-hidden="true">${t.done?'✓':''}</span>
+      <div class="stack" style="gap:2px;flex:1;min-width:0">
+        <strong>${esc(t.title)}</strong>
+        <span class="small muted">${esc(t.why)}</span>
+        ${t.progress&&!t.done?`<span class="small num">${esc(t.progress)}</span>`:''}
+      </div>
+      ${t.done?'':`<button class="small-btn" data-go="${t.go}">Go</button>`}
+    </div>`).join('')}
+    </div>
+  </div>
+  <div class="card">
+    <div class="row"><h2>All properties</h2><span class="muted small">${S.properties.length}</span></div>
+    <div class="stack">
+    ${S.properties.map(p=>{ const s=score(p), l=levelFor(p); return `<button class="prop" data-prop="${p.id}" aria-current="${p.id===P.id}">
+      <div class="stack" style="gap:0;min-width:0"><span class="typetag">${esc(TYPES[p.type].label)}</span><strong>${esc(p.name)}</strong>
+        <span class="small muted">${esc(p.address)}${active()&&p.inPath?' · <span style="color:var(--red);font-weight:600">In storm path</span>':''}</span></div>
+      <span class="sc" style="color:var(--${s>=80?'green':s>=50?'amber':'red'})">${s}</span></button>`;}).join('')}
+    </div>
+    <details class="add" ${S.openAdd?'open':''}><summary>+ Add a property</summary>
+      <form class="stack" id="addProp">
+        <label class="field">Name<input id="apName" placeholder="e.g. Camp house" required></label>
+        <div class="grid2">
+          <label class="field">Type<select id="apType"><option value="home">Home</option><option value="rental">Rental</option><option value="business">Business</option></select></label>
+          <label class="field">City, state<input id="apAddr" placeholder="Biloxi, MS" required></label>
+        </div>
+        <label class="field">Insurance policy
+          <select id="apPolicy">
+            <option value="">Its own policy (upload next)</option>
+            ${S.policies.filter(po=>usersOf(po.id).length).map(po=>`<option value="${po.id}">Same policy as ${esc(usersOf(po.id).map(u=>u.name).join(', '))} (${esc(po.form)})</option>`).join('')}
+          </select></label>
+        <p class="small muted">Some owners have one policy for several places, like a business policy that lists two locations.</p>
+        <button class="primary" type="submit">Add property</button>
+        <p class="small muted">Each extra property adds a few dollars a month. Businesses use the business plan.</p>
+      </form>
+    </details>
+  </div>
+  <p class="foot">StormFile prototype · sample data · not insurance advice</p>`;
+}
+
+function viewPolicy(){
+  const P = cur(), cfg = TYPES[P.type], p = polOf(P), i = P.info;
+  if(!p) return `
+  <section class="stack"><p class="label">${esc(P.name)}</p><h1>Add the policy</h1></section>
+  <div class="card">
+    <p>Grab your <strong>declarations page</strong>. It\u2019s the 1\u20133 page summary your insurer emails or mails at every renewal, with your coverage amounts and deductibles.</p>
+    <button class="primary" data-go="policyForm">Enter it by hand (about 3 minutes)</button>
+    ${LIVE ? `<label class="upload">Or upload a photo or PDF for Claude to read<input type="file" id="polUpload" accept="image/*,application/pdf"></label>
+    <p class="small muted">Claude reads it on your Claude account. The file itself isn\u2019t saved.</p>` : ''}
+    <p class="small muted">Everything you enter stays on this phone.</p>
+    <button class="ghost" data-act="demoPolicy">Use a sample ${esc(cfg.label.toLowerCase())} policy</button>
+    ${S.policies.some(po=>usersOf(po.id).length)?`<label class="field">Or use a policy you already uploaded
+      <select id="polSwitch"><option value="new" selected>Choose a policy</option>${S.policies.filter(po=>usersOf(po.id).length).map(po=>`<option value="${po.id}">${esc(po.form)} · ${esc(usersOf(po.id).map(u=>u.name).join(', '))}</option>`).join('')}</select></label>`:''}
+  </div>`;
+  const c = calc(P);
+  return `
+  <section class="stack">
+    <p class="label">${esc(p.carrier)} · ${esc(p.form)}</p>
+    <h1>What ${esc(P.name)} is covered for</h1>
+  </section>
+  ${p.manual?`<div class="alert ok" style="background:var(--surface)"><strong>Built from what you entered</strong>
+    <p class="small">Items marked \u201CCheck full policy\u201D come from your answers or are common gaps. Confirm them with your agent.</p>
+    <button class="small-btn" data-go="policyForm" style="align-self:flex-start">Edit policy details</button></div>`:''}
+  ${p.live?`<div class="alert ok" style="background:var(--surface)"><strong>Read from the uploaded declarations page</strong>
+    <p class="small">Claude read this summary from ${esc(p.fileName||'the upload')}. Check it against the document. Items marked \u201CCheck full policy\u201D are common for this kind of policy but aren\u2019t shown on a declarations page.</p>
+    ${p.notes?`<p class="small muted">${esc(p.notes)}</p>`:''}</div>`:''}
+
+  <div class="card">
+    <div class="grid2">
+      <label class="field">Policy number<input id="polNum" value="${esc(p.number)}"></label>
+      <label class="field">Renews<input id="polRenew" type="date" value="${esc(p.renewal)}"></label>
+    </div>
+    <div class="row small"><span class="muted">Agent</span><span>${esc(p.agent)}</span></div>
+    <div class="row small"><span class="muted">Claims line</span><span class="num">${esc(p.claimPhone)}</span></div>
+    ${(()=>{ const others = usersOf(p.id).filter(x=>x.id!==P.id); return others.length ? `<div class="alert ok" style="background:var(--bg)"><strong>This policy also covers ${esc(others.map(o=>o.name).join(', '))}</strong>
+      <p class="small">One policy, ${others.length+1} locations. Changes you make here apply to all of them. The full app reads the policy’s schedule of locations to show the limit for each place.</p></div>` : ''; })()}
+    <label class="field">Policy for this property
+      <select id="polSwitch">
+        ${S.policies.filter(po=>po.id===p.id || usersOf(po.id).length).map(po=>`<option value="${po.id}" ${po.id===p.id?'selected':''}>${esc(polLabel(po))}${po.id===p.id?'':' (also used by '+esc(usersOf(po.id).map(u=>u.name).join(', '))+')'}</option>`).join('')}
+        <option value="new">Upload a separate policy</option>
+      </select></label>
+  </div>
+
+  <div class="card">
+    <h2>Covered</h2>
+    <div>${p.coverages.map(cv=>`<div class="kv"><div class="k stack" style="gap:2px">
+      <strong>${esc(cv.name)}</strong><span class="small muted">${esc(cv.plain)}</span>
+      <button class="src" style="align-self:flex-start" data-src="${esc(cv.src)}">${esc(cv.src)}</button></div>
+      <span class="v">${fmt(cv.limit)}</span></div>`).join('')}</div>
+    ${p.covered.map(x=>`<div class="stack" style="gap:2px"><span class="chip ok" style="align-self:flex-start"><span class="dot"></span>${esc(x.title)}</span>
+      <span class="small">${esc(x.plain)}</span><button class="src" style="align-self:flex-start" data-src="${esc(x.src)}">${esc(x.src)}</button></div>`).join('')}
+  </div>
+
+  <div class="card">
+    <h2>Not covered</h2>
+    ${p.notCovered.map(x=>`<div class="alert ${x.sev}">
+      <div class="row"><strong>${esc(x.title)}</strong>${x.fromPage===false?'<span class="chip info">Check full policy</span>':''}</div>
+      <p class="small">${esc(x.plain)}</p>
+      ${x.quote?`<details><summary class="src" style="display:inline">${esc(x.src)}</summary><p class="quote" style="margin-top:6px">\u201C${esc(x.quote)}\u201D</p></details>`:`<span class="small muted">${esc(x.src)}</span>`}
+    </div>`).join('')}
+  </div>
+
+  <div class="card">
+    <h2>Out of pocket in a hurricane</h2>
+    <div class="kv"><span class="k">${esc(hurDedLabel(p, cfg))}</span><span class="v">${fmt(c.hurDed)}</span></div>
+    <div class="kv"><span class="k">Other claims deductible</span><span class="v">${fmt((p.deductibles||{}).allPerils||0)}</span></div>
+    ${P.type==='business' && p.waitHours?`<div class="kv"><span class="k">Lost income during the first ${p.waitHours} hours</span><span class="v">${fmt(i.monthlyNeed*12/365*p.waitHours/24)}</span></div>`:''}
+  </div>
+
+  ${P.type==='business' ? `
+  ${c.noCoins ? `<div class="card"><h2>Coinsurance rule</h2><p class="small">No coinsurance percentage was found on this document. Many business policies require 80\u201390%. Check the full policy or ask the agent.</p></div>` : `<div class="card">
+    <div class="row"><h2>The ${p.coinsurancePct}% rule</h2><span class="chip ${c.coinsOK?'ok':'bad'}">${c.coinsOK?'You pass':'Penalty applies'}</span></div>
+    <p class="small">This policy requires insuring the building for at least ${p.coinsurancePct}% of what it costs to rebuild. If you’re under, every claim gets cut by the same share, even small ones.</p>
+    <div class="grid2">
+      <label class="field">Square feet<input id="sqft" type="number" inputmode="numeric" value="${i.sqft}"></label>
+      <label class="field">Local build cost per sq ft<input id="cps" type="number" inputmode="numeric" value="${i.cps}"></label>
+    </div>
+    <div class="kv"><span class="k">Cost to rebuild</span><span class="v">${fmt(c.rebuild)}</span></div>
+    <div class="kv"><span class="k">Required (${p.coinsurancePct}%)</span><span class="v">${fmt(c.coinsReq)}</span></div>
+    <div class="kv"><span class="k">Your building coverage</span><span class="v">${fmt(c.building)}</span></div>
+    ${c.coinsOK?'':`<div class="alert bad"><strong>On a $100,000 claim, the insurer would pay about ${fmt(c.examplePaid)}</strong>
+      <p class="small">You carry ${Math.round(c.coinsFactor*100)}% of the required amount, so they pay ${Math.round(c.coinsFactor*100)}% of the loss, minus the deductible. Raising building coverage to ${fmt(c.coinsReq)} removes the penalty.</p></div>`}
+  </div>`}
+  <div class="card">
+    <div class="row"><h2>Lost income check</h2><span class="chip ${c.loss>=c.biNeed?'ok':'bad'}">${c.loss>=c.biNeed?'Covered':'Short'}</span></div>
+    <div class="grid2">
+      <label class="field">Monthly profit + bills you’d keep paying<input id="monthlyNeed" type="number" inputmode="numeric" value="${i.monthlyNeed}"></label>
+      <label class="field">Months to reopen after a bad storm<input id="monthsClosed" type="number" inputmode="numeric" value="${i.monthsClosed}"></label>
+    </div>
+    <div class="kv"><span class="k">You’d need</span><span class="v">${fmt(c.biNeed)}</span></div>
+    <div class="kv"><span class="k">Your lost income coverage</span><span class="v">${fmt(c.loss)}</span></div>
+    <p class="small muted">After Katrina, many Gulf Coast businesses took 6–12 months to reopen. Payroll is often the biggest bill.</p>
+  </div>` : `
+  <div class="card">
+    <div class="row"><h2>Enough to rebuild?</h2><span class="chip ${tone(c.ratio)}">${c.ratio>=1?'Covered':'Underinsured'}</span></div>
+    <div class="grid2">
+      <label class="field">Square feet<input id="sqft" type="number" inputmode="numeric" value="${i.sqft}"></label>
+      <label class="field">Local build cost per sq ft<input id="cps" type="number" inputmode="numeric" value="${i.cps}"></label>
+    </div>
+    <div class="kv"><span class="k">Cost to rebuild today</span><span class="v">${fmt(c.rebuild)}</span></div>
+    <div class="kv"><span class="k">${esc(cfg.buildingName)}</span><span class="v">${fmt(c.building)}</span></div>
+    <div class="meter" aria-hidden="true"><i style="width:${Math.min(100,c.ratio*100/1.3).toFixed(1)}%;background:var(--${toneVar(tone(c.ratio))})"></i></div>
+    <p class="small">${c.ratio>=1?`Coverage is ${fmt(c.building-c.rebuild)} above the estimated rebuild cost.`:`Rebuilding would cost about <strong>${fmt(c.rebuild-c.building)}</strong> more than the policy pays. Worth asking your agent about.`}</p>
+  </div>`}
+
+  ${P.type==='rental' ? `
+  <div class="card">
+    <div class="row"><h2>Lost rent</h2><span class="chip ${c.loss>=c.rentNeed?'ok':'warn'}">${c.loss>=c.rentNeed?'12 months covered':Math.floor(c.loss/(i.rent||1))+' months covered'}</span></div>
+    <label class="field">Monthly rent<input id="rent" type="number" inputmode="numeric" value="${i.rent}"></label>
+    <div class="kv"><span class="k">A year of rent</span><span class="v">${fmt(c.rentNeed)}</span></div>
+    <div class="kv"><span class="k">Lost rent coverage</span><span class="v">${fmt(c.loss)}</span></div>
+    <p class="small muted">Major hurricane repairs often take 6–12 months because contractors are booked up.</p>
+  </div>
+  <div class="card">
+    <h2>Tenant</h2>
+    <div class="row small"><span class="muted">Contact</span><span>${esc(i.tenant)}</span></div>
+    <label class="field">Renter’s insurance proof
+      <select id="renterProof"><option value="" ${!i.renterProof?'selected':''}>Not on file</option><option value="yes" ${i.renterProof?'selected':''}>On file</option></select></label>
+    ${i.renterProof?'':`<div class="alert warn"><p class="small">Your landlord policy doesn’t cover the tenant’s belongings. Ask for a copy of their renter’s insurance before hurricane season.</p></div>`}
+  </div>` : ''}
+
+  <div class="card">
+    <h2>Inflation check</h2>
+    <p class="small muted">Rechecked automatically 45 days before renewal on ${esc(p.renewal)}.</p>
+    <label class="field">Local construction cost rise per year (%)<input id="infl" type="number" step="0.1" value="${i.localInfl}"></label>
+    <div class="tblwrap"><table>
+      <tr><td></td><td class="label" style="text-align:right">At renewal</td></tr>
+      <tr><td>Rebuild cost (+${i.localInfl}%)</td><td>${fmt(c.rebuildNext)}</td></tr>
+      <tr><td>${esc(cfg.buildingName)} with inflation guard (+${p.inflationGuardPct}%)</td><td>${fmt(c.buildingNext)}</td></tr>
+      <tr><td><strong>Gap</strong></td><td><strong>${c.buildingNext>=c.rebuildNext?'None':fmt(c.rebuildNext-c.buildingNext)}</strong></td></tr>
+    </table></div>
+    ${i.localInfl>p.inflationGuardPct?`<div class="alert warn"><p class="small">${p.inflationGuardPct?`The policy raises coverage ${p.inflationGuardPct}% a year`:'The policy has no inflation guard'}, but local building costs are rising ${i.localInfl}%. The gap grows each year.</p></div>`:''}
+  </div>
+
+  <div class="card">
+    <h2>${esc(cfg.contentsName)}</h2>
+    <div class="kv"><span class="k">Logged so far (today’s prices)</span><span class="v">${fmt(c.inv.today)}</span></div>
+    <div class="kv"><span class="k">Coverage</span><span class="v">${fmt(c.contents)}</span></div>
+    <p class="small muted">${c.inv.count} items logged${P.type==='business'?'. Stock on hand comes from your stock report.':'.'}</p>
+  </div>
+
+  <div class="card">
+    <h2>Flood policy</h2>
+    <label class="field">Status
+      <select id="flood">
+        <option value="none" ${i.flood==='none'?'selected':''}>No flood policy</option>
+        <option value="nfip" ${i.flood==='nfip'?'selected':''}>NFIP flood policy</option>
+        <option value="private" ${i.flood==='private'?'selected':''}>Private flood policy</option>
+        <option value="declined" ${i.flood==='declined'?'selected':''}>Decided not to buy</option>
+      </select></label>
+    ${i.flood==='none'?`<div class="alert bad"><strong>New flood policies take 30 days to start</strong><p class="small">Buying one after a storm forms is too late.${P.type==='business'?' Federal business flood coverage caps at $500,000 building and $500,000 contents, so ask about private excess flood too.':' Ask your agent before hurricane season.'}</p></div>`:''}
+  </div>
+
+  <div class="card">
+    <h3>Update the policy</h3>
+    <p class="small muted">Got a renewal? Upload the new declarations page and StormFile rereads it. Policy reads on this account: <span class="num">${S.policyReads}</span>.</p>
+    <label class="upload">Upload new declarations page (photo or PDF)<input type="file" id="polUpload" accept="image/*,application/pdf"></label>
+  </div>
+  <p class="foot">StormFile explains policies in plain words. It is not insurance advice. Confirm coverage with your licensed agent.</p>`;
+}
+
+function viewInventory(){
+  const P = cur(), cfg = TYPES[P.type], inv = invTotals(P);
+  const done = P.rooms.filter(roomDone).length;
+  return `
+  <section class="stack"><p class="label">${esc(P.name)}</p><h1>${esc(cfg.roomsTitle)}</h1></section>
+  <div class="card">
+    <div class="row"><span class="label">Logged value today</span><span class="num" style="font-size:20px">${fmt(inv.today)}</span></div>
+    <div class="meter"><i style="width:${P.rooms.length?(done/P.rooms.length*100).toFixed(0):0}%;background:var(--accent)"></i></div>
+    <span class="small muted">${done} of ${P.rooms.length} ${cfg.area}s complete · ${inv.count} items</span>
+    ${(()=>{ const m = missingReceipts(P); return m.length ? `<div class="alert warn" style="background:var(--bg)"><strong>${m.length} big-ticket item${m.length>1?'s':''} without a receipt</strong><p class="small">${esc(m.join(', '))}. Snap a photo of the receipt, or find it in your email. Adjusters often question high-value items with no proof.</p></div>` : `<span class="chip ok" style="align-self:flex-start">Receipts on file for everything over $1,000</span>`; })()}
+  </div>
+
+  ${P.type==='business'?`<div class="card">
+    <div class="row"><h2>Stock report</h2><span class="chip ${P.info.stockReport?'ok':'warn'}">${P.info.stockReport?'On file':'Missing'}</span></div>
+    <p class="small muted">Upload an inventory report from your POS or bookkeeping software instead of photographing every item. Update it monthly and before a storm.</p>
+    ${P.info.stockReport?`<p class="small">${esc(P.info.stockReport)}</p>`:''}
+    <label class="upload">Upload stock report<input type="file" id="stockUpload" accept=".csv,.xlsx,.pdf,image/*"></label>
+  </div>`:''}
+
+  ${P.type==='rental'?`<div class="alert warn" style="background:var(--surface)"><p class="small">Only log what <strong>you</strong> own at the rental. The tenant’s furniture and belongings are on their renter’s insurance.</p></div>`:''}
+
+  <div class="card">
+    <div class="row"><h2>Outside of the building</h2><span class="chip ${P.exterior.length>=4?'ok':'warn'}">${P.exterior.length} of 4</span></div>
+    <p class="small muted">Roof, front, back, both sides. Each photo is saved with the date to prove the condition before a storm.</p>
+    ${P.exterior.length?`<div class="thumbs">${P.exterior.map(p=>`<img src="${p.src}" alt="Exterior photo ${esc(p.date)}">`).join('')}</div>`:''}
+    <label class="upload">Take exterior photos<input type="file" id="extUpload" accept="image/*" capture="environment" multiple></label>
+  </div>
+
+  ${(()=>{ const ups = P.upgrades||[], po = polOf(P);
+    const roof = ups.find(u=>/roof/i.test(u.n)), age = roof ? YEAR-roof.y : null, rc = po && po.roofRCYears;
+    return `<div class="card">
+    <div class="row"><h2>${P.type==='business'?'Building upgrades':'Home upgrades & big repairs'}</h2><span class="chip ${ups.some(u=>!u.r)?'warn':'ok'}">${ups.filter(u=>u.r).length} of ${ups.length} receipts</span></div>
+    <p class="small muted">A new roof, AC, windows or remodel raises what it costs to rebuild. Adjusters usually ask how old the roof is first.</p>
+    ${roof && rc ? `<div class="alert ${age<rc?'ok':'warn'}" style="background:var(--bg)"><p class="small">Roof is ${age} years old. ${age<rc?`This policy pays full replacement for roofs under ${rc} years old.`:`Roofs over ${rc} years old are paid at used value on this policy.`}</p></div>` : ''}
+    ${ups.length?`<div class="tblwrap"><table>${ups.map((u,i)=>`<tr><td>${esc(u.n)}<br><span class="small muted">${u.y}</span> ${u.r?`<span class="chip ok">Receipt \u2713</span>`:`<label class="src" style="cursor:pointer;position:relative;color:var(--amber);font-weight:600">Add receipt<input type="file" data-upreceipt="${i}" accept="image/*,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0"></label>`}</td><td>${fmt(u.v)}<br><button class="src" data-delup="${i}">Remove</button></td></tr>`).join('')}</table></div>`:'<p class="small muted">Nothing added yet.</p>'}
+    <form class="stack" id="addUpgrade">
+      <label class="field">Upgrade or repair<input id="upN" placeholder="e.g. Roof replacement" required></label>
+      <div class="grid2">
+        <label class="field">Cost<input id="upV" type="number" inputmode="numeric" placeholder="14000" required></label>
+        <label class="field">Year done<input id="upY" type="number" inputmode="numeric" value="${YEAR}"></label>
+      </div>
+      <button type="submit">Add upgrade</button>
+    </form>
+  </div>`; })()}
+
+  <div class="stack">
+  ${P.rooms.map(r=>{
+    const tot = r.items.reduce((s,it)=>s+itemToday(it),0);
+    const ok = roomDone(r);
+    return `<div class="room">
+      <button class="room-head" data-room="${r.id}" aria-expanded="${!!r.open}">
+        <div class="stack" style="gap:2px;min-width:0"><strong>${esc(r.name)}</strong>
+          <span class="small muted">${roomPhotos(r)} photos · ${r.items.length} items · <span class="num">${fmt(tot)}</span></span></div>
+        <span class="chip ${ok?'ok':'warn'}">${ok?'Done':'To do'}</span>
+      </button>
+      ${r.open?`<div class="room-body">
+        ${(r.photoData||[]).length?`<div class="thumbs">${r.photoData.map(p=>`<img src="${p}" alt="${esc(r.name)} photo">`).join('')}</div>`:''}
+        ${r.photos?`<span class="small muted">${r.photos} sample photo${r.photos>1?'s':''} on file</span>`:''}
+        <label class="upload">Add photos<input type="file" data-roomphoto="${r.id}" accept="image/*" capture="environment" multiple></label>
+        ${r.items.length?`<div class="tblwrap"><table>${r.items.map((it,i)=>`<tr><td>${esc(it.n)}<br><span class="small muted">Bought ${it.y} for ${fmt(it.v)}</span><br>${it.r?`<span class="chip ok">Receipt \u2713</span>`:`<label class="src" style="cursor:pointer;position:relative${it.v>=BIG?';color:var(--amber);font-weight:600':''}">${it.v>=BIG?'Big-ticket: add receipt':'Add receipt'}<input type="file" data-itemreceipt="${r.id}:${i}" accept="image/*,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0"></label>`}</td><td>${fmt(itemToday(it))}<br><button class="src" data-delitem="${r.id}:${i}">Remove</button></td></tr>`).join('')}</table></div>`:'<p class="small muted">No items yet. Start with the most expensive things.</p>'}
+        <form class="stack" data-additem="${r.id}">
+          <label class="field">Item<input name="n" id="n-${r.id}" placeholder="${esc(cfg.itemHint)}" required></label>
+          <div class="grid2">
+            <label class="field">Price paid<input name="v" id="v-${r.id}" type="number" inputmode="numeric" placeholder="800" required></label>
+            <label class="field">Year bought<input name="y" id="y-${r.id}" type="number" inputmode="numeric" value="${YEAR}"></label>
+          </div>
+          <button class="primary" type="submit">Add item</button>
+        </form>
+        <p class="small muted">In the full app, AI names items from your photos and suggests today’s price.</p>
+      </div>`:''}
+    </div>`;}).join('')}
+  </div>
+  <form class="row" id="addRoom" style="flex-wrap:nowrap">
+    <input id="roomName" placeholder="Add a${cfg.area==='area'?'n area':' room'}" required>
+    <button type="submit">Add</button>
+  </form>
+
+  <div class="card">
+    <h2>Vehicles, campers & boats</h2>
+    <p class="small muted">Homeowners and business property policies don\u2019t cover these. Each needs its own policy with comprehensive coverage to pay for flood or wind damage.</p>
+    ${(P.vehicles||[]).length?`<div class="stack">${P.vehicles.map((v,i)=>{ const c=VCOV[v.cov]; return `<div class="stack" style="gap:4px;padding-block:8px;border-bottom:1px solid var(--line)">
+      <div class="row"><div class="stack" style="gap:0;min-width:0"><strong>${esc(v.n)}</strong><span class="small muted">${esc(v.kind)}</span></div><span class="chip ${c.tone}">${esc(c.t)}</span></div>
+      <span class="small">${esc(c.why)}</span>
+      <div class="row" style="flex-wrap:nowrap"><select data-vcov="${i}" aria-label="Coverage for ${esc(v.n)}">${Object.entries(VCOV).map(([k,o])=>`<option value="${k}" ${k===v.cov?'selected':''}>${esc(o.t)}</option>`).join('')}</select><button class="small-btn ghost" data-delveh="${i}">Remove</button></div>
+    </div>`; }).join('')}</div>`:'<p class="small muted">No vehicles added.</p>'}
+    <form class="stack" id="addVehicle">
+      <label class="field">Vehicle<input id="vhN" placeholder="e.g. 2020 Honda Pilot" required></label>
+      <div class="grid2">
+        <label class="field">Type<select id="vhK">${VKINDS.map(k=>`<option>${k}</option>`).join('')}</select></label>
+        <label class="field">Insured by<select id="vhC">${Object.entries(VCOV).map(([k,o])=>`<option value="${k}">${esc(o.t)}</option>`).join('')}</select></label>
+      </div>
+      <button type="submit">Add vehicle</button>
+    </form>
+    <p class="small muted">Before a storm, photograph each one with the VIN and odometer, then move it to higher ground. It\u2019s the one thing you can usually save.</p>
+  </div>`;
+}
+
+function checklist(P, level){
+  const cfg = TYPES[P.type], c = calc(P);
+  const m = P.manual || (P.manual = {});
+  const missing = P.rooms.filter(r=>!roomDone(r)).map(r=>r.name);
+  const mk = (id,t,d) => ({id,t,d,manual:true,done:!!m[id]});
+  if(level==='after') return [
+    mk('safe','Wait until officials say it’s safe','Watch for downed power lines and standing water'),
+    mk('dmg','Photograph damage before cleaning up','Match the angles of your "before" photos'),
+    mk('tarp','Prevent more damage','Tarp the roof and keep receipts for supplies'),
+    {t:'Open the claim',d:'Call the claims line, then add the claim number in the Claim tab',done:!!P.claim.number}
+  ];
+  const base = [
+    {t:`Finish missing ${cfg.area}s`, d: missing.length? missing.join(', ') : 'Everything documented', done:!missing.length},
+    {t:'Photograph roof and all four sides', d:`${P.exterior.length} of 4 exterior photos`, done:P.exterior.length>=4},
+    {t:'Know the hurricane deductible', d: c?`${fmt(c.hurDed)} before insurance pays`:'Upload the policy', done:!!c}
+  ];
+  if(P.type==='business') base.push({t:'Upload this month’s stock report',d:P.info.stockReport||'Not on file',done:!!P.info.stockReport});
+  if(level!=='watch' && level!=='warning') return base;
+  const fin = [{t:'Save the claims phone number', d: polOf(P)? polOf(P).claimPhone : 'Upload the policy first', done:!!polOf(P)}];
+  if((P.vehicles||[]).length) fin.push(mk('veh','Move vehicles, campers and boats to higher ground','Photograph each one first, with the VIN and odometer'));
+  if(P.type==='home') fin.push(mk('bag','Put documents in a waterproof bag','IDs, deed, policy, medications list'), mk('night','Take "night before" photos','Quick video walkthrough of every room'));
+  if(P.type==='rental') fin.push(mk('tenant','Text the tenant the storm plan','Shutters, where to send damage photos, your phone number'), mk('night','Ask the tenant for "night before" photos','Or drive by and take exterior photos yourself'));
+  if(P.type==='business') fin.push(mk('backup','Back up sales records and payroll','You’ll need 12 months of records for a lost income claim'), mk('equip','Raise or move equipment off the floor','Unplug and lift what you can'), mk('night','Take "night before" photos','Shelves, coolers and equipment'));
+  return base.concat(fin);
+}
+
+function notifications(P, level){
+  const n = P.name;
+  const map = {
+    none:[['Weekly',`${n}: take 5 minutes and finish one ${TYPES[P.type].area}. You’re at ${score(P)}/100.`]],
+    preseason:[['Mon',`Hurricane season starts June 1. ${n} has ${tasks(P).filter(t=>!t.done).length} tasks left.`],['Thu','Flood policies take 30 days to start.']],
+    forecast:[['8:00 AM',`Tropical Storm Delia may reach ${n} in 5 days. Finish your photos today.`]],
+    watch:[['8:00 AM',`Hurricane watch for ${n}. ${checklist(P,'watch').filter(t=>!t.done).length} checklist items left.`],['6:00 PM','Photograph the roof while it’s still daylight.']],
+    warning:[['8:00 AM',`Hurricane warning for ${n}. Final checklist now.`],['6:00 PM','Last chance for "night before" photos. Stay safe.']],
+    after:[['9:00 AM',`The storm has passed ${n}. When it’s safe, start documenting damage.`]]
+  };
+  return map[level];
+}
+
+function coneSVG(P, level){
+  const near = level==='watch'||level==='warning', show = level==='forecast'||near;
+  const label = TYPES[P.type].mapLabel;
+  if(active() && !P.inPath) return `<svg class="cone" viewBox="0 0 400 140" role="img" aria-label="This property is outside the storm path">
+    <rect width="400" height="140" fill="var(--surface-2)"/>
+    <text x="200" y="64" text-anchor="middle" fill="var(--fg)" font-size="15" font-weight="600" font-family="IBM Plex Sans, sans-serif">${esc(P.address)} is outside Delia’s path</text>
+    <text x="200" y="88" text-anchor="middle" fill="var(--muted)" font-size="12" font-family="IBM Plex Sans, sans-serif">Alerts for this property stay weekly</text></svg>`;
+  return `<svg class="cone" viewBox="0 0 400 200" role="img" aria-label="Sample storm forecast map">
+    <rect width="400" height="200" fill="var(--surface-2)"/>
+    <path d="M0 40 L120 46 L170 60 L210 52 L260 64 L320 50 L400 58 L400 0 L0 0 Z" fill="var(--line)"/>
+    <text x="20" y="28" fill="var(--muted)" font-size="11" font-family="IBM Plex Sans, sans-serif">${esc(P.address)}</text>
+    <circle cx="190" cy="56" r="5" fill="var(--accent)"/>
+    <text x="198" y="78" fill="var(--fg)" font-size="11" font-family="IBM Plex Sans, sans-serif" font-weight="600">${esc(label)}</text>
+    ${show?`<path d="M${near?'150 190':'60 195'} L${near?'230 190':'260 195'} L${near?'205 64':'230 70'} L${near?'175 64':'150 70'} Z" fill="var(--amber)" opacity=".28"/>
+    <path d="M${near?'190 185':'160 190'} L190 70" stroke="var(--amber)" stroke-width="2" stroke-dasharray="5 5"/>
+    <circle cx="${near?190:160}" cy="${near?150:180}" r="9" fill="var(--red)"/>
+    <text x="${near?204:174}" y="${near?154:184}" fill="var(--fg)" font-size="11" font-family="IBM Plex Sans, sans-serif" font-weight="600">Delia (sample)</text>`:
+    `<text x="200" y="140" text-anchor="middle" fill="var(--muted)" font-size="13" font-family="IBM Plex Sans, sans-serif">${level==='after'?'Storm moved inland':'No active storms nearby'}</text>`}
+  </svg>`;
+}
+
+function viewStorm(){
+  const P = cur(), level = levelFor(P), lv = LEVELS[level], list = checklist(P, level);
+  const inPath = S.properties.filter(p=>p.inPath);
+  return `
+  <section class="stack"><p class="label">${esc(P.name)} · storm alerts</p><h1>${esc(lv.name)}</h1></section>
+  <div class="alert ${lv.tone==='info'?'ok':lv.tone}" style="background:var(--surface)"><p>${esc(active() && !P.inPath ? 'Delia isn’t headed toward this property.' : lv.msg)}</p>
+    <span class="small muted">Alerts: <strong>${esc(lv.cadence)}</strong></span></div>
+  ${coneSVG(P, level)}
+  ${active() && S.properties.length>1 ? `<div class="card"><h3>Your properties in the path</h3>
+    <div class="stack">${S.properties.map(p=>`<button class="prop" data-prop="${p.id}" aria-current="${p.id===P.id}">
+      <div class="stack" style="gap:0;min-width:0"><strong>${esc(p.name)}</strong><span class="small muted">${esc(p.address)}</span></div>
+      <span class="chip ${p.inPath?'bad':'ok'}">${p.inPath?LEVELS[S.threat].short:'Not in path'}</span></button>`).join('')}</div>
+    <p class="small muted">${inPath.length} of ${S.properties.length} properties get daily alerts.</p></div>`:''}
+  <div class="card">
+    <h2>${level==='after'?'After the storm':level==='watch'||level==='warning'?'Final checklist':'Before the storm'}</h2>
+    <div>${list.map(t=>`<div class="task">
+      ${t.manual?`<button class="check ${t.done?'done':''}" data-manual="${t.id}" aria-pressed="${t.done}" aria-label="Mark ${esc(t.t)} done" style="min-height:0;padding:0">${t.done?'✓':''}</button>`:`<span class="check ${t.done?'done':''}" aria-hidden="true">${t.done?'✓':''}</span>`}
+      <div class="stack" style="gap:2px;min-width:0"><strong>${esc(t.t)}</strong><span class="small muted">${esc(t.d)}</span></div></div>`).join('')}</div>
+    ${level==='after'?`<button class="primary" data-go="claim">Start claim mode</button>`:''}
+  </div>
+  <div class="card">
+    <h3>What your phone would show</h3>
+    ${notifications(P, level).map(([t,m])=>`<div class="notif"><span class="ic">S</span><div class="stack" style="gap:0;min-width:0"><span class="small muted">StormFile · ${esc(t)}</span><span class="small">${esc(m)}</span></div></div>`).join('')}
+  </div>
+  <div class="card">
+    <h3>Try each alert level</h3>
+    <p class="small muted">The real app follows National Hurricane Center forecasts and raises alerts only for properties in a storm’s path. In this sample, the house and the restaurant are in Delia’s path and the Baton Rouge rental is not.</p>
+    <div class="levels">${Object.entries(LEVELS).map(([k,v])=>`<button data-level="${k}" aria-pressed="${S.threat===k}">${esc(v.short)}</button>`).join('')}</div>
+  </div>`;
+}
+
+function viewClaim(){
+  const P = cur(), cfg = TYPES[P.type], cl = P.claim, p = polOf(P), c = calc(P);
+  const spent = cl.receipts.reduce((s,r)=>s+r.amt,0);
+  const limit = c ? c.loss : 0;
+  const inv = invTotals(P);
+  return `
+  <section class="stack"><p class="label">${esc(P.name)} · claim mode</p><h1>The claim</h1></section>
+  <div class="card">
+    <div class="grid2">
+      <label class="field">Claim number<input id="clNum" value="${esc(cl.number)}" placeholder="From the insurer"></label>
+      <label class="field">Date of loss<input id="clDate" type="date" value="${esc(cl.dateOfLoss)}"></label>
+      <label class="field">Adjuster name<input id="clAdj" value="${esc(cl.adjuster)}"></label>
+      <label class="field">Adjuster phone<input id="clAdjPh" type="tel" value="${esc(cl.adjPhone)}"></label>
+    </div>
+    ${p?`<div class="row small"><span class="muted">Policy</span><span class="num">${esc(p.number)}</span></div>`:''}
+    ${cl.number?`<span class="chip ok" style="align-self:flex-start"><span class="dot"></span>Claim saved</span>`:`<p class="small muted">Call ${p?esc(p.claimPhone):'the insurer'} to open a claim, then enter the number here.</p>`}
+  </div>
+
+  <div class="card">
+    <h2>Ready-to-send reports</h2>
+    <div class="kv"><span class="k">${esc(cfg.contentsName)} inventory<br><span class="small muted">${inv.count} items, before photos, today’s prices</span></span><span class="v">${fmt(inv.today)}</span></div>
+    <div class="kv"><span class="k">Before & after photo set<br><span class="small muted">${P.exterior.length + P.rooms.reduce((s,r)=>s+roomPhotos(r),0)} dated "before" photos</span></span><span class="v">PDF</span></div>
+    <div class="kv"><span class="k">Receipts packet<br><span class="small muted">${P.rooms.reduce((s,r)=>s+r.items.filter(it=>it.r).length,0) + (P.upgrades||[]).filter(u=>u.r).length} purchase and upgrade receipts, ${cl.receipts.filter(r=>r.r).length} expense receipts</span></span><span class="v">PDF</span></div>
+    ${P.type==='business'?`<div class="kv"><span class="k">Lost income worksheet<br><span class="small muted">Built from 12 months of sales and payroll</span></span><span class="v">PDF</span></div>`:''}
+    <p class="small muted">The full app builds these as PDFs in the format adjusters use.</p>
+  </div>
+
+  ${P.type==='home' ? (()=>{ const ale = p && p.ale, st = cl.status;
+    const days = cl.orderDate ? Math.max(0, Math.floor((Date.now() - new Date(cl.orderDate+'T00:00').getTime())/86400000)) + 1 : 0;
+    return `<div class="card">
+    <div class="row"><h2>Out of your home?</h2>${st==='home'?'<span class="chip ok">At home</span>':st==='evac'?'<span class="chip warn">Evacuated</span>':'<span class="chip bad">Not livable</span>'}</div>
+    <label class="field">Your situation
+      <select id="clStatus">
+        <option value="home" ${st==='home'?'selected':''}>Living at home</option>
+        <option value="evac" ${st==='evac'?'selected':''}>Under a mandatory evacuation order</option>
+        <option value="unlivable" ${st==='unlivable'?'selected':''}>Home is not livable</option>
+      </select></label>
+    ${st==='home'?`<p class="small muted">If you\u2019re ordered to evacuate or the house can\u2019t be lived in, change this and start saving every receipt. This is called additional living expense.</p>`:''}
+    ${st==='evac'?`<label class="field">Date of the evacuation order<input id="clOrder" type="date" value="${esc(cl.orderDate)}"></label>
+      ${ale?`<div class="alert warn" style="background:var(--bg)"><strong>What this policy says</strong><p class="small">${esc(ale.civilRule)}</p>
+        <p class="small">An order issued before the storm, with no damage nearby yet, is often not covered. Some insurers pay anyway, so keep every receipt.</p>
+        <button class="src" style="align-self:flex-start" data-src="${esc(ale.src)}">${esc(ale.src)}</button></div>
+      ${days?`<div class="row small"><span>Day <span class="num">${days}</span> of ${ale.civilWeeks*7} under the evacuation rule</span><span class="num">${Math.max(0, ale.civilWeeks*7-days)} days left</span></div>
+      <div class="meter"><i style="width:${Math.min(100,days/(ale.civilWeeks*7)*100).toFixed(0)}%;background:var(--amber)"></i></div>`:''}
+      <p class="small muted">If the house is damaged and can\u2019t be lived in when the order lifts, switch to "Home is not livable." Coverage continues past 2 weeks.</p>`:'<p class="small muted">Upload the policy to see what it says about evacuations.</p>'}`:''}
+    ${st==='unlivable'?`<div class="alert ok" style="background:var(--bg)"><p class="small">Pays reasonable extra costs while the home is repaired, up to ${fmt(limit)}${ale?` or ${ale.months} months`:''}. That includes a hotel or rental house, extra meal costs, mileage, laundry, pet boarding and storage.</p>${ale?`<button class="src" style="align-self:flex-start" data-src="${esc(ale.src)}">${esc(ale.src)}</button>`:''}</div>`:''}
+    <p class="small muted"><strong>Only the extra cost counts.</strong> If you normally spend $600 a month on groceries and spend $1,100 eating out, the extra $500 is what you claim.</p>
+  </div>`; })() : ''}
+
+  <div class="card">
+    <div class="row"><h2>${esc(cfg.lossName)}</h2><span class="num">${fmt(spent)} / ${fmt(limit)}</span></div>
+    <div class="meter"><i style="width:${limit?Math.min(100,spent/limit*100).toFixed(1):0}%;background:var(--accent)"></i></div>
+    ${cl.receipts.length ? `<div class="tblwrap"><table>
+      ${Object.entries(cl.receipts.reduce((a,r)=>{ a[r.cat||'Other']=(a[r.cat||'Other']||0)+r.amt; return a; },{})).map(([k,v])=>`<tr><td><strong>${esc(k)}</strong></td><td>${fmt(v)}</td></tr>`).join('')}
+    </table></div>
+    <details><summary class="src" style="display:inline">See all ${cl.receipts.length} expenses</summary><div class="tblwrap" style="margin-top:6px"><table>${cl.receipts.slice().reverse().map(r=>`<tr><td>${esc(r.what)}<br><span class="small muted">${esc(r.cat||'Other')} \u00B7 ${esc(r.date)}</span> ${r.r?'<span class="chip ok">Receipt \u2713</span>':'<span class="chip warn">No receipt</span>'}</td><td>${fmt(r.amt)}</td></tr>`).join('')}</table></div></details>`
+    : `<p class="small muted">${esc(cfg.lossHelp)}</p>`}
+    <form class="stack" id="addReceipt">
+      <div class="grid2">
+        <label class="field">Type<select id="rcCat">${CATS[P.type].map(c=>`<option>${c}</option>`).join('')}</select></label>
+        <label class="field">${P.type==='home'?'Amount, or miles for Mileage':'Amount'}<input id="rcAmt" type="number" inputmode="decimal" placeholder="240" required></label>
+      </div>
+      <label class="field">What it was for<input id="rcWhat" placeholder="${P.type==='rental'?'November rent':P.type==='business'?'Payroll, week 1':'Hotel in Jackson, 2 nights'}" required></label>
+      <label class="upload">Attach receipt photo (optional)<input type="file" id="rcFile" accept="image/*,application/pdf" capture="environment"></label>
+      <span class="small muted" id="rcFileName"></span>
+      <button class="primary" type="submit">Add expense</button>
+      ${P.type==='home'?`<label class="field">Mileage rate per mile<input id="clRate" type="number" step="0.01" value="${cl.mileRate}"></label>`:''}
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Call & email log</h2>
+    ${cl.log.length?`<div>${cl.log.slice().reverse().map(l=>`<div class="kv"><span class="k">${esc(l.note)}</span><span class="small muted">${esc(l.date)}</span></div>`).join('')}</div>`:'<p class="small muted">Write down every call: who you spoke with and what they promised.</p>'}
+    <form class="stack" id="addLog">
+      <label class="field">Note<input id="logNote" placeholder="Spoke with adjuster, inspection Tuesday" required></label>
+      <button type="submit">Add to log</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h3>Claim stalled or underpaid?</h3>
+    <p class="small">A licensed public adjuster works for you, not the insurer. They usually charge a share of the claim.${P.type==='business'?' Business claims, especially lost income, are where they help most.':''}</p>
+    <button data-act="pa">Connect with a public adjuster</button>
+  </div>`;
+}
+
+/* ---------- Enter a policy by hand ---------- */
+const PF_LIMITS = {
+  home:[['A','Coverage A – Dwelling','Your house','Pays to rebuild the house itself'],['B','Coverage B – Other structures','Other structures','Fence, shed, detached garage'],['C','Coverage C – Personal property','Your stuff','Furniture, clothes, electronics'],['D','Coverage D – Loss of use','Hotel and food','Extra living costs if you can’t stay home'],['E','Coverage E – Personal liability','Liability','If someone is hurt on your property and sues'],['F','Coverage F – Medical payments','Medical payments','Small medical bills for guests hurt on your property']],
+  rental:[['A','Coverage A – Dwelling','The rental house','Pays to rebuild the house'],['B','Coverage B – Other structures','Other structures','Fence, shed, carport'],['C','Coverage C – Personal property','Your property there','Appliances and items you own at the rental'],['D','Coverage D – Fair rental value','Lost rent','Rent you lose while it’s being repaired'],['L','Liability','Liability','If a tenant or guest is hurt and sues']],
+  business:[['BLD','Building','Building','Pays to repair or rebuild the building'],['BPP','Business personal property','Equipment and inventory','Equipment, furniture, stock, computers'],['BI','Business income','Lost income','Lost profit and ongoing bills while closed for repairs'],['EE','Extra expense','Extra expense','Costs to reopen faster'],['L','Liability','Liability','If a customer is hurt and sues']]
+};
+const YNU = [['yes','Yes'],['no','No'],['unsure','Not sure']];
+function pfSelect(id, label, opts, val, help){
+  return `<label class="field">${esc(label)}<select id="pf-${id}">${opts.map(([v,t])=>`<option value="${v}" ${v===val?'selected':''}>${esc(t)}</option>`).join('')}</select>${help?`<span class="small muted">${esc(help)}</span>`:''}</label>`;
+}
+function viewPolicyForm(){
+  const P = cur(), cfg = TYPES[P.type], old = polOf(P), a = (old && old.manual && old.answers) || {};
+  const v = k => esc(a[k] ?? '');
+  return `
+  <section class="stack"><p class="label">${esc(P.name)}</p><h1>Enter your policy</h1>
+    <p class="small muted">Copy the numbers from your declarations page. Leave anything blank you can’t find.</p></section>
+  <form class="stack" id="policyForm" style="gap:16px">
+  <div class="card">
+    <h2>The basics</h2>
+    <label class="field">Insurance company<input id="pf-carrier" value="${v('carrier')}" placeholder="Name at the top of the page"></label>
+    <div class="grid2">
+      <label class="field">Policy type<input id="pf-form" value="${v('form')}" placeholder="${P.type==='business'?'e.g. BOP':P.type==='rental'?'e.g. DP-3':'e.g. HO-3 or HO-5'}"></label>
+      <label class="field">Policy number<input id="pf-number" value="${v('number')}"></label>
+      <label class="field">Expires<input id="pf-renewal" type="date" value="${v('renewal')}"></label>
+      <label class="field">Claims phone<input id="pf-claimPhone" type="tel" value="${v('claimPhone')}"></label>
+    </div>
+    <label class="field">Agent name and phone<input id="pf-agent" value="${v('agent')}"></label>
+  </div>
+  <div class="card">
+    <h2>Coverage amounts</h2>
+    <p class="small muted">Usually in a box called “Coverage Information” or “Limits of Liability.”</p>
+    <div class="grid2">${PF_LIMITS[P.type].map(([k,lab])=>`<label class="field">${esc(lab)}<input id="pf-lim-${k}" type="number" inputmode="numeric" placeholder="$" value="${v('lim'+k)}"></label>`).join('')}</div>
+  </div>
+  <div class="card">
+    <h2>Deductibles</h2>
+    <label class="field">Regular deductible (“All other perils”)<input id="pf-allPerils" type="number" inputmode="numeric" placeholder="$" value="${v('allPerils')}"></label>
+    ${pfSelect('windType','Wind, hail or hurricane deductible',[['pct','A percentage (like 2% or 5%)'],['flat','A dollar amount'],['same','Same as the regular deductible'],['excluded','Wind is excluded from this policy'],['unsure','Not sure']], a.windType||'pct','Look for “Windstorm or Hail” or “Hurricane” near the deductibles. “Exclude Wind: Not Applicable” means wind IS covered.')}
+    <label class="field">Percentage or dollar amount<input id="pf-windAmt" type="number" inputmode="decimal" placeholder="5 for 5%, or 2500" value="${v('windAmt')}"></label>
+  </div>
+  <div class="card">
+    <h2>Other coverage</h2>
+    ${pfSelect('flood','Do you have a separate flood policy?',[['nfip','Yes, NFIP (FEMA) flood'],['private','Yes, private flood'],['no','No'],['unsure','Not sure']], a.flood||'unsure','Homeowners and business policies almost never cover flood or storm surge.')}
+    ${P.type!=='business'?pfSelect('ordinance','Ordinance or law coverage?',YNU,a.ordinance||'unsure','Pays extra to rebuild to current code. “No Coverage” on the page means no.'):''}
+    ${P.type==='home'?pfSelect('contentsRC','How is your stuff paid?',[['rc','Replacement cost (price of new)'],['acv','Actual cash value (used value)'],['unsure','Not sure']],a.contentsRC||'unsure','“Personal Property Replacement Cost: Not Applicable” usually means used value.'):''}
+    ${pfSelect('waterBackup','Water or sewer backup coverage?',YNU,a.waterBackup||'unsure')}
+    ${P.type!=='business'?pfSelect('mold','Mold coverage?',YNU,a.mold||'unsure'):''}
+    ${P.type==='business'?`<div class="grid2">
+      <label class="field">Coinsurance %<input id="pf-coins" type="number" inputmode="numeric" placeholder="80" value="${v('coins')}"></label>
+      <label class="field">Business income waiting period (hours)<input id="pf-wait" type="number" inputmode="numeric" placeholder="72" value="${v('wait')}"></label></div>`:''}
+  </div>
+  <div class="card">
+    <h2>About the property</h2>
+    <p class="small muted">Some declarations pages list these. Used for the “enough to rebuild?” check.</p>
+    <div class="grid2">
+      <label class="field">Square feet<input id="pf-sqft" type="number" inputmode="numeric" value="${esc(P.info.sqft||'')}"></label>
+      <label class="field">Year the roof was replaced<input id="pf-roofYear" type="number" inputmode="numeric" value="${v('roofYear')}"></label>
+    </div>
+  </div>
+  <button class="primary" type="submit">Show what I’m covered for</button>
+  <button class="ghost" type="button" data-go="policy">Cancel</button>
+  </form>`;
+}
+function buildManualPolicy(P, a){
+  const cfg = TYPES[P.type], money = n => '$' + Math.round(n).toLocaleString('en-US');
+  const coverages = PF_LIMITS[P.type].filter(([k])=>a['lim'+k]>0).map(([k,lab,name,plain])=>({key:k,name,plain,limit:a['lim'+k],src:'You entered: '+lab}));
+  const building = a['lim'+cfg.building] || 0;
+  const d = {allPerils:a.allPerils||0, hurricanePct:null, hurricaneFlat:null};
+  if(a.windType==='pct' && a.windAmt) d.hurricanePct = a.windAmt;
+  if(a.windType==='flat' && a.windAmt) d.hurricaneFlat = a.windAmt;
+  const covered = [], notCovered = [];
+  const you = 'From what you entered';
+  if(a.windType==='excluded') notCovered.push({sev:'bad',title:'Wind and hail',plain:'Wind is excluded. Hurricane wind damage needs a separate wind policy, such as through the Mississippi Windstorm Underwriting Association.',src:you,quote:'',fromPage:true});
+  else if(a.windType==='pct' && a.windAmt) covered.push({title:'Wind and hail',plain:`Covered. You pay the first ${a.windAmt}% of ${cfg.buildingName.toLowerCase()}${building?` (${money(building*a.windAmt/100)})`:''} of wind or hail damage.`,src:you});
+  else if(a.windType==='flat' && a.windAmt) covered.push({title:'Wind and hail',plain:`Covered. You pay the first ${money(a.windAmt)} of wind or hail damage.`,src:you});
+  else if(a.windType==='same') covered.push({title:'Wind and hail',plain:'Covered with your regular deductible.',src:you});
+  else notCovered.push({sev:'warn',title:'Wind coverage not confirmed',plain:'Check whether wind is covered and what the wind deductible is. On the Gulf Coast it’s often separate.',src:'Check full policy',quote:'',fromPage:false});
+  if(a.flood==='no') notCovered.push({sev:'bad',title:'Flood or storm surge',plain:'No flood policy. Rising water isn’t covered, even when a hurricane causes it. New flood policies usually take 30 days to start.',src:you,quote:'',fromPage:true});
+  else if(a.flood==='unsure') notCovered.push({sev:'warn',title:'Flood or storm surge',plain:'This kind of policy almost never covers flood. Check whether you have a separate flood policy.',src:'Check full policy',quote:'',fromPage:false});
+  else covered.push({title:'Flood',plain:'Covered by a separate flood policy. Keep its policy number in your records too.',src:you});
+  if(a.ordinance==='no') notCovered.push({sev:'warn',title:'Code upgrades when rebuilding',plain:'No ordinance or law coverage. If the county requires a raised foundation or new wiring, you pay the extra cost.',src:you,quote:'',fromPage:true});
+  if(a.contentsRC==='acv') notCovered.push({sev:'warn',title:'Your stuff is paid at used value',plain:'Belongings are paid at what they’re worth today, not the price of new. Ask about a replacement cost endorsement.',src:you,quote:'',fromPage:true});
+  if(a.waterBackup==='no') notCovered.push({sev:'warn',title:'Sewer or drain backup',plain:'Water backing up through drains isn’t covered. An add-on usually costs $50–$100 a year.',src:you,quote:'',fromPage:true});
+  if(a.mold==='no') notCovered.push({sev:'warn',title:'Mold',plain:'Mold cleanup isn’t covered, even after a covered leak. Dry out water damage fast.',src:you,quote:'',fromPage:true});
+  if(P.type==='rental') notCovered.push({sev:'warn',title:'Your tenant’s belongings',plain:'Landlord policies don’t cover the tenant’s things. Ask them for proof of renter’s insurance.',src:'Check full policy',quote:'',fromPage:false});
+  notCovered.push({sev:'warn',title:'Cars, campers and boats',plain:'Vehicles aren’t covered by a property policy. They need auto or RV coverage with comprehensive.',src:'Check full policy',quote:'',fromPage:false});
+  if(a.roofYear){ const age = YEAR - a.roofYear; covered.push({title:'Roof',plain:`Roof is about ${age} year${age===1?'':'s'} old. Newer roofs are usually paid at full replacement cost; ask your agent where your policy draws the line.`,src:you}); }
+  return {id:uid(), manual:true, answers:a, carrier:a.carrier||'Your insurer', form:a.form||cfg.label+' policy', number:a.number||'Not entered', renewal:a.renewal||'',
+    agent:a.agent||'Not entered', claimPhone:a.claimPhone||'Not entered', coverages, deductibles:d, inflationGuardPct:0,
+    coinsurancePct:a.coins||null, waitHours:a.wait||null, ale:null, covered, notCovered, notes:''};
+}
+
+/* ---------- Tester feedback ---------- */
+const FB_Q = [
+  {id:'who',q:'Which describes you best?',opts:['Homeowner','Renter','Landlord','Business owner','Insurance agent','Adjuster or contractor','Other']},
+  {id:'rating',q:'How useful would this be to you?',opts:['1 Not useful','2','3','4','5 Very useful']},
+  {id:'best',q:'Which part was most useful?',opts:['Policy in plain English','Do I have enough?','Rooms and receipts','Storm alerts','Claim and living expenses','Vehicles and campers','Multiple properties']},
+  {id:'pay',q:'Would you pay for it?',opts:['No, only if free','$2–3 a month','$5 a month','$40 a year','More, if my agent gave it to me']},
+  {id:'flood',q:'Before today, did you know if your policy covers flood?',opts:['Yes','No','Not sure']},
+  {id:'deduct',q:'Do you know your hurricane deductible in dollars?',opts:['Yes','No','Not sure']}
+];
+const FB_T = [
+  {id:'confusing',q:'What was confusing or hard to use?'},
+  {id:'missing',q:'What’s missing that you’d want?'},
+  {id:'name',q:'Your name and city (optional)'}
+];
+function fbText(){
+  const f = S.fb || {};
+  const lines = ['StormFile feedback'];
+  FB_Q.forEach(x=>{ if(f[x.id]) lines.push(`${x.q} ${f[x.id]}`); });
+  FB_T.forEach(x=>{ if(f[x.id] && f[x.id].trim()) lines.push(`${x.q} ${f[x.id].trim()}`); });
+  return lines.join('\n');
+}
+function viewFeedback(){
+  const f = S.fb || (S.fb = {});
+  const answered = FB_Q.filter(x=>f[x.id]).length;
+  return `
+  <section class="stack"><p class="label">Test version</p><h1>Your feedback</h1>
+    <p class="small muted">Six taps and a few words. When you’re done, copy your answers and text or email them to the person who shared StormFile with you.</p></section>
+  ${FB_Q.map(x=>`<div class="card"><h3>${esc(x.q)}</h3><div class="choices" role="group" aria-label="${esc(x.q)}">
+    ${x.opts.map(o=>`<button data-fbq="${x.id}" data-fba="${esc(o)}" aria-pressed="${f[x.id]===o}">${esc(o)}</button>`).join('')}</div></div>`).join('')}
+  ${FB_T.map(x=>`<div class="card"><label class="field" style="color:var(--fg);font-size:15px;font-weight:600">${esc(x.q)}
+    ${x.id==='name'?`<input id="fb-${x.id}" data-fbt="${x.id}" value="${esc(f[x.id]||'')}">`:`<textarea id="fb-${x.id}" data-fbt="${x.id}">${esc(f[x.id]||'')}</textarea>`}</label></div>`).join('')}
+  <div class="card" style="border-color:var(--accent)">
+    <div class="row"><h2>Send it</h2><span class="small muted">${answered} of ${FB_Q.length} answered</span></div>
+    <button class="primary" data-act="fbCopy">Copy my answers</button>
+    <p class="small muted">Then paste them into a text or email to the person who shared this link. If copying doesn’t work, press and hold the box below to select it.</p>
+    <textarea id="fbOut" readonly style="min-height:140px;font-size:13px">${esc(fbText())}</textarea>
+  </div>`;
+}
+
+/* ---------- Render + events ---------- */
+const VIEWS = {home:viewHome, policy:viewPolicy, inventory:viewInventory, storm:viewStorm, claim:viewClaim, feedback:viewFeedback, policyForm:viewPolicyForm};
+let LIVE = null;
+const INSTALLED = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+let INSTALL_EVT = null;
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); INSTALL_EVT = e; if(S && S.tab==='home') render(); });
+window.addEventListener('appinstalled', ()=>{ INSTALL_EVT = null; toast('StormFile installed. Open it from your home screen.'); });
+const view = document.getElementById('view');
+const menuBtn = document.getElementById('menuBtn'), menu = document.getElementById('menu');
+function render(){
+  const P = cur();
+  document.getElementById('menuName').textContent = `${P.name} · ${TYPES[P.type].label}`;
+  menu.innerHTML = S.properties.map(p=>{ const po = polOf(p), shared = po && usersOf(po.id).length>1;
+    return `<div class="mprop" aria-current="${p.id===P.id}">
+      <div class="row" style="flex-wrap:nowrap"><div class="stack" style="gap:0;min-width:0"><span class="typetag">${esc(TYPES[p.type].label)}</span><strong>${esc(p.name)}</strong><span class="small muted">${esc(p.address)}</span></div>
+        <span class="num" style="color:var(--${score(p)>=80?'green':score(p)>=50?'amber':'red'})">${score(p)}</span></div>
+      <div class="mline"><span class="muted">Policy</span><span>${po?esc(polLabel(po))+(shared?' <span class="chip info">Shared</span>':''):'<span style="color:var(--amber);font-weight:600">Not uploaded</span>'}</span></div>
+      <div class="mline"><span class="muted">Claim</span><span>${p.claim.number?'#'+esc(p.claim.number):'No open claim'}</span></div>
+      <div class="mlinks"><button data-mprop="${p.id}" data-mtab="home">Overview</button><button data-mprop="${p.id}" data-mtab="policy">Policy</button><button data-mprop="${p.id}" data-mtab="claim">Claim</button></div>
+    </div>`;}).join('') + `<button class="primary" data-madd="1">+ Add a property</button>`;
+  view.innerHTML = VIEWS[S.tab]();
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-current', b.dataset.tab===S.tab?'page':'false'));
+  document.getElementById('tabRooms').textContent = TYPES[P.type].tab;
+  document.getElementById('samplePill').hidden = !S.sample;
+  document.getElementById('backHome').hidden = S.tab==='home';
+  document.getElementById('fbBtn').hidden = S.tab==='feedback';
+}
+function go(tab){ S.tab = tab; save(); render(); window.scrollTo(0,0); }
+function toast(msg){
+  const t = document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2400);
+}
+
+const defaultInfo = type => type==='business' ? {sqft:2500,cps:185,localInfl:5.5,flood:'none',monthlyNeed:20000,monthsClosed:6,stockReport:''}
+  : type==='rental' ? {sqft:1400,cps:165,localInfl:5.5,flood:'none',rent:1500,tenant:'Not added yet',renterProof:false}
+  : {sqft:1600,cps:170,localInfl:5.5,flood:'none'};
+
+function loadScript(src){
+  return new Promise((res, rej)=>{ const sc=document.createElement('script'); sc.src=src; sc.onload=res; sc.onerror=()=>rej(new Error('load')); document.head.appendChild(sc); });
+}
+async function loadPdfJs(){
+  if(window.pdfjsLib && window.pdfjsWorker) return;
+  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js');
+}
+async function pdfToInput(file, maxImages){
+  await loadPdfJs();
+  const doc = await window.pdfjsLib.getDocument({data: new Uint8Array(await file.arrayBuffer()), isEvalSupported:false}).promise;
+  const pages = Math.min(doc.numPages, 8);
+  let text = '';
+  for(let n=1; n<=pages; n++){
+    const pg = await doc.getPage(n);
+    const tc = await pg.getTextContent();
+    text += `\n--- Page ${n} ---\n` + tc.items.map(it=>it.str + (it.hasEOL?'\n':' ')).join('');
+  }
+  if(text.replace(/\s|-|Page \d+/g,'').length > 300) return {text, images:[]};
+  const images = [];
+  for(let n=1; n<=Math.min(pages, maxImages); n++){
+    const pg = await doc.getPage(n);
+    const vp = pg.getViewport({scale: 2});
+    const cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
+    await pg.render({canvasContext: cv.getContext('2d'), viewport: vp}).promise;
+    images.push(await new Promise(r=>cv.toBlob(r,'image/jpeg',0.85)));
+  }
+  return {text:'', images};
+}
+
+function decPrompt(text, hint){
+  return `You are reading an insurance declarations page (and possibly more policy pages) for a hurricane-preparedness app used by ordinary homeowners on the U.S. Gulf Coast. ${text ? 'The document text is below.' : 'The document is in the attached image(s).'}
+
+Rules:
+- Use ONLY what the document shows for numbers, names, dates and limits. Never invent a number. If something isn't shown, use null.
+- Write every "plain" field in short, plain English a non-expert understands (under 20 words).
+- "quote" must be words copied exactly from the document, under 25 words, or null.
+- Do NOT include the insured person's name, mailing address, or any account, loan or ID numbers anywhere in the JSON.
+- For "notCovered": list exclusions or limits the document actually shows (fromPage: true, with src and quote). Then add up to 3 important gaps that are COMMON for this kind of policy but not shown on this document, such as flood, if they likely apply (fromPage: false, quote: null, src: "Not on this page. Typical for this policy type; confirm in the full policy."). If the document shows a flood policy or endorsement, don't list flood as a gap.
+- Detect the policy type: "home" (HO-3, HO-5, HO-6, DP for owner-occupied), "rental" (landlord or dwelling fire on a rental), or "business" (BOP or commercial property).${hint ? ` The person expects a ${hint} policy, but go by the document.` : ''}
+- Coverage keys: for home and rental use A (dwelling), B (other structures), C (personal property), D (loss of use or fair rental value), E or L (liability), F (medical payments), and short codes for any others. For business use BLD (building), BPP (business personal property), BI (business income), EE (extra expense), L (liability), and short codes for others.
+- Deductibles: allPerils = the regular deductible in dollars. If there is a hurricane, named storm or windstorm deductible as a percentage, put the number in hurricanePct (5 for 5%); if it's a dollar amount, put it in hurricaneFlat. If wind or hail is EXCLUDED, say so in notCovered as a "bad" item.
+- Dates as YYYY-MM-DD. Money as plain numbers with no $ or commas.
+- If the image is not an insurance declarations page or is unreadable, return {"error": "short reason"}.
+
+Reply with ONLY a JSON object in this shape:
+{"type":"home","carrier":"string","form":"e.g. HO-3 Homeowners","number":"policy number or null","effective":"YYYY-MM-DD or null","renewal":"expiration date YYYY-MM-DD or null","agent":"agency name and phone or null","claimPhone":"claims phone or null","propertyCity":"city and state of the insured property only, e.g. Biloxi, MS, or null",
+"coverages":[{"key":"A","name":"Your house","plain":"Pays to rebuild the house itself","limit":285000,"src":"Declarations, Coverage A"}],
+"deductibles":{"allPerils":2500,"hurricanePct":5,"hurricaneFlat":null},
+"inflationGuardPct":null,"coinsurancePct":null,"waitHours":null,
+"ale":{"months":12,"civilWeeks":2,"civilRule":"plain sentence","src":"string"} or null,
+"covered":[{"title":"Wind and hail","plain":"string","src":"string"}],
+"notCovered":[{"sev":"bad or warn","title":"string","plain":"string","src":"string","quote":"exact words or null","fromPage":true}],
+"notes":"one or two plain sentences on anything unclear or worth asking the agent, or null"}
+${text ? '\nDOCUMENT TEXT:\n' + text.slice(0, 60000) : ''}`;
+}
+
+function cleanPolicy(ai, fileName){
+  const num = v => { if(v==null) return 0; const n = typeof v==='number' ? v : parseFloat(String(v).replace(/[^0-9.]/g,'')); return isFinite(n) ? n : 0; };
+  const str = (v, d='') => (v==null || v==='null') ? d : String(v).slice(0, 400);
+  const type = ['home','rental','business'].includes(ai.type) ? ai.type : 'home';
+  const coverages = (Array.isArray(ai.coverages)?ai.coverages:[]).filter(c=>c && c.name).slice(0,14)
+    .map(c=>({key:str(c.key).toUpperCase().slice(0,6), name:str(c.name), plain:str(c.plain), limit:num(c.limit), src:str(c.src,'Declarations page')}));
+  if(!coverages.some(c=>c.limit>0)) throw {code:'no_limits'};
+  const d = ai.deductibles || {};
+  const pol = {
+    id: uid(), live: true, fileName: str(fileName).slice(0,80),
+    carrier: str(ai.carrier,'Insurer not shown'), form: str(ai.form, TYPES[type].label+' policy'),
+    number: str(ai.number,'Not shown'), renewal: /^\d{4}-\d{2}-\d{2}$/.test(ai.renewal||'') ? ai.renewal : '',
+    agent: str(ai.agent,'Not shown'), claimPhone: str(ai.claimPhone,'Not shown on this page'),
+    coverages,
+    deductibles: {allPerils: num(d.allPerils), hurricanePct: num(d.hurricanePct) || null, hurricaneFlat: num(d.hurricaneFlat) || null},
+    inflationGuardPct: num(ai.inflationGuardPct), coinsurancePct: num(ai.coinsurancePct) || null, waitHours: num(ai.waitHours) || null,
+    ale: ai.ale && ai.ale.civilRule ? {months:num(ai.ale.months)||12, civilWeeks:num(ai.ale.civilWeeks)||2, civilRule:str(ai.ale.civilRule), src:str(ai.ale.src,'Loss of use section')} : null,
+    covered: (Array.isArray(ai.covered)?ai.covered:[]).slice(0,8).map(x=>({title:str(x.title), plain:str(x.plain), src:str(x.src,'Declarations page')})).filter(x=>x.title),
+    notCovered: (Array.isArray(ai.notCovered)?ai.notCovered:[]).slice(0,10).map(x=>({sev:x.sev==='bad'?'bad':'warn', title:str(x.title), plain:str(x.plain), src:str(x.src,'Declarations page'), quote:x.quote?str(x.quote).slice(0,200):'', fromPage: x.fromPage!==false})).filter(x=>x.title),
+    notes: str(ai.notes)
+  };
+  return {type, pol, city: str(ai.propertyCity)};
+}
+
+const READ_ERRORS = {
+  unavailable:'Live reading works when StormFile is opened inside Claude while signed in. Use the sample policy for now.',
+  not_granted:'StormFile needs permission to use Claude to read the page. Reload and choose Allow when asked.',
+  sampling_disabled:'Claude isn’t available on this account.',
+  images_unavailable:'This view can’t send photos to Claude. Try a PDF with selectable text instead.',
+  image_rejected:'That file couldn’t be read as an image. Take a screenshot or a JPG photo of the page and try again.',
+  rate_limited:'Too many reads in a short time. Wait a minute and try again.',
+  session_expired:'Your Claude sign-in expired. Sign in again and retry.',
+  invalid_json:'The page was read but the answer came back garbled. Try again, ideally with a clearer photo.',
+  refused:'Claude couldn’t read this document. Try a different photo of the declarations page.',
+  no_limits:'No coverage amounts were found. Make sure the whole declarations page is in the photo, in focus and well lit.',
+  not_dec:'This doesn’t look like an insurance declarations page.',
+  pdf:'That PDF couldn’t be opened. Take a screenshot of the page and upload the image instead.',
+  prompt_too_large:'That document is too long. Upload just the declarations pages.',
+  cancelled:''
+};
+
+let readCtl = null;
+async function readDecPage(file, P){
+  if(!file) return;
+  const ov = document.createElement('div'); ov.className='overlay';
+  ov.innerHTML = `<div class="card" role="status" aria-live="polite"><div class="spinner" id="ovSpin"></div><h3 style="text-align:center" id="ovTitle">Reading the declarations page</h3>
+    <p class="small muted" id="ovStep" style="text-align:center">Opening ${esc(file.name)}…</p>
+    <button class="ghost" id="ovBtn">Cancel</button></div>`;
+  document.body.appendChild(ov);
+  const step = t => { const el = document.getElementById('ovStep'); if(el) el.textContent = t; };
+  readCtl = new AbortController(); const ctl = readCtl;
+  let ticker = null;
+  const close = () => { clearInterval(ticker); ov.remove(); };
+  const fail = code => {
+    clearInterval(ticker);
+    if(code==='cancelled'){ close(); return; }
+    const msg = READ_ERRORS[code] || 'Something went wrong reading the page. Try again in a moment.';
+    document.getElementById('ovSpin').hidden = true;
+    document.getElementById('ovTitle').textContent = 'Couldn’t read it';
+    step(msg);
+    const b = document.getElementById('ovBtn'); b.textContent = 'Close'; b.onclick = close;
+  };
+  document.getElementById('ovBtn').onclick = () => { ctl.abort(); close(); };
+  try{
+    const hasRuntime = !!(window.claude && window.claude.use);
+    const sample = hasRuntime ? await window.claude.use('sample') : null;
+    if(!sample){ fail('unavailable'); step(READ_ERRORS.unavailable + (hasRuntime ? ' (Code: S1, reading isn’t enabled for this account or view.)' : ' (Code: S0, not opened inside Claude.)')); return; }
+    const lim = await sample.limits().catch(()=>null);
+    const maxImg = Math.min(4, (lim && lim.images && lim.images.maxCount) || 0);
+    let text = '', images = [];
+    const isPdf = file.type==='application/pdf' || /\.pdf$/i.test(file.name);
+    if(isPdf){
+      step('Opening the PDF…');
+      try{ ({text, images} = await pdfToInput(file, Math.max(1, maxImg))); }catch(e){ return fail('pdf'); }
+    } else {
+      images = [file];
+    }
+    if(images.length && !maxImg) return fail('images_unavailable');
+    images = images.slice(0, maxImg || 1);
+    if(ctl.signal.aborted) return;
+    const msgs = ['Finding coverage limits…','Checking deductibles…','Looking for exclusions…','Writing the plain-English summary…','Almost done…'];
+    let mi = 0; step('Sending to Claude… you may be asked to allow it.');
+    ticker = setInterval(()=>{ step(msgs[Math.min(mi++, msgs.length-1)]); }, 6000);
+    const opts = {signal: ctl.signal, modelTier:'default', cache:false};
+    if(images.length) opts.images = images;
+    const ai = await sample.json(decPrompt(text, P ? P.type : ''), opts);
+    clearInterval(ticker);
+    if(!ai || typeof ai !== 'object' || ai.error) return fail('not_dec');
+    const {type, pol, city} = cleanPolicy(ai, file.name);
+    S.policies.push(pol);
+    if(P){
+      if(P.type !== type){ P.type = type; P.info = Object.assign(defaultInfo(type), {flood:P.info.flood}); }
+      P.policyId = pol.id;
+    } else {
+      const np = {upgrades:[], vehicles:[], id:uid(), type, name: city ? `Uploaded: ${city}` : `Uploaded ${TYPES[type].label.toLowerCase()} policy`,
+        address: city || 'From uploaded policy', inPath:false, policyId:pol.id, info:defaultInfo(type), exterior:[], manual:{}, claim:blankClaim(),
+        rooms: TYPES[type].rooms.map(n=>room(n))};
+      S.properties.push(np); S.current = np.id;
+    }
+    S.policyReads = (S.policyReads||0)+1; S.tab = 'policy';
+    save(); close(); render(); window.scrollTo(0,0);
+    toast('Policy read. Check it against the document.');
+  }catch(e){
+    fail(e && e.code ? e.code : 'other');
+  }
+}
+
+function readPolicyDemo(){
+  const P = cur();
+  const ov = document.createElement('div'); ov.className='overlay';
+  ov.innerHTML = `<div class="card" role="status"><div class="spinner"></div><h3 style="text-align:center">Reading the policy</h3>
+    <p class="small muted" id="ovStep" style="text-align:center">Finding coverage limits…</p></div>`;
+  document.body.appendChild(ov);
+  const steps = ['Finding coverage limits…','Checking exclusions…','Writing plain-English summary…'];
+  let i=0; const iv = setInterval(()=>{ i++; const el=document.getElementById('ovStep'); if(el&&steps[i]) el.textContent=steps[i]; },700);
+  setTimeout(()=>{ clearInterval(iv); ov.remove(); const np = newPolicy(P.type); np.number = np.number.replace('SAMPLE', String(1000+Math.floor(Math.random()*9000))); S.policies.push(np); P.policyId = np.id; S.policyReads=(S.policyReads||0)+1; save(); render(); toast('Policy read. Sample results shown.'); }, 2200);
+}
+
+function shrink(file, cb){
+  const fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const s = 160 / Math.max(img.width, img.height);
+      const c = document.createElement('canvas'); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      cb(c.toDataURL('image/jpeg',0.7));
+    };
+    img.onerror = () => cb(null);
+    img.src = fr.result;
+  };
+  fr.onerror = () => cb(null);
+  fr.readAsDataURL(file);
+}
+
+function setMenu(open){ menu.hidden = !open; menuBtn.setAttribute('aria-expanded', String(open)); }
+menuBtn.addEventListener('click', ()=>setMenu(menu.hidden));
+menu.addEventListener('click', e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  setMenu(false);
+  if(b.dataset.madd){ S.openAdd = true; go('home'); setTimeout(()=>{ const f=document.getElementById('apName'); if(f){ f.scrollIntoView({block:'center'}); f.focus(); } },50); return; }
+  S.current = b.dataset.mprop; go(b.dataset.mtab);
+});
+document.addEventListener('click', e=>{ if(!menu.hidden && !e.target.closest('header.top')) setMenu(false); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') setMenu(false); });
+document.getElementById('backHome').addEventListener('click', ()=>go('home'));
+document.getElementById('fbBtn').addEventListener('click', ()=>go('feedback'));
+document.querySelector('nav.tabs').addEventListener('click', e=>{ const b=e.target.closest('button[data-tab]'); if(b) go(b.dataset.tab); });
+
+view.addEventListener('click', e=>{
+  const t = e.target.closest('button'); if(!t) return;
+  const P = cur();
+  if(t.dataset.prop){ S.current = t.dataset.prop; save(); render(); window.scrollTo(0,0); return; }
+  if(t.dataset.go) return go(t.dataset.go);
+  if(t.dataset.act==='demoPolicy') return readPolicyDemo();
+  if(t.dataset.act==='startOwn'){
+    const keepIds = new Set(); S.properties = []; S.policies = S.policies.filter(po=>keepIds.has(po.id));
+    S.ownStarted = true; S.sample = false; S.openAdd = true; S.threat = 'none';
+    const np = {upgrades:[], vehicles:[], id:uid(), type:'home', name:'My home', address:'Add your city', inPath:false, policyId:null, info:defaultInfo('home'), exterior:[], manual:{}, claim:blankClaim(), rooms:TYPES.home.rooms.map(n=>room(n))};
+    S.properties.push(np); S.current = np.id; S.tab = 'home'; S.renaming = true; save(); render(); window.scrollTo(0,0);
+    toast('Sample data removed. Name your property below.'); return;
+  }
+  if(t.dataset.act==='saveName'){
+    const n = document.getElementById('rnName').value.trim(), a = document.getElementById('rnAddr').value.trim(), ty = document.getElementById('rnType').value;
+    if(n) P.name = n; if(a) P.address = a;
+    if(ty !== P.type){ P.type = ty; P.info = defaultInfo(ty); P.rooms = TYPES[ty].rooms.map(x=>room(x)); P.policyId = null; }
+    S.renaming = false; S.tab = P.policyId ? 'home' : 'policy'; save(); render(); window.scrollTo(0,0); return;
+  }
+  if(t.dataset.act==='rename'){ S.renaming = true; save(); return render(); }
+  if(t.dataset.act==='install' && INSTALL_EVT){ const ev = INSTALL_EVT; INSTALL_EVT = null; ev.prompt(); ev.userChoice.finally(()=>render()); return; }
+  if(t.dataset.act==='hideWelcome'){ S.hideWelcome = true; save(); return render(); }
+  if(t.dataset.fbq){ S.fb = S.fb || {}; S.fb[t.dataset.fbq] = t.dataset.fba; save(); const y = window.scrollY; render(); window.scrollTo(0,y); return; }
+  if(t.dataset.act==='fbCopy'){
+    const txt = fbText(), box = document.getElementById('fbOut');
+    const fallback = () => { if(box){ box.focus(); box.select(); } toast('Selected. Copy it from the box.'); };
+    try{ navigator.clipboard.writeText(txt).then(()=>toast('Copied. Paste it into a text or email.'), fallback); }catch(e){ fallback(); }
+    return;
+  }
+  if(t.dataset.act==='pa') return toast('In the full app, this connects you with a local licensed public adjuster.');
+  if(t.dataset.src) return toast('Opens the policy at ' + t.dataset.src);
+  if(t.dataset.room){ const r=P.rooms.find(x=>x.id===t.dataset.room); r.open=!r.open; save(); return render(); }
+  if(t.dataset.delitem){ const [rid,i]=t.dataset.delitem.split(':'); const r=P.rooms.find(x=>x.id===rid); r.items.splice(+i,1); save(); return render(); }
+  if(t.dataset.delup){ P.upgrades.splice(+t.dataset.delup,1); save(); return render(); }
+  if(t.dataset.delveh){ P.vehicles.splice(+t.dataset.delveh,1); save(); return render(); }
+  if(t.dataset.level){ S.threat=t.dataset.level; save(); return render(); }
+  if(t.dataset.manual){ P.manual=P.manual||{}; P.manual[t.dataset.manual]=!P.manual[t.dataset.manual]; save(); return render(); }
+});
+
+view.addEventListener('change', e=>{
+  const el = e.target, P = cur();
+  const num = v => Math.max(0, parseFloat(v)||0);
+  if(el.id==='polUpload'){ if(el.files.length) readDecPage(el.files[0], P); return; }
+  if(el.id==='decUploadNew'){ if(el.files.length) readDecPage(el.files[0], null); return; }
+  if(el.id==='stockUpload'){ if(el.files.length){ P.info.stockReport = `${el.files[0].name} · uploaded ${new Date().toLocaleDateString()}`; save(); render(); toast('Stock report saved'); } return; }
+  if(el.dataset.itemreceipt){ if(el.files.length){ const [rid,i]=el.dataset.itemreceipt.split(':'); P.rooms.find(x=>x.id===rid).items[+i].r = el.files[0].name; S.sample=false; save(); render(); toast('Receipt saved'); } return; }
+  if(el.dataset.upreceipt){ if(el.files.length){ P.upgrades[+el.dataset.upreceipt].r = el.files[0].name; save(); render(); toast('Receipt saved'); } return; }
+  if(el.dataset.vcov){ P.vehicles[+el.dataset.vcov].cov = el.value; save(); return render(); }
+  if(el.id==='rcFile'){ const n=document.getElementById('rcFileName'); if(n) n.textContent = el.files.length ? 'Attached: '+el.files[0].name : ''; return; }
+  if(el.id==='extUpload'){
+    [...el.files].forEach(f=>shrink(f, src=>{ if(src){ P.exterior.push({src,date:new Date().toLocaleDateString()}); S.sample=false; save(); render(); } }));
+    return;
+  }
+  if(el.dataset.roomphoto){
+    const r=P.rooms.find(x=>x.id===el.dataset.roomphoto);
+    [...el.files].forEach(f=>shrink(f, src=>{ if(src){ (r.photoData=r.photoData||[]).push(src); S.sample=false; save(); render(); } }));
+    return;
+  }
+  const map = {
+    polNum:()=>{ polOf(P).number = el.value; },
+    polRenew:()=>{ polOf(P).renewal = el.value; },
+    polSwitch:()=>{ P.policyId = el.value==='new' ? null : el.value; },
+    sqft:()=>P.info.sqft=num(el.value), cps:()=>P.info.cps=num(el.value), infl:()=>P.info.localInfl=num(el.value),
+    flood:()=>P.info.flood=el.value, rent:()=>P.info.rent=num(el.value), renterProof:()=>P.info.renterProof=!!el.value,
+    monthlyNeed:()=>P.info.monthlyNeed=num(el.value), monthsClosed:()=>P.info.monthsClosed=num(el.value),
+    clNum:()=>P.claim.number=el.value.trim(), clDate:()=>P.claim.dateOfLoss=el.value,
+    clAdj:()=>P.claim.adjuster=el.value, clAdjPh:()=>P.claim.adjPhone=el.value,
+    clStatus:()=>P.claim.status=el.value, clOrder:()=>P.claim.orderDate=el.value, clRate:()=>P.claim.mileRate=num(el.value)
+  };
+  if(map[el.id]){ map[el.id](); save(); render(); }
+});
+
+view.addEventListener('input', e=>{
+  const k = e.target.dataset && e.target.dataset.fbt; if(!k) return;
+  S.fb = S.fb || {}; S.fb[k] = e.target.value; save();
+  const out = document.getElementById('fbOut'); if(out) out.value = fbText();
+});
+view.addEventListener('submit', e=>{
+  e.preventDefault();
+  const f = e.target, P = cur();
+  if(f.dataset.additem){
+    const r=P.rooms.find(x=>x.id===f.dataset.additem);
+    const n=f.n.value.trim(), v=parseFloat(f.v.value), y=parseInt(f.y.value)||YEAR;
+    if(!n||!(v>0)) return toast('Enter an item name and price.');
+    r.items.push({n,v,y:Math.min(YEAR,Math.max(1950,y)),r:''}); S.sample=false; save(); render(); toast('Added '+n);
+  } else if(f.id==='addRoom'){
+    const n=document.getElementById('roomName').value.trim(); if(!n) return;
+    P.rooms.push(Object.assign(room(n),{open:true})); save(); render();
+  } else if(f.id==='addReceipt'){
+    const cat=document.getElementById('rcCat').value, what=document.getElementById('rcWhat').value.trim(), raw=parseFloat(document.getElementById('rcAmt').value);
+    if(!what||!(raw>0)) return toast('Enter what it was for and the amount.');
+    const file=document.getElementById('rcFile').files[0];
+    const amt = cat==='Mileage' ? raw*(P.claim.mileRate||0) : raw;
+    P.claim.receipts.push({cat, what: cat==='Mileage' ? `${what} (${raw} mi)` : what, amt, date:new Date().toLocaleDateString(), r: file ? file.name : ''});
+    save(); render(); toast(cat==='Mileage' ? `Added ${raw} miles = ${fmt(amt)}` : 'Expense added');
+  } else if(f.id==='addUpgrade'){
+    const n=document.getElementById('upN').value.trim(), v=parseFloat(document.getElementById('upV').value), y=parseInt(document.getElementById('upY').value)||YEAR;
+    if(!n||!(v>0)) return toast('Enter the upgrade and its cost.');
+    P.upgrades.push({n,v,y:Math.min(YEAR,Math.max(1950,y)),r:''}); save(); render(); toast('Added '+n);
+  } else if(f.id==='addVehicle'){
+    const n=document.getElementById('vhN').value.trim(); if(!n) return;
+    P.vehicles.push({n,kind:document.getElementById('vhK').value,cov:document.getElementById('vhC').value}); save(); render(); toast('Added '+n);
+  } else if(f.id==='addLog'){
+    const note=document.getElementById('logNote').value.trim(); if(!note) return;
+    P.claim.log.push({note,date:new Date().toLocaleDateString()}); save(); render();
+  } else if(f.id==='policyForm'){
+    const g = id => { const el = document.getElementById('pf-'+id); return el ? el.value.trim() : ''; };
+    const n = id => { const x = parseFloat(g(id).replace(/[^0-9.]/g,'')); return isFinite(x) && x>0 ? x : 0; };
+    const a = {carrier:g('carrier'), form:g('form'), number:g('number'), renewal:g('renewal'), claimPhone:g('claimPhone'), agent:g('agent'),
+      allPerils:n('allPerils'), windType:g('windType'), windAmt:n('windAmt'), flood:g('flood'), ordinance:g('ordinance'), contentsRC:g('contentsRC'),
+      waterBackup:g('waterBackup'), mold:g('mold'), coins:n('coins'), wait:n('wait'), roofYear:n('roofYear')};
+    PF_LIMITS[P.type].forEach(([k])=>a['lim'+k]=n('lim-'+k));
+    if(!PF_LIMITS[P.type].some(([k])=>a['lim'+k]>0)) return toast('Enter at least one coverage amount.');
+    if((a.windType==='pct'||a.windType==='flat') && !a.windAmt) return toast('Enter the wind deductible amount, or choose Not sure.');
+    if(a.windType==='pct' && a.windAmt>25) return toast('That wind percentage looks too high. Enter 5 for 5%.');
+    const pol = buildManualPolicy(P, a);
+    const old = polOf(P);
+    if(old && old.manual){ const others = usersOf(old.id).filter(x=>x.id!==P.id); if(!others.length) S.policies = S.policies.filter(x=>x.id!==old.id); }
+    S.policies.push(pol);
+    if(old) usersOf(old.id).forEach(x=>{ if(old.manual) x.policyId = pol.id; });
+    P.policyId = pol.id;
+    if(a.flood==='nfip'||a.flood==='private') P.info.flood = a.flood; else if(a.flood==='no') P.info.flood = 'none';
+    if(n('sqft')) P.info.sqft = n('sqft');
+    if(a.roofYear){ P.upgrades = (P.upgrades||[]).filter(u=>!/^Roof \(from policy\)/.test(u.n)); }
+    S.tab = 'policy'; save(); render(); window.scrollTo(0,0); toast('Here\u2019s what your policy covers.');
+  } else if(f.id==='addProp'){
+    const name=document.getElementById('apName').value.trim(), type=document.getElementById('apType').value, addr=document.getElementById('apAddr').value.trim();
+    if(!name||!addr) return;
+    const info = defaultInfo(type);
+    const np = {upgrades:[], vehicles:[], id:uid(), type, name, address:addr, inPath:false, policyId:document.getElementById('apPolicy').value||null, info, exterior:[], manual:{}, claim:blankClaim(), rooms:TYPES[type].rooms.map(n=>room(n))};
+    S.properties.push(np); S.current = np.id; S.openAdd = false; S.tab = np.policyId ? 'home' : 'policy'; save(); render(); window.scrollTo(0,0); toast(np.policyId ? 'Added '+name : 'Added '+name+'. Now upload its policy.');
+  }
+});
+
+load(); if(S.tab==='feedback' && !VIEWS.feedback) S.tab='home'; render();
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+(async ()=>{
+  try{
+    const sm = window.claude && window.claude.use ? await window.claude.use('sample') : null;
+    LIVE = !!sm;
+  }catch(e){ LIVE = false; }
+  if(S.tab==='home') render();
+})();
+})();
+</script>
+
+</body>
+</html>
