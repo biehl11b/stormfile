@@ -458,7 +458,8 @@ function viewHome(){
     <h2>Install StormFile on your phone</h2>
     ${INSTALL_EVT ? `<p class="small">Add StormFile to your home screen so it opens like any other app, full screen, even without signal.</p>
       <button class="primary" data-act="install">Install app</button>`
-    : IS_IOS ? `<ol class="steps small"><li>Make sure this is open in <strong>Safari</strong>.</li><li>Tap the <strong>Share</strong> button (square with an arrow).</li><li>Scroll down and tap <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li><li>Open StormFile from the new icon.</li></ol>`
+    : IS_IOS ? `<ol class="steps small"><li>Open this page in <strong>Safari</strong>. If you came from a text, email or Facebook, tap the compass icon or <strong>Open in Safari</strong> first.</li><li>Tap the <strong>\u22EF</strong> (three dots) next to the web address, then <strong>Share</strong>. On older iPhones, tap the <strong>Share</strong> button (square with an arrow) at the bottom.</li><li>Scroll down and tap <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li><li>Open StormFile from the new icon.</li></ol>
+      <p class="small muted">Using Chrome? Tap the Share icon at the top right of the address bar, then Add to Home Screen.</p>`
     : `<ol class="steps small"><li>Open this in <strong>Chrome</strong>.</li><li>Tap the <strong>\u22EE</strong> menu, then <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li><li>Open StormFile from the new icon.</li></ol>`}
     <p class="small muted">Your information is saved only on this phone. If you install the app, open it from the icon from then on so your records stay in one place.</p>
   </div>`}
