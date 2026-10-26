@@ -148,6 +148,18 @@ header.top{flex-direction:column;align-items:stretch;gap:8px}
 .choices button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
 textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px;width:100%;min-height:90px;resize:vertical}
 .steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+figure.ph{margin:0;display:flex;flex-direction:column;gap:2px;width:72px}
+figure.ph img{width:72px;height:72px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+figure.ph figcaption{font-size:10px;line-height:1.25;color:var(--muted);font-variant-numeric:tabular-nums}
+figure.ph.after img{outline:3px solid var(--amber);outline-offset:-3px}
+.photo-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lockbar{display:flex;gap:8px;align-items:center;border-radius:10px;padding:10px 12px;background:var(--surface-2);font-size:13px}
+.hist{display:flex;flex-direction:column;max-height:320px;overflow-y:auto}
+.hist div{display:flex;justify-content:space-between;gap:10px;padding-block:7px;border-bottom:1px solid var(--line);font-size:13px}
+.hist div span:last-child{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+header.top > .row{min-width:0}
+header.top > .row > .row{flex-wrap:wrap!important;justify-content:flex-end;min-width:0}
+.toast{border-radius:14px!important;max-width:calc(100% - 32px);width:max-content;text-align:center}
 details.add summary{cursor:pointer;font-weight:600;color:var(--accent);list-style:none;min-height:44px;display:flex;align-items:center}
 details.add summary::-webkit-details-marker{display:none}
 </style>
@@ -328,6 +340,82 @@ function invTotals(P){
   return {today,count};
 }
 const roomPhotos = r => r.photos + (r.photoData||[]).length;
+const nowISO = () => new Date().toISOString();
+const plural = (n, w) => n + ' ' + w + (n===1?'':'s');
+const fmtWhen = iso => { if(!iso) return ''; const d = new Date(iso); if(isNaN(d)) return String(iso); return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ', ' + d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); };
+const fmtDay = iso => { if(!iso) return ''; const d = new Date(iso); return isNaN(d) ? String(iso) : d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); };
+function logEvt(P, what){ P.history = P.history || []; P.history.push({at: nowISO(), what}); if(P.history.length > 400) P.history.splice(0, P.history.length - 400); }
+const lockedAt = P => P.claim && P.claim.lockedAt;
+const isAfterLock = (P, o) => !!(lockedAt(P) && o && o.addedAt && o.addedAt > P.claim.lockedAt);
+function photoObj(x){ return typeof x === 'string' ? {src:x} : x; }
+
+/* Read the date a photo was taken from its EXIF data (JPEG only). */
+async function exifDate(file){
+  try{
+    if(!/jpe?g/i.test(file.type||'') && !/\.jpe?g$/i.test(file.name||'')) return null;
+    const buf = await file.slice(0, 256*1024).arrayBuffer(); const v = new DataView(buf);
+    if(v.getUint16(0) !== 0xFFD8) return null;
+    let off = 2;
+    while(off < v.byteLength - 4){
+      const marker = v.getUint16(off); const len = v.getUint16(off+2);
+      if(marker === 0xFFE1 && v.getUint32(off+4) === 0x45786966){
+        const t = off + 10, le = v.getUint16(t) === 0x4949;
+        const u16 = o => v.getUint16(t+o, le), u32 = o => v.getUint32(t+o, le);
+        const readStr = (o, n) => { let x=''; for(let k=0;k<n-1;k++){ const c=v.getUint8(t+o+k); if(!c) break; x+=String.fromCharCode(c);} return x; };
+        const scan = (ifd, want) => { const n = u16(ifd); for(let k=0;k<n;k++){ const e = ifd+2+k*12; const tag = u16(e); if(want[tag]) return {tag, cnt:u32(e+4), val:u32(e+8)}; } return null; };
+        const ifd0 = u32(4);
+        let dt = null;
+        const sub = scan(ifd0, {0x8769:1});
+        if(sub){ const d = scan(sub.val, {0x9003:1, 0x9004:1}); if(d) dt = readStr(d.val, d.cnt); }
+        if(!dt){ const d0 = scan(ifd0, {0x0132:1}); if(d0) dt = readStr(d0.val, d0.cnt); }
+        if(!dt) return null;
+        const m = dt.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2})/); if(!m) return null;
+        return new Date(+m[1], +m[2]-1, +m[3], +m[4], +m[5]).toISOString();
+      }
+      if((marker & 0xFF00) !== 0xFF00) break;
+      off += 2 + len;
+    }
+  }catch(e){}
+  return null;
+}
+/* Ask the phone for its location once per batch of photos; never blocks for long. */
+function getGPS(){
+  return new Promise(res=>{
+    if(!navigator.geolocation) return res(null);
+    let done = false; const fin = x => { if(!done){ done = true; res(x); } };
+    setTimeout(()=>fin(null), 9000);
+    try{ navigator.geolocation.getCurrentPosition(p=>fin({lat:+p.coords.latitude.toFixed(4), lng:+p.coords.longitude.toFixed(4), acc:Math.round(p.coords.accuracy)}), ()=>fin(null), {enableHighAccuracy:false, timeout:8000, maximumAge:120000}); }catch(e){ fin(null); }
+  });
+}
+const shrinkP = f => new Promise(r=>shrink(f, r));
+async function addPhotos(P, files, target, label, source){
+  const list = [...files]; if(!list.length) return;
+  toast('Saving ' + list.length + ' photo' + (list.length>1?'s':'') + '…');
+  const gps = await getGPS();
+  let added = 0;
+  for(const f of list){
+    const [src, taken] = await Promise.all([shrinkP(f), exifDate(f)]);
+    if(!src) continue;
+    target.push({src, addedAt: nowISO(), taken, gps, source});
+    added++;
+  }
+  if(!added) return toast('Those photos couldn’t be read. Try a JPG or a new photo.');
+  logEvt(P, `Added ${added} photo${added>1?'s':''}: ${label}${source==='camera'?' (camera)':' (from library)'}${gps?'':' · no location'}${isAfterLock(P,{addedAt:nowISO()})?' · after claim started':''}`);
+  S.sample = false; save(); render();
+  toast(gps ? 'Saved with date, time and location.' : 'Saved with date and time. Location was not available.');
+}
+function photoGrid(P, list, alt){
+  if(!list || !list.length) return '';
+  return `<div class="thumbs">${list.map(x=>{ const o = photoObj(x); const after = isAfterLock(P,o);
+    const when = o.taken ? 'Taken ' + fmtDay(o.taken) : o.addedAt ? 'Added ' + fmtDay(o.addedAt) : (o.date ? 'Added ' + esc(o.date) : 'Sample');
+    return `<figure class="ph${after?' after':''}"><img src="${o.src}" alt="${esc(alt)}"><figcaption>${when}${o.gps?' · GPS':''}${after?'<br><strong style="color:var(--amber)">After claim</strong>':''}</figcaption></figure>`; }).join('')}</div>`;
+}
+function photoButtons(attr, label){
+  return `<div class="photo-btns">
+    <label class="upload">Take ${label}<input type="file" ${attr} data-source="camera" accept="image/*" capture="environment" multiple></label>
+    <label class="upload">From photo library<input type="file" ${attr} data-source="library" accept="image/*" multiple></label>
+  </div>`;
+}
 const BIG = 1000;
 function missingReceipts(P){
   const items = []; P.rooms.forEach(r=>r.items.forEach(it=>{ if(it.v>=BIG && !it.r) items.push(it.n); }));
@@ -570,6 +658,11 @@ function viewPolicy(){
     <p class="label">${esc(p.carrier)} · ${esc(p.form)}</p>
     <h1>What ${esc(P.name)} is covered for</h1>
   </section>
+  <div class="alert warn" style="background:var(--surface)">
+    <strong>Confirm anything that surprises you</strong>
+    <p class="small">StormFile explains your policy. It doesn\u2019t decide coverage. If you think you have more coverage than this shows, or less, check with your agent or insurance company before you rely on it.</p>
+    ${p.agent && p.agent!=='Not entered' && p.agent!=='Not shown' ? `<span class="small muted">Your agent: ${esc(p.agent)}</span>` : ''}
+  </div>
   ${p.manual?`<div class="alert ok" style="background:var(--surface)"><strong>Built from what you entered</strong>
     <p class="small">Items marked \u201CCheck full policy\u201D come from your answers or are common gaps. Confirm them with your agent.</p>
     <button class="small-btn" data-go="policyForm" style="align-self:flex-start">Edit policy details</button></div>`:''}
@@ -716,6 +809,7 @@ function viewInventory(){
   const done = P.rooms.filter(roomDone).length;
   return `
   <section class="stack"><p class="label">${esc(P.name)}</p><h1>${esc(cfg.roomsTitle)}</h1></section>
+  ${lockedAt(P)?`<div class="lockbar"><strong>Before-storm record locked</strong><span class="muted">${fmtWhen(lockedAt(P))}. You can still add things; they\u2019re marked \u201Cadded after claim.\u201D</span></div>`:''}
   <div class="card">
     <div class="row"><span class="label">Logged value today</span><span class="num" style="font-size:20px">${fmt(inv.today)}</span></div>
     <div class="meter"><i style="width:${P.rooms.length?(done/P.rooms.length*100).toFixed(0):0}%;background:var(--accent)"></i></div>
@@ -734,9 +828,9 @@ function viewInventory(){
 
   <div class="card">
     <div class="row"><h2>Outside of the building</h2><span class="chip ${P.exterior.length>=4?'ok':'warn'}">${P.exterior.length} of 4</span></div>
-    <p class="small muted">Roof, front, back, both sides. Each photo is saved with the date to prove the condition before a storm.</p>
-    ${P.exterior.length?`<div class="thumbs">${P.exterior.map(p=>`<img src="${p.src}" alt="Exterior photo ${esc(p.date)}">`).join('')}</div>`:''}
-    <label class="upload">Take exterior photos<input type="file" id="extUpload" accept="image/*" capture="environment" multiple></label>
+    <p class="small muted">Roof, front, back, both sides. Each photo is saved with the date, time and location to prove the condition before a storm.</p>
+    ${photoGrid(P, P.exterior, 'Exterior photo')}
+    ${photoButtons('data-extphoto="1"', 'exterior photos')}
   </div>
 
   ${(()=>{ const ups = P.upgrades||[], po = polOf(P);
@@ -767,10 +861,10 @@ function viewInventory(){
         <span class="chip ${ok?'ok':'warn'}">${ok?'Done':'To do'}</span>
       </button>
       ${r.open?`<div class="room-body">
-        ${(r.photoData||[]).length?`<div class="thumbs">${r.photoData.map(p=>`<img src="${p}" alt="${esc(r.name)} photo">`).join('')}</div>`:''}
+        ${photoGrid(P, r.photoData, r.name + ' photo')}
         ${r.photos?`<span class="small muted">${r.photos} sample photo${r.photos>1?'s':''} on file</span>`:''}
-        <label class="upload">Add photos<input type="file" data-roomphoto="${r.id}" accept="image/*" capture="environment" multiple></label>
-        ${r.items.length?`<div class="tblwrap"><table>${r.items.map((it,i)=>`<tr><td>${esc(it.n)}<br><span class="small muted">Bought ${it.y} for ${fmt(it.v)}</span><br>${it.r?`<span class="chip ok">Receipt \u2713</span>`:`<label class="src" style="cursor:pointer;position:relative${it.v>=BIG?';color:var(--amber);font-weight:600':''}">${it.v>=BIG?'Big-ticket: add receipt':'Add receipt'}<input type="file" data-itemreceipt="${r.id}:${i}" accept="image/*,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0"></label>`}</td><td>${fmt(itemToday(it))}<br><button class="src" data-delitem="${r.id}:${i}">Remove</button></td></tr>`).join('')}</table></div>`:'<p class="small muted">No items yet. Start with the most expensive things.</p>'}
+        ${photoButtons('data-roomphoto="' + r.id + '"', 'photos')}
+        ${r.items.length?`<div class="tblwrap"><table>${r.items.map((it,i)=>`<tr><td>${esc(it.n)}<br><span class="small muted">Bought ${it.y} for ${fmt(it.v)}${it.addedAt?' \u00B7 logged '+fmtDay(it.addedAt):''}</span>${isAfterLock(P,it)?' <span class="chip warn">Added after claim</span>':''}<br>${it.r?`<span class="chip ok">Receipt \u2713</span>`:`<label class="src" style="cursor:pointer;position:relative${it.v>=BIG?';color:var(--amber);font-weight:600':''}">${it.v>=BIG?'Big-ticket: add receipt':'Add receipt'}<input type="file" data-itemreceipt="${r.id}:${i}" accept="image/*,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0"></label>`}</td><td>${fmt(itemToday(it))}<br><button class="src" data-delitem="${r.id}:${i}">Remove</button></td></tr>`).join('')}</table></div>`:'<p class="small muted">No items yet. Start with the most expensive things.</p>'}
         <form class="stack" data-additem="${r.id}">
           <label class="field">Item<input name="n" id="n-${r.id}" placeholder="${esc(cfg.itemHint)}" required></label>
           <div class="grid2">
@@ -917,6 +1011,19 @@ function viewClaim(){
     ${cl.number?`<span class="chip ok" style="align-self:flex-start"><span class="dot"></span>Claim saved</span>`:`<p class="small muted">Call ${p?esc(p.claimPhone):'the insurer'} to open a claim, then enter the number here.</p>`}
   </div>
 
+  <div class="card" style="border-color:${lockedAt(P)?'var(--green)':'var(--amber)'}">
+    <div class="row"><h2>Before-storm record</h2><span class="chip ${lockedAt(P)?'ok':'warn'}">${lockedAt(P)?'Locked':'Not locked'}</span></div>
+    ${lockedAt(P) ? (()=>{
+      const items = P.rooms.flatMap(r=>r.items), photos = P.exterior.concat(P.rooms.flatMap(r=>(r.photoData||[]).map(photoObj)));
+      const iAfter = items.filter(x=>isAfterLock(P,x)).length, pAfter = photos.filter(x=>isAfterLock(P,x)).length;
+      return `<p class="small">Locked ${fmtWhen(lockedAt(P))}. Everything logged before then is your before-storm record and can\u2019t be removed.</p>
+      <div class="kv"><span class="k">Before the storm</span><span class="v">${plural(items.length-iAfter,'item')} \u00B7 ${plural(photos.length-pAfter + P.rooms.reduce((s,r)=>s+r.photos,0),'photo')}</span></div>
+      <div class="kv"><span class="k">Added after the claim started</span><span class="v">${plural(iAfter,'item')} \u00B7 ${plural(pAfter,'photo')}</span></div>`; })()
+    : `<p class="small">When you file a claim, lock your record. Everything you logged before the storm is frozen, and anything added later is clearly marked. It shows the adjuster your list wasn\u2019t built after the damage.</p>
+      <button class="primary" data-act="lockRecord">Lock my before-storm record</button>
+      <p class="small muted">Enter the date of loss above first. This can\u2019t be undone.</p>`}
+  </div>
+
   <div class="card">
     <h2>Ready-to-send reports</h2>
     <div class="kv"><span class="k">${esc(cfg.contentsName)} inventory<br><span class="small muted">${inv.count} items, before photos, today’s prices</span></span><span class="v">${fmt(inv.today)}</span></div>
@@ -976,6 +1083,14 @@ function viewClaim(){
       <label class="field">Note<input id="logNote" placeholder="Spoke with adjuster, inspection Tuesday" required></label>
       <button type="submit">Add to log</button>
     </form>
+  </div>
+
+  <div class="card">
+    <div class="row"><h2>Record history</h2><span class="small muted">${(P.history||[]).length} changes</span></div>
+    <p class="small muted">Every addition, removal and receipt is saved with the date and time. It can\u2019t be edited.</p>
+    ${(P.history||[]).length ? `<div class="hist">${(P.history||[]).slice().reverse().slice(0, S.histAll?400:12).map(h=>`<div><span>${esc(h.what)}</span><span>${fmtWhen(h.at)}</span></div>`).join('')}</div>
+      ${(P.history||[]).length>12?`<button class="src" data-act="showAllHist" style="align-self:flex-start">${S.histAll?'Show fewer':'Show all'}</button>`:''}`
+      : '<p class="small muted">Nothing yet. Changes appear here as you add items, photos and receipts.</p>'}
   </div>
 
   <div class="card">
@@ -1139,14 +1254,15 @@ function render(){
   view.innerHTML = VIEWS[S.tab]();
   document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-current', b.dataset.tab===S.tab?'page':'false'));
   document.getElementById('tabRooms').textContent = TYPES[P.type].tab;
-  document.getElementById('samplePill').hidden = !S.sample;
+  document.getElementById('samplePill').hidden = !S.sample || S.tab!=='home';
   document.getElementById('backHome').hidden = S.tab==='home';
   document.getElementById('fbBtn').hidden = S.tab==='feedback';
 }
 function go(tab){ S.tab = tab; save(); render(); window.scrollTo(0,0); }
 function toast(msg){
-  const t = document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 2400);
+  document.querySelectorAll('.toast').forEach(x=>x.remove());
+  const t = document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>t.remove(), Math.max(2400, msg.length*45));
 }
 
 const defaultInfo = type => type==='business' ? {sqft:2500,cps:185,localInfl:5.5,flood:'none',monthlyNeed:20000,monthsClosed:6,stockReport:''}
@@ -1391,8 +1507,17 @@ view.addEventListener('click', e=>{
   if(t.dataset.act==='pa') return toast('In the full app, this connects you with a local licensed public adjuster.');
   if(t.dataset.src) return toast('Opens the policy at ' + t.dataset.src);
   if(t.dataset.room){ const r=P.rooms.find(x=>x.id===t.dataset.room); r.open=!r.open; save(); return render(); }
-  if(t.dataset.delitem){ const [rid,i]=t.dataset.delitem.split(':'); const r=P.rooms.find(x=>x.id===rid); r.items.splice(+i,1); save(); return render(); }
-  if(t.dataset.delup){ P.upgrades.splice(+t.dataset.delup,1); save(); return render(); }
+  if(t.dataset.delitem){ const [rid,i]=t.dataset.delitem.split(':'); const r=P.rooms.find(x=>x.id===rid); const it=r.items[+i];
+    if(lockedAt(P) && !isAfterLock(P,it)) return toast('This item is part of your locked before-storm record. Add a note in the claim log instead.');
+    r.items.splice(+i,1); logEvt(P, `Removed ${it.n} (${fmt(it.v)}) from ${r.name}`); save(); return render(); }
+  if(t.dataset.delup){ const u=P.upgrades[+t.dataset.delup];
+    if(lockedAt(P) && !isAfterLock(P,u)) return toast('This upgrade is part of your locked before-storm record.');
+    P.upgrades.splice(+t.dataset.delup,1); logEvt(P, `Removed upgrade: ${u.n}`); save(); return render(); }
+  if(t.dataset.act==='lockRecord'){
+    if(!P.claim.dateOfLoss) return toast('Enter the date of loss above first.');
+    P.claim.lockedAt = nowISO(); logEvt(P, `Before-storm record locked (date of loss ${P.claim.dateOfLoss})`); save(); render(); return toast('Before-storm record locked.');
+  }
+  if(t.dataset.act==='showAllHist'){ S.histAll = !S.histAll; save(); return render(); }
   if(t.dataset.delveh){ P.vehicles.splice(+t.dataset.delveh,1); save(); return render(); }
   if(t.dataset.level){ S.threat=t.dataset.level; save(); return render(); }
   if(t.dataset.manual){ P.manual=P.manual||{}; P.manual[t.dataset.manual]=!P.manual[t.dataset.manual]; save(); return render(); }
@@ -1404,17 +1529,15 @@ view.addEventListener('change', e=>{
   if(el.id==='polUpload'){ if(el.files.length) readDecPage(el.files[0], P); return; }
   if(el.id==='decUploadNew'){ if(el.files.length) readDecPage(el.files[0], null); return; }
   if(el.id==='stockUpload'){ if(el.files.length){ P.info.stockReport = `${el.files[0].name} · uploaded ${new Date().toLocaleDateString()}`; save(); render(); toast('Stock report saved'); } return; }
-  if(el.dataset.itemreceipt){ if(el.files.length){ const [rid,i]=el.dataset.itemreceipt.split(':'); P.rooms.find(x=>x.id===rid).items[+i].r = el.files[0].name; S.sample=false; save(); render(); toast('Receipt saved'); } return; }
-  if(el.dataset.upreceipt){ if(el.files.length){ P.upgrades[+el.dataset.upreceipt].r = el.files[0].name; save(); render(); toast('Receipt saved'); } return; }
+  if(el.dataset.itemreceipt){ if(el.files.length){ const [rid,i]=el.dataset.itemreceipt.split(':'); const it = P.rooms.find(x=>x.id===rid).items[+i]; it.r = el.files[0].name; it.receiptAt = nowISO(); logEvt(P, `Receipt added for ${it.n}`); S.sample=false; save(); render(); toast('Receipt saved'); } return; }
+  if(el.dataset.upreceipt){ if(el.files.length){ const u = P.upgrades[+el.dataset.upreceipt]; u.r = el.files[0].name; u.receiptAt = nowISO(); logEvt(P, `Receipt added for ${u.n}`); save(); render(); toast('Receipt saved'); } return; }
   if(el.dataset.vcov){ P.vehicles[+el.dataset.vcov].cov = el.value; save(); return render(); }
   if(el.id==='rcFile'){ const n=document.getElementById('rcFileName'); if(n) n.textContent = el.files.length ? 'Attached: '+el.files[0].name : ''; return; }
-  if(el.id==='extUpload'){
-    [...el.files].forEach(f=>shrink(f, src=>{ if(src){ P.exterior.push({src,date:new Date().toLocaleDateString()}); S.sample=false; save(); render(); } }));
-    return;
-  }
+  if(el.dataset.extphoto){ addPhotos(P, el.files, P.exterior, 'outside of the building', el.dataset.source); return; }
   if(el.dataset.roomphoto){
     const r=P.rooms.find(x=>x.id===el.dataset.roomphoto);
-    [...el.files].forEach(f=>shrink(f, src=>{ if(src){ (r.photoData=r.photoData||[]).push(src); S.sample=false; save(); render(); } }));
+    r.photoData = (r.photoData||[]).map(photoObj);
+    addPhotos(P, el.files, r.photoData, r.name, el.dataset.source);
     return;
   }
   const map = {
@@ -1443,7 +1566,7 @@ view.addEventListener('submit', e=>{
     const r=P.rooms.find(x=>x.id===f.dataset.additem);
     const n=f.n.value.trim(), v=parseFloat(f.v.value), y=parseInt(f.y.value)||YEAR;
     if(!n||!(v>0)) return toast('Enter an item name and price.');
-    r.items.push({n,v,y:Math.min(YEAR,Math.max(1950,y)),r:''}); S.sample=false; save(); render(); toast('Added '+n);
+    r.items.push({n,v,y:Math.min(YEAR,Math.max(1950,y)),r:'',addedAt:nowISO()}); logEvt(P, `Added ${n} (${fmt(v)}, bought ${y}) to ${r.name}`); S.sample=false; save(); render(); toast('Added '+n);
   } else if(f.id==='addRoom'){
     const n=document.getElementById('roomName').value.trim(); if(!n) return;
     P.rooms.push(Object.assign(room(n),{open:true})); save(); render();
@@ -1452,18 +1575,19 @@ view.addEventListener('submit', e=>{
     if(!what||!(raw>0)) return toast('Enter what it was for and the amount.');
     const file=document.getElementById('rcFile').files[0];
     const amt = cat==='Mileage' ? raw*(P.claim.mileRate||0) : raw;
-    P.claim.receipts.push({cat, what: cat==='Mileage' ? `${what} (${raw} mi)` : what, amt, date:new Date().toLocaleDateString(), r: file ? file.name : ''});
+    P.claim.receipts.push({cat, what: cat==='Mileage' ? `${what} (${raw} mi)` : what, amt, date:new Date().toLocaleDateString(), at:nowISO(), r: file ? file.name : ''});
+    logEvt(P, `Expense logged: ${cat}, ${fmt(amt)}${file?' with receipt':''}`);
     save(); render(); toast(cat==='Mileage' ? `Added ${raw} miles = ${fmt(amt)}` : 'Expense added');
   } else if(f.id==='addUpgrade'){
     const n=document.getElementById('upN').value.trim(), v=parseFloat(document.getElementById('upV').value), y=parseInt(document.getElementById('upY').value)||YEAR;
     if(!n||!(v>0)) return toast('Enter the upgrade and its cost.');
-    P.upgrades.push({n,v,y:Math.min(YEAR,Math.max(1950,y)),r:''}); save(); render(); toast('Added '+n);
+    P.upgrades.push({n,v,y:Math.min(YEAR,Math.max(1950,y)),r:'',addedAt:nowISO()}); logEvt(P, `Added upgrade: ${n} (${fmt(v)}, ${y})`); save(); render(); toast('Added '+n);
   } else if(f.id==='addVehicle'){
     const n=document.getElementById('vhN').value.trim(); if(!n) return;
-    P.vehicles.push({n,kind:document.getElementById('vhK').value,cov:document.getElementById('vhC').value}); save(); render(); toast('Added '+n);
+    P.vehicles.push({n,kind:document.getElementById('vhK').value,cov:document.getElementById('vhC').value,addedAt:nowISO()}); logEvt(P, `Added vehicle: ${n}`); save(); render(); toast('Added '+n);
   } else if(f.id==='addLog'){
     const note=document.getElementById('logNote').value.trim(); if(!note) return;
-    P.claim.log.push({note,date:new Date().toLocaleDateString()}); save(); render();
+    P.claim.log.push({note,date:new Date().toLocaleDateString(),at:nowISO()}); logEvt(P, 'Call or email noted'); save(); render();
   } else if(f.id==='policyForm'){
     const g = id => { const el = document.getElementById('pf-'+id); return el ? el.value.trim() : ''; };
     const n = id => { const x = parseFloat(g(id).replace(/[^0-9.]/g,'')); return isFinite(x) && x>0 ? x : 0; };
@@ -1477,7 +1601,7 @@ view.addEventListener('submit', e=>{
     const pol = buildManualPolicy(P, a);
     const old = polOf(P);
     if(old && old.manual){ const others = usersOf(old.id).filter(x=>x.id!==P.id); if(!others.length) S.policies = S.policies.filter(x=>x.id!==old.id); }
-    S.policies.push(pol);
+    S.policies.push(pol); logEvt(P, old ? 'Policy details updated' : 'Policy entered');
     if(old) usersOf(old.id).forEach(x=>{ if(old.manual) x.policyId = pol.id; });
     P.policyId = pol.id;
     if(a.flood==='nfip'||a.flood==='private') P.info.flood = a.flood; else if(a.flood==='no') P.info.flood = 'none';
