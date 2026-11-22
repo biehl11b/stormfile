@@ -22,7 +22,7 @@ out = {}
 with sync_playwright() as p:
     b, ctx, pg, errs = new_page(p)
     external = []
-    pg.on('request', lambda r: external.append(r.url) if not (r.url.startswith(URL) or r.url.startswith('data:') or r.url.startswith('blob:') or 'fonts.g' in r.url) else None)
+    pg.on('request', lambda r: external.append(r.url) if not (r.url.startswith(URL) or r.url.startswith('data:') or r.url.startswith('blob:')) else None)
     import os
     if not os.environ.get('SEC_SAMPLE'):
         start_own(pg)

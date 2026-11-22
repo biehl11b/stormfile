@@ -14,7 +14,7 @@ with sync_playwright() as p:
         r = pg.evaluate(JS)
         if r['sw'] > r['W'] or r['bad']: out['problems'].append({'w': width, 'screen': 'start', **r})
         agree(pg)
-        for t in ['home', 'policy', 'inventory', 'storm', 'claim', 'feedback', 'settings', 'policyForm']:
+        for t in ['home', 'policy', 'inventory', 'storm', 'claim', 'feedback', 'settings', 'resources', 'policyForm']:
             pg.evaluate("t=>{ const b=document.querySelector('nav.tabs button[data-tab='+t+']'); if(b) b.click(); else { document.getElementById('fbBtn').click(); const x=document.querySelector('[data-go='+t+']'); x&&x.click(); } }", t)
             pg.wait_for_timeout(250)
             if t == 'policyForm' and not pg.is_visible('#policyForm'):

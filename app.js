@@ -896,6 +896,7 @@ function viewStorm(){
       ${list.length?`<button class="primary" data-act="calSeason">Add yearly reminders to my calendar</button>
       <p class="small muted">Adds a \u201Cget ready\u201D reminder 3 weeks before each season and one on the day it starts, repeating every year.</p>`:''}
     </div>`; })()}
+  <button class="card linkcard" data-go="resources"><div class="stack" style="gap:2px;min-width:0"><strong>Emergency and disaster help</strong><span class="small muted">Your state’s emergency agency, FEMA and the National Hurricane Center</span></div><span aria-hidden="true">›</span></button>
   <div class="card">
     <h3>Try each alert level</h3>
     <p class="small muted">The real app follows National Hurricane Center forecasts and raises alerts only for properties in a storm’s path. In this sample, the house and the restaurant are in Delia’s path and the Baton Rouge rental is not.</p>
@@ -922,6 +923,7 @@ function viewClaim(){
     ${cl.number?`<span class="chip ok" style="align-self:flex-start"><span class="dot"></span>Claim saved</span>`:`<p class="small muted">Call ${p?esc(p.claimPhone):'the insurer'} to open a claim, then enter the number here.</p>`}
   </div>
 
+  <button class="card linkcard" data-go="resources"><div class="stack" style="gap:2px;min-width:0"><strong>Claim stuck? Get help${stateOf(P)?' in '+esc(STATE_NAME[stateOf(P)]):''}</strong><span class="small muted">Your state insurance department, FEMA, SBA and flood insurance contacts</span></div><span aria-hidden="true">›</span></button>
   <div class="card" style="border-color:${lockedAt(P)?'var(--green)':'var(--amber)'}">
     <div class="row"><h2>Before-storm record</h2><span class="chip ${lockedAt(P)?'ok':'warn'}">${lockedAt(P)?'Locked':'Not locked'}</span></div>
     ${lockedAt(P) ? (()=>{
@@ -1551,11 +1553,171 @@ function viewWelcome(){
     <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Explains, doesn’t decide</strong><span class="small muted">StormFile helps you understand and organize. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</span></div></div>
     <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Test version</strong><span class="small muted">This is an early version shared for feedback, so things may change. StormFile, including its name, design and code, belongs to Coastline Code LLC. Please use it for testing and feedback only.</span></div></div>
   </div>
-  <p class="small muted">By tapping “I agree” you confirm you understand the points above. Questions: info@coastlinecode.com</p>
+  <p class="small muted">By tapping “I agree” you confirm you understand the points above and accept the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>. Questions: info@coastlinecode.com</p>
   ${mine ? `<button class="primary" data-act="agree">I agree</button>` :
     `<button class="primary" data-act="agreeOwn">I agree — set up my home</button>
      <button data-act="agree">I agree — look around with sample data first</button>`}
   <p class="foot">StormFile is made by Coastline Code LLC, a veteran-owned company in Pass Christian, Mississippi.</p>`;
+}
+
+/* ---------- State and national help (checked against official sites, Nov 2026) ----------
+   Insurance departments: NAIC insurance department directory (content.naic.org), with Gulf states, FL, TX, VA, WA, WV, WI, WY
+   confirmed on the department's own site. Emergency agencies: each agency's official .gov site. Keep RES_CHECKED current. */
+const RES_CHECKED = 'November 2026';
+const RES_INS = { // state: [department, website, consumer phone, complaint page (optional)]
+  AL:['Alabama Department of Insurance','https://aldoi.gov','1-800-433-3966','https://aldoi.gov/Consumers/FileComplaint.aspx'],
+  AK:['Alaska Division of Insurance','https://insurance.alaska.gov','1-800-467-8725'],
+  AZ:['Arizona Department of Insurance and Financial Institutions','https://difi.az.gov','602-364-3100'],
+  AR:['Arkansas Insurance Department','https://insurance.arkansas.gov','1-800-852-5494'],
+  CA:['California Department of Insurance','https://www.insurance.ca.gov','1-800-927-4357'],
+  CO:['Colorado Division of Insurance','https://doi.colorado.gov','303-894-7490'],
+  CT:['Connecticut Insurance Department','https://portal.ct.gov/cid','1-800-203-3447'],
+  DE:['Delaware Department of Insurance','https://insurance.delaware.gov','1-800-282-8611'],
+  DC:['DC Department of Insurance, Securities and Banking','https://disb.dc.gov','202-727-8000'],
+  FL:['Florida Department of Financial Services, Insurance Consumer Helpline','https://www.myfloridacfo.com/division/consumers','1-877-693-5236','https://www.myfloridacfo.com/division/consumers/needourhelp'],
+  GA:['Georgia Office of Insurance and Safety Fire Commissioner','https://oci.georgia.gov','1-800-656-2298'],
+  HI:['Hawaii Insurance Division','https://cca.hawaii.gov/ins/','808-586-2790'],
+  ID:['Idaho Department of Insurance','https://doi.idaho.gov','1-800-721-3272'],
+  IL:['Illinois Department of Insurance','https://insurance.illinois.gov','217-782-4515'],
+  IN:['Indiana Department of Insurance','https://www.in.gov/idoi/','1-800-622-4461'],
+  IA:['Iowa Insurance Division','https://iid.iowa.gov','1-877-955-1212'],
+  KS:['Kansas Department of Insurance','https://insurance.kansas.gov','1-800-432-2484'],
+  KY:['Kentucky Department of Insurance','https://insurance.ky.gov','1-800-595-6053'],
+  LA:['Louisiana Department of Insurance','https://www.ldi.la.gov','1-800-259-5300','https://www.ldi.la.gov/OnlineServices/ConsumerComplaintForm/Complaints'],
+  ME:['Maine Bureau of Insurance','https://www.maine.gov/pfr/insurance/home','1-800-300-5000'],
+  MD:['Maryland Insurance Administration','https://insurance.maryland.gov','1-800-492-6116'],
+  MA:['Massachusetts Division of Insurance','https://www.mass.gov/orgs/division-of-insurance','617-521-7777'],
+  MI:['Michigan Department of Insurance and Financial Services','https://www.michigan.gov/difs','517-284-8800'],
+  MN:['Minnesota Department of Commerce','https://mn.gov/commerce','651-539-1500'],
+  MS:['Mississippi Insurance Department','https://www.mid.ms.gov','1-800-562-2957','https://www.mid.ms.gov/consumers/request-assistance.aspx'],
+  MO:['Missouri Department of Commerce and Insurance','https://dci.mo.gov','573-751-4126'],
+  MT:['Montana Commissioner of Securities and Insurance','https://csimt.gov','1-800-332-6148'],
+  NE:['Nebraska Department of Insurance','https://doi.nebraska.gov','1-877-564-7323'],
+  NV:['Nevada Division of Insurance','https://doi.nv.gov','1-888-872-3234'],
+  NH:['New Hampshire Insurance Department','https://www.nh.gov/insurance/','1-800-852-3416'],
+  NJ:['New Jersey Department of Banking and Insurance','https://www.state.nj.us/dobi/index.html','1-800-446-7467'],
+  NM:['New Mexico Office of Superintendent of Insurance','https://www.osi.state.nm.us','1-855-427-5674'],
+  NY:['New York State Department of Financial Services','https://www.dfs.ny.gov','1-800-342-3736'],
+  NC:['North Carolina Department of Insurance','https://www.ncdoi.gov','1-855-408-1212'],
+  ND:['North Dakota Insurance and Securities Department','https://insurance.nd.gov','1-800-247-0560'],
+  OH:['Ohio Department of Insurance','https://insurance.ohio.gov','1-800-686-1526'],
+  OK:['Oklahoma Insurance Department','https://www.ok.gov/oid/','1-800-522-0071'],
+  OR:['Oregon Division of Financial Regulation','https://dfr.oregon.gov','1-888-877-4894'],
+  PA:['Pennsylvania Insurance Department','https://www.insurance.pa.gov','1-877-881-6388'],
+  RI:['Rhode Island Division of Insurance','https://dbr.ri.gov/insurance-overview','401-462-9520'],
+  SC:['South Carolina Department of Insurance','https://doi.sc.gov','1-800-768-3467'],
+  SD:['South Dakota Division of Insurance','https://dlr.sd.gov/insurance','605-773-3563'],
+  TN:['Tennessee Department of Commerce and Insurance','https://www.tn.gov/commerce/','1-800-342-4029'],
+  TX:['Texas Department of Insurance','https://www.tdi.texas.gov','1-800-252-3439','https://www.tdi.texas.gov/consumer/get-help-with-an-insurance-complaint.html'],
+  UT:['Utah Insurance Department','https://insurance.utah.gov','1-800-439-3805'],
+  VT:['Vermont Department of Financial Regulation','https://dfr.vermont.gov','802-828-3301'],
+  VA:['Virginia Bureau of Insurance','https://scc.virginia.gov/boi/consumerinquiry','1-877-310-6560'],
+  WA:['Washington Office of the Insurance Commissioner','https://www.insurance.wa.gov','1-800-562-6900'],
+  WV:['West Virginia Offices of the Insurance Commissioner','https://www.wvinsurance.gov','1-888-879-9842'],
+  WI:['Wisconsin Office of the Commissioner of Insurance','https://oci.wi.gov','1-800-236-8517'],
+  WY:['Wyoming Department of Insurance','https://doi.wyo.gov','307-777-7402'],
+};
+const RES_EM = { // state: [emergency management agency, website]
+  AL:['Alabama Emergency Management Agency','https://ema.alabama.gov'],
+  AK:['Alaska Division of Homeland Security and Emergency Management','https://ready.alaska.gov'],
+  AZ:['Arizona Department of Emergency and Military Affairs','https://dema.az.gov/emergency-management'],
+  AR:['Arkansas Division of Emergency Management','https://dps.arkansas.gov/emergency-management/adem/'],
+  CA:['California Governor’s Office of Emergency Services','https://www.caloes.ca.gov'],
+  CO:['Colorado Division of Homeland Security and Emergency Management','https://dhsem.colorado.gov'],
+  CT:['Connecticut Division of Emergency Management and Homeland Security','https://portal.ct.gov/demhs'],
+  DE:['Delaware Emergency Management Agency','https://dema.delaware.gov'],
+  DC:['DC Homeland Security and Emergency Management Agency','https://hsema.dc.gov'],
+  FL:['Florida Division of Emergency Management','https://www.floridadisaster.org'],
+  GA:['Georgia Emergency Management and Homeland Security Agency','https://gema.georgia.gov'],
+  HI:['Hawaii Emergency Management Agency','https://dod.hawaii.gov/hiema/'],
+  ID:['Idaho Office of Emergency Management','https://ioem.idaho.gov'],
+  IL:['Illinois Emergency Management Agency and Office of Homeland Security','https://iemaohs.illinois.gov'],
+  IN:['Indiana Department of Homeland Security','https://www.in.gov/dhs/'],
+  IA:['Iowa Department of Homeland Security and Emergency Management','https://homelandsecurity.iowa.gov'],
+  KS:['Kansas Division of Emergency Management','https://www.kansastag.gov/101/KDEM'],
+  KY:['Kentucky Emergency Management','https://kyem.ky.gov'],
+  LA:['Governor’s Office of Homeland Security and Emergency Preparedness (GOHSEP)','https://gohsep.la.gov'],
+  ME:['Maine Emergency Management Agency','https://www.maine.gov/mema'],
+  MD:['Maryland Department of Emergency Management','https://mdem.maryland.gov'],
+  MA:['Massachusetts Emergency Management Agency','https://www.mass.gov/mema'],
+  MI:['Michigan State Police, Emergency Management and Homeland Security Division','https://www.michigan.gov/msp/divisions/emhsd'],
+  MN:['Minnesota Homeland Security and Emergency Management','https://dps.mn.gov/divisions/hsem'],
+  MS:['Mississippi Emergency Management Agency (MEMA)','https://www.msema.org'],
+  MO:['Missouri State Emergency Management Agency','https://sema.dps.mo.gov'],
+  MT:['Montana Disaster and Emergency Services','https://des.mt.gov'],
+  NE:['Nebraska Emergency Management Agency','https://nema.nebraska.gov'],
+  NV:['Nevada Office of Emergency Management / Homeland Security','https://www.oem.nv.gov'],
+  NH:['New Hampshire Homeland Security and Emergency Management','https://www.nh.gov/safety/divisions/hsem/'],
+  NJ:['New Jersey Office of Emergency Management','https://www.nj.gov/njoem/'],
+  NM:['New Mexico Department of Homeland Security and Emergency Management','https://www.dhsem.nm.gov'],
+  NY:['New York State Division of Homeland Security and Emergency Services','https://www.dhses.ny.gov'],
+  NC:['North Carolina Emergency Management','https://www.ncdps.gov/our-organization/emergency-management'],
+  ND:['North Dakota Department of Emergency Services','https://www.des.nd.gov'],
+  OH:['Ohio Emergency Management Agency','https://ema.ohio.gov'],
+  OK:['Oklahoma Department of Emergency Management and Homeland Security','https://oklahoma.gov/oem'],
+  OR:['Oregon Department of Emergency Management','https://www.oregon.gov/oem'],
+  PA:['Pennsylvania Emergency Management Agency','https://www.pa.gov/agencies/pema'],
+  RI:['Rhode Island Emergency Management Agency','https://riema.ri.gov'],
+  SC:['South Carolina Emergency Management Division','https://www.scemd.org'],
+  SD:['South Dakota Office of Emergency Management','https://dps.sd.gov/emergency-services/emergency-management'],
+  TN:['Tennessee Emergency Management Agency','https://www.tn.gov/tema'],
+  TX:['Texas Division of Emergency Management','https://tdem.texas.gov'],
+  UT:['Utah Division of Emergency Management','https://dem.utah.gov'],
+  VT:['Vermont Emergency Management','https://vem.vermont.gov'],
+  VA:['Virginia Department of Emergency Management','https://www.vdem.virginia.gov'],
+  WA:['Washington Emergency Management Division','https://mil.wa.gov/emergency-management-division'],
+  WV:['West Virginia Emergency Management Division','https://emd.wv.gov'],
+  WI:['Wisconsin Emergency Management','https://wem.wi.gov'],
+  WY:['Wyoming Office of Homeland Security','https://hls.wyo.gov'],
+};
+const RES_MORE = { // extra state programs worth knowing on the coast: [name, what it is, website, phone]
+  MS:[['Strengthen Mississippi Homes','Grants of up to $10,000 toward a FORTIFIED roof for owner-occupied, single-family primary homes.','https://www.mid.ms.gov/mississippi-insurance-department/preparedness/mitigation/smh/'],
+      ['Mississippi Windstorm Underwriting Association','The state’s wind pool for coastal homes. If your wind coverage is a separate MWUA policy, report wind damage to it.','https://msplans.com/mwua']],
+  AL:[['Strengthen Alabama Homes','State program that helps pay for FORTIFIED roofs. Run by the Alabama Department of Insurance.','https://aldoi.gov/SAH/Home.aspx','1-800-433-3966']],
+  LA:[['Louisiana Fortify Homes Program','State grants toward a FORTIFIED roof, run by the Louisiana Department of Insurance.','https://ldi.la.gov/fortifyhomes']],
+  TX:[['Texas Windstorm Insurance Association (TWIA)','Wind and hail coverage for the Texas coast. File TWIA claims online or by phone.','https://www.twia.org/claims/','1-800-788-8247']],
+  FL:[['Citizens Property Insurance','Florida’s state-backed insurer. Claims line is open 24 hours a day.','https://citizensfla.com/report-a-claim','1-866-411-2742']],
+};
+const RES_NATIONAL = [
+  ['FEMA disaster assistance','After a declared disaster, apply for help with temporary housing and repairs insurance doesn’t cover. Helpline 7 a.m. to 11 p.m. Eastern, every day.','https://www.disasterassistance.gov','1-800-621-3362'],
+  ['SBA disaster loans','Low-interest disaster loans for homeowners and renters as well as businesses. 8 a.m. to 8 p.m. Eastern, weekdays.','https://www.sba.gov/funding-programs/disaster-assistance','1-800-659-2955'],
+  ['Flood insurance (NFIP)','Questions about a flood policy or finding your flood insurer. For a claim, call the company on your flood policy. Flood policies usually require a signed proof of loss within 60 days, so ask your insurer for your deadline.','https://www.floodsmart.gov','1-877-336-2627'],
+  ['National Hurricane Center','Official hurricane forecasts and warnings.','https://www.hurricanes.gov'],
+  ['Ready.gov','Federal checklists for getting ready for every kind of disaster.','https://www.ready.gov'],
+];
+const telHref = ph => 'tel:+1' + String(ph).replace(/\D/g,'').replace(/^1(?=\d{10}$)/,'');
+const extLink = (url, text) => `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(text || url.replace(/^https?:\/\/(www\.)?/,'').split('/')[0])}</a>`;
+const telLink = ph => `<a class="tel" href="${esc(telHref(ph))}">${esc(ph)}</a>`;
+function resItem(name, what, url, phone){
+  return `<div class="res"><strong>${esc(name)}</strong>${what?`<span class="small">${esc(what)}</span>`:''}
+    <div class="res-links small">${phone?telLink(phone):''}${url?extLink(url):''}</div></div>`;
+}
+
+function viewResources(){
+  const P = cur(), st = stateOf(P), ins = RES_INS[st], em = RES_EM[st], more = RES_MORE[st] || [];
+  return `
+  <section class="stack"><p class="label">${esc(P.name)} · help and resources</p><h1>${st ? 'Help in ' + esc(STATE_NAME[st]) : 'Help and resources'}</h1></section>
+  ${!st ? `<div class="card" style="border-color:var(--amber)"><h2>Where is this property?</h2>
+    <p class="small">Pick the state for ${esc(P.name)} to see its insurance department and emergency agency.</p>
+    <label class="field">State<select id="pState">${stateOptions('')}</select></label></div>` : `
+  <div class="card">
+    <div class="row"><h2>Insurance department</h2><button class="src" data-act="changeState">Change state</button></div>
+    <p class="small">If your claim stalls, you can’t get answers, or you think you’re being treated unfairly, the state insurance department can step in. Call first with your policy and claim numbers ready, or file a complaint online.</p>
+    ${resItem(ins[0], '', ins[1], ins[2])}
+    ${ins[3] ? `<a class="btn-like" href="${esc(ins[3])}" target="_blank" rel="noopener noreferrer">File a complaint online</a>` : ''}
+    <p class="small muted">Give them your claim number, the adjuster’s name, and the dates from your Claim tab call log. The claim packet has all of it in one file.</p>
+  </div>
+  <div class="card">
+    <h2>Emergency management</h2>
+    <p class="small">Evacuation orders, shelters, and disaster declarations for ${esc(STATE_NAME[st])}. In an emergency, call 911.</p>
+    ${resItem(em[0], '', em[1])}
+  </div>
+  ${more.length ? `<div class="card"><h2>Also in ${esc(STATE_NAME[st])}</h2>${more.map(m=>resItem(m[0], m[1], m[2], m[3])).join('')}</div>` : ''}`}
+  <div class="card">
+    <h2>National help</h2>
+    ${RES_NATIONAL.map(m=>resItem(m[0], m[1], m[2], m[3])).join('')}
+  </div>
+  <p class="small muted" style="padding:0 4px">Checked against official websites in ${RES_CHECKED}. Phone numbers and programs can change. If a number doesn’t work, use the website, and please <a href="mailto:info@coastlinecode.com?subject=${encodeURIComponent('StormFile: wrong contact for ' + (STATE_NAME[st]||'a state'))}">tell us</a>. StormFile isn’t connected to any of these agencies.</p>`;
 }
 
 /* ---------- Settings screen ---------- */
@@ -1607,6 +1769,7 @@ function viewSettings(){
     <label class="field">Mailing address (if you’re not at home)<input id="me-mail" value="${esc(me.mail||'')}" autocomplete="street-address"></label>
   </div>
 
+  <button class="card linkcard" data-go="resources"><div class="stack" style="gap:2px;min-width:0"><strong>Help and resources</strong><span class="small muted">Insurance department and emergency contacts for each property’s state</span></div><span aria-hidden="true">›</span></button>
   <div class="card">
     <h2>Feedback</h2>
     <p class="small">Tell us what worked, what didn’t, and what you’d add.</p>
@@ -1619,6 +1782,7 @@ function viewSettings(){
     <p class="small">StormFile helps you organize your insurance and home records. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</p>
     <p class="small muted">This is a test version shared for feedback. StormFile, including its name, design and code, belongs to Coastline Code LLC. © 2026 Coastline Code LLC.</p>
     <p class="small muted">Questions: info@coastlinecode.com</p>
+    <p class="small"><a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> · <a href="support.html" target="_blank" rel="noopener">Help</a></p>
   </div>
 
   <div class="card" style="border-color:var(--red)">
@@ -1629,7 +1793,7 @@ function viewSettings(){
 }
 
 /* ---------- Render + events ---------- */
-const VIEWS = {home:viewHome, policy:viewPolicy, inventory:viewInventory, storm:viewStorm, claim:viewClaim, feedback:viewFeedback, policyForm:viewPolicyForm, settings:viewSettings};
+const VIEWS = {home:viewHome, policy:viewPolicy, inventory:viewInventory, storm:viewStorm, claim:viewClaim, feedback:viewFeedback, policyForm:viewPolicyForm, settings:viewSettings, resources:viewResources};
 let LIVE = null;
 const INSTALLED = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
 const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
@@ -1999,7 +2163,7 @@ view.addEventListener('change', e=>{
     clAdj:()=>P.claim.adjuster=el.value, clAdjPh:()=>P.claim.adjPhone=el.value, clAdjEmail:()=>P.claim.adjEmail=el.value.trim(),
     clStatus:()=>P.claim.status=el.value, clOrder:()=>P.claim.orderDate=el.value, clRate:()=>P.claim.mileRate=num(el.value)
   };
-  if(el.id==='pState'){ P.state = el.value; P.stateCleared = false; if(el.value && !/,\s*[A-Z]{2}\s*$/.test(P.address||'')) P.address = (P.address && P.address!=='Add your city' ? P.address + ', ' : '') + el.value; save(); render(); if(el.value) toast(`Showing seasons for ${STATE_NAME[el.value]}.`); return; }
+  if(el.id==='pState'){ P.state = el.value; P.stateCleared = false; if(el.value && !/,\s*[A-Z]{2}\s*$/.test(P.address||'')) P.address = (P.address && P.address!=='Add your city' ? P.address + ', ' : '') + el.value; save(); render(); if(el.value) toast(`${P.name} is set to ${STATE_NAME[el.value]}.`); return; }
   if(el.id==='ltKind'){ S.ltKind = el.value; S.ltExtra = ''; save(); render(); const c = document.getElementById('ltKind'); if(c) c.scrollIntoView({block:'center'}); return; }
   if(map[el.id]){ map[el.id](); save(); render(); }
 });
