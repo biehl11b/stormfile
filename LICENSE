@@ -1,0 +1,12 @@
+Copyright (c) 2026 Coastline Code LLC. All rights reserved.
+
+StormFile, including its name, logo, design, text, and source code, is
+proprietary to Coastline Code LLC. No license is granted to copy, modify,
+distribute, sublicense, or create derivative works from any part of it, or
+to use it to build a similar product, without the owner's written permission.
+
+Permission is granted only to open and use the hosted test version to
+evaluate it and give feedback.
+
+vendor/pdf-lib.min.js is third-party software under the MIT License; see
+vendor/pdf-lib-LICENSE.md.

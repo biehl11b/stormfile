@@ -198,15 +198,79 @@ function getGPS(){
   });
 }
 const shrinkP = f => new Promise(r=>shrink(f, r));
+
+/* ---------- Files on this phone (full-size photos, receipts) ---------- */
+const DBNAME = 'stormfile', STORE = 'files';
+let dbP = null;
+function db(){
+  if(!dbP) dbP = new Promise((res, rej)=>{
+    try{ const rq = indexedDB.open(DBNAME, 1);
+      rq.onupgradeneeded = () => { const d = rq.result; if(!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, {keyPath:'id'}); };
+      rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error); }catch(e){ rej(e); }
+  });
+  return dbP;
+}
+async function idbDo(mode, fn){ const d = await db(); return new Promise((res, rej)=>{ const tx = d.transaction(STORE, mode); const st = tx.objectStore(STORE); let out; const r = fn(st); if(r) r.onsuccess = () => { out = r.result; }; tx.oncomplete = () => res(out); tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error); }); }
+const putFile = rec => idbDo('readwrite', st => st.put(rec));
+const getFile = id => id ? idbDo('readonly', st => st.get(id)) : Promise.resolve(null);
+const delFile = id => id ? idbDo('readwrite', st => st.delete(id)) : Promise.resolve();
+const allFileIds = () => idbDo('readonly', st => st.getAllKeys());
+const clearFiles = () => idbDo('readwrite', st => st.clear());
+const fid = () => 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+
+/* Decode an image once; return a full-size copy for claims and a small preview for the screen. */
+function loadImg(file){
+  return new Promise((res, rej)=>{ const u = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(u); res(img); }; img.onerror = () => { URL.revokeObjectURL(u); rej(new Error('img')); }; img.src = u; });
+}
+function drawTo(img, max, type, q){
+  const s = Math.min(1, max / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+  const c = document.createElement('canvas'); c.width = Math.max(1, Math.round((img.naturalWidth||img.width)*s)); c.height = Math.max(1, Math.round((img.naturalHeight||img.height)*s));
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return {canvas:c, w:c.width, h:c.height};
+}
+async function processPhoto(file){
+  const img = await loadImg(file);
+  const full = drawTo(img, 2048);
+  const blob = await new Promise(r=>full.canvas.toBlob(r, 'image/jpeg', 0.86));
+  if(!blob) throw new Error('blob');
+  const thumb = drawTo(img, 320).canvas.toDataURL('image/jpeg', 0.72);
+  return {blob, thumb, w:full.w, h:full.h};
+}
+/* Save a receipt or document as-is (images are trimmed to a sensible size). */
+async function storeDoc(file){
+  const id = fid();
+  if(/^image\//.test(file.type||'') && !/heic|heif/i.test(file.type||'')){
+    try{ const p = await processPhoto(file); await putFile({id, name:file.name||'receipt.jpg', type:'image/jpeg', blob:p.blob, w:p.w, h:p.h, at:nowISO()}); return {id, kind:'image', thumb:p.thumb}; }catch(e){}
+  }
+  await putFile({id, name:file.name||'document', type:file.type||'application/octet-stream', blob:file, at:nowISO()});
+  return {id, kind:/pdf/i.test(file.type||'')?'pdf':'file'};
+}
+let viewerUrl = null;
+async function openViewer(id, fallbackSrc, caption){
+  let src = fallbackSrc || '', isPdf = false, name = '';
+  try{ const rec = await getFile(id); if(rec && rec.blob){ if(viewerUrl) URL.revokeObjectURL(viewerUrl); viewerUrl = URL.createObjectURL(rec.blob); src = viewerUrl; isPdf = /pdf/i.test(rec.type||''); name = rec.name||''; } }catch(e){}
+  if(!src) return toast('That file isn’t on this phone anymore.');
+  const ov = document.createElement('div'); ov.className = 'overlay viewer'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true');
+  ov.innerHTML = `<div class="viewer-box">${isPdf ? `<p class="small">PDF receipt: ${esc(name)}</p><a class="btn-like" href="${esc(src)}" target="_blank" rel="noopener">Open the PDF</a>` : `<img src="${esc(src)}" alt="${esc(caption||'Photo')}">`}
+    ${caption?`<p class="small">${esc(caption)}</p>`:''}<button class="primary" data-closeviewer="1">Close</button></div>`;
+  ov.addEventListener('click', e=>{ if(e.target===ov || e.target.closest('[data-closeviewer]')){ ov.remove(); if(viewerUrl){ URL.revokeObjectURL(viewerUrl); viewerUrl = null; } } });
+  document.body.appendChild(ov);
+}
 async function addPhotos(P, files, target, label, source){
   const list = [...files]; if(!list.length) return;
   toast('Saving ' + list.length + ' photo' + (list.length>1?'s':'') + '…');
   const gps = await getGPS();
   let added = 0;
   for(const f of list){
-    const [src, taken] = await Promise.all([shrinkP(f), exifDate(f)]);
-    if(!src) continue;
-    target.push({src, addedAt: nowISO(), taken, gps, source});
+    const taken = await exifDate(f);
+    let ph = null;
+    try{ ph = await processPhoto(f); }catch(e){}
+    if(!ph){ const src = await shrinkP(f); if(!src) continue; target.push({src, addedAt: nowISO(), taken, gps, source}); added++; continue; }
+    const id = fid();
+    try{ await putFile({id, name:f.name||'photo.jpg', type:'image/jpeg', blob:ph.blob, w:ph.w, h:ph.h, at:nowISO()}); }
+    catch(e){ toast('This phone is out of space for photos. Free up space, then try again.'); break; }
+    target.push({id, src:ph.thumb, w:ph.w, h:ph.h, addedAt: nowISO(), taken, gps, source});
     added++;
   }
   if(!added) return toast('Those photos couldn’t be read. Try a JPG or a new photo.');
@@ -219,7 +283,7 @@ function photoGrid(P, list, alt){
   return `<div class="thumbs">${list.map(x=>{ const o = photoObj(x); const after = isAfterLock(P,o);
     const when = o.taken ? 'Taken ' + fmtDay(o.taken) : o.addedAt ? 'Added ' + fmtDay(o.addedAt) : (o.date ? 'Added ' + esc(o.date) : 'Sample');
     if(!safeImg(o.src)) return '';
-    return `<figure class="ph${after?' after':''}"><img src="${esc(safeImg(o.src))}" alt="${esc(alt)}"><figcaption>${when}${o.gps?' · GPS':''}${after?'<br><strong style="color:var(--amber)">After claim</strong>':''}</figcaption></figure>`; }).join('')}</div>`;
+    return `<figure class="ph${after?' after':''}"><button class="phbtn" data-viewphoto="${esc(o.id||'')}" data-thumb="${esc(safeImg(o.src))}" data-cap="${esc(alt + (o.taken?' \u00B7 taken '+fmtDay(o.taken):o.addedAt?' \u00B7 added '+fmtWhen(o.addedAt):'') + (o.gps?' \u00B7 '+o.gps.lat+', '+o.gps.lng:''))}" aria-label="View ${esc(alt)} full size"><img src="${esc(safeImg(o.src))}" alt="${esc(alt)}"></button><figcaption>${when}${o.gps?' · GPS':''}${after?'<br><strong style="color:var(--amber)">After claim</strong>':''}</figcaption></figure>`; }).join('')}</div>`;
 }
 function photoButtons(attr, label){
   return `<div class="photo-btns">
@@ -360,9 +424,14 @@ function viewHome(){
     : IS_IOS ? `<ol class="steps small"><li>Open this page in <strong>Safari</strong>. If you came from a text, email or Facebook, tap the compass icon or <strong>Open in Safari</strong> first.</li><li>Tap the <strong>\u22EF</strong> (three dots) next to the web address, then <strong>Share</strong>. On older iPhones, tap the <strong>Share</strong> button (square with an arrow) at the bottom.</li><li>Scroll down and tap <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li><li>Open StormFile from the new icon.</li></ol>
       <p class="small muted">Using Chrome? Tap the Share icon at the top right of the address bar, then Add to Home Screen.</p>`
     : `<ol class="steps small"><li>Open this in <strong>Chrome</strong>.</li><li>Tap the <strong>\u22EE</strong> menu, then <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li><li>Open StormFile from the new icon.</li></ol>`}
-    <p class="small muted">Your information is saved only on this phone. If you install the app, open it from the icon from then on so your records stay in one place.</p>
+    ${IS_IOS && !S.sample ? `<div class="alert warn" style="background:var(--bg)"><p class="small"><strong>Important on iPhone:</strong> if StormFile isn\u2019t on your Home Screen, Safari can erase what you\u2019ve saved after about a week of not opening it. Add it to your Home Screen, and make a backup in Settings.</p></div>` : ''}
+    <p class="small muted">Your information is saved only on this phone. Once it\u2019s installed, always open StormFile from the icon so your records stay in one place.</p>
   </div>`}
-  ${S.hideWelcome ? '' : `<div class="card" style="border-color:var(--amber);background:var(--amber-bg)">
+  ${(()=>{ const due = backupDue(); return due ? `<div class="card" style="border-color:var(--amber)">
+    <div class="row"><h2>Back up your records</h2><span class="chip warn">Recommended</span></div>
+    <p class="small">${esc(due)} If a storm takes this phone, a backup is the only copy of your photos and receipts.</p>
+    <button class="primary" data-go="settings">Make a backup</button></div>` : ''; })()}
+  ${S.hideWelcome || !S.sample ? '' : `<div class="card" style="border-color:var(--amber);background:var(--amber-bg)">
     <div class="row"><span class="label" style="color:var(--amber)">Test version</span><button class="src" data-act="hideWelcome">Hide</button></div>
     <h2>Thanks for testing StormFile</h2>
     <p class="small">StormFile helps Gulf Coast homeowners understand their insurance and get ready for a hurricane claim. Everything here is sample data. Nothing you enter leaves this phone.</p>
@@ -575,6 +644,11 @@ function viewPolicy(){
     ${i.renterProof?'':`<div class="alert warn"><p class="small">Your landlord policy doesn’t cover the tenant’s belongings. Ask for a copy of their renter’s insurance before hurricane season.</p></div>`}
   </div>` : ''}
 
+  ${p.renewal ? `<div class="card">
+    <div class="row"><h2>Renewal reminders</h2><span class="chip info">Renews ${esc(fmtDay(p.renewal+'T12:00:00'))}</span></div>
+    <p class="small">Get a reminder 45 days before your policy renews, so there\u2019s time to check your coverage and talk to your agent, plus one on the renewal date to add the new declarations page.</p>
+    <button class="primary" data-act="calRenewal">Add renewal reminders to my calendar</button>
+  </div>` : ''}
   <div class="card">
     <h2>Inflation check</h2>
     <p class="small muted">Rechecked automatically 45 days before renewal on ${esc(p.renewal)}.</p>
@@ -650,7 +724,7 @@ function viewInventory(){
     <div class="row"><h2>${P.type==='business'?'Building upgrades':'Home upgrades & big repairs'}</h2><span class="chip ${ups.some(u=>!u.r)?'warn':'ok'}">${ups.filter(u=>u.r).length} of ${ups.length} receipts</span></div>
     <p class="small muted">A new roof, AC, windows or remodel raises what it costs to rebuild. Adjusters usually ask how old the roof is first.</p>
     ${roof && rc ? `<div class="alert ${age<rc?'ok':'warn'}" style="background:var(--bg)"><p class="small">Roof is ${age} years old. ${age<rc?`This policy pays full replacement for roofs under ${rc} years old.`:`Roofs over ${rc} years old are paid at used value on this policy.`}</p></div>` : ''}
-    ${ups.length?`<div class="tblwrap"><table>${ups.map((u,i)=>`<tr><td>${esc(u.n)}<br><span class="small muted">${u.y}</span> ${u.r?`<span class="chip ok">Receipt \u2713</span>`:`<label class="src" style="cursor:pointer;position:relative;color:var(--amber);font-weight:600">Add receipt<input type="file" data-upreceipt="${i}" accept="image/*,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0"></label>`}</td><td>${fmt(u.v)}<br><button class="src" data-delup="${i}">Remove</button></td></tr>`).join('')}</table></div>`:'<p class="small muted">Nothing added yet.</p>'}
+    ${ups.length?`<div class="tblwrap"><table>${ups.map((u,i)=>`<tr><td>${esc(u.n)}<br><span class="small muted">${u.y}</span> ${u.r?(u.rid?`<button class="chip ok chipbtn" data-viewfile="${esc(u.rid)}" data-cap="${esc('Receipt: '+u.n)}">Receipt \u2713 View</button>`:`<span class="chip ok">Receipt \u2713</span>`):`<label class="src" style="cursor:pointer;position:relative;color:var(--amber);font-weight:600">Add receipt<input type="file" data-upreceipt="${i}" accept="image/*,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0"></label>`}</td><td>${fmt(u.v)}<br><button class="src" data-delup="${i}">Remove</button></td></tr>`).join('')}</table></div>`:'<p class="small muted">Nothing added yet.</p>'}
     <form class="stack" id="addUpgrade">
       <label class="field">Upgrade or repair<input id="upN" placeholder="e.g. Roof replacement" required></label>
       <div class="grid2">
@@ -675,7 +749,7 @@ function viewInventory(){
         ${photoGrid(P, r.photoData, r.name + ' photo')}
         ${r.photos?`<span class="small muted">${Number(r.photos)||0} sample photo${r.photos>1?'s':''} on file</span>`:''}
         ${photoButtons('data-roomphoto="' + r.id + '"', 'photos')}
-        ${r.items.length?`<div class="tblwrap"><table>${r.items.map((it,i)=>`<tr><td>${esc(it.n)}<br><span class="small muted">Bought ${it.y} for ${fmt(it.v)}${it.addedAt?' \u00B7 logged '+fmtDay(it.addedAt):''}</span>${isAfterLock(P,it)?' <span class="chip warn">Added after claim</span>':''}<br>${it.r?`<span class="chip ok">Receipt \u2713</span>`:`<label class="src" style="cursor:pointer;position:relative${it.v>=BIG?';color:var(--amber);font-weight:600':''}">${it.v>=BIG?'Big-ticket: add receipt':'Add receipt'}<input type="file" data-itemreceipt="${r.id}:${i}" accept="image/*,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0"></label>`}</td><td>${fmt(itemToday(it))}<br><button class="src" data-delitem="${r.id}:${i}">Remove</button></td></tr>`).join('')}</table></div>`:'<p class="small muted">No items yet. Start with the most expensive things.</p>'}
+        ${r.items.length?`<div class="tblwrap"><table>${r.items.map((it,i)=>`<tr><td>${esc(it.n)}<br><span class="small muted">Bought ${it.y} for ${fmt(it.v)}${it.addedAt?' \u00B7 logged '+fmtDay(it.addedAt):''}</span>${isAfterLock(P,it)?' <span class="chip warn">Added after claim</span>':''}<br>${it.r?(it.rid?`<button class="chip ok chipbtn" data-viewfile="${esc(it.rid)}" data-cap="${esc('Receipt: '+it.n)}">Receipt \u2713 View</button>`:`<span class="chip ok">Receipt \u2713</span>`):`<label class="src" style="cursor:pointer;position:relative${it.v>=BIG?';color:var(--amber);font-weight:600':''}">${it.v>=BIG?'Big-ticket: add receipt':'Add receipt'}<input type="file" data-itemreceipt="${r.id}:${i}" accept="image/*,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0"></label>`}</td><td>${fmt(itemToday(it))}<br><button class="src" data-delitem="${r.id}:${i}">Remove</button></td></tr>`).join('')}</table></div>`:'<p class="small muted">No items yet. Start with the most expensive things.</p>'}
         <form class="stack" data-additem="${r.id}">
           <label class="field">Item<input name="n" id="n-${r.id}" placeholder="${esc(cfg.itemHint)}" required></label>
           <div class="grid2">
@@ -798,6 +872,11 @@ function viewStorm(){
     ${notifications(P, level).map(([t,m])=>`<div class="notif"><span class="ic">S</span><div class="stack" style="gap:0;min-width:0"><span class="small muted">StormFile · ${esc(t)}</span><span class="small">${esc(m)}</span></div></div>`).join('')}
   </div>
   <div class="card">
+    <h2>Hurricane season reminders</h2>
+    <p class="small">Three reminders on your phone\u2019s calendar: May 15 to get your records ready, June 1 when the season starts, and August 1 before the peak.</p>
+    <button class="primary" data-act="calSeason">Add season reminders to my calendar</button>
+  </div>
+  <div class="card">
     <h3>Try each alert level</h3>
     <p class="small muted">The real app follows National Hurricane Center forecasts and raises alerts only for properties in a storm’s path. In this sample, the house and the restaurant are in Delia’s path and the Baton Rouge rental is not.</p>
     <div class="levels">${Object.entries(LEVELS).map(([k,v])=>`<button data-level="${k}" aria-pressed="${S.threat===k}">${esc(v.short)}</button>`).join('')}</div>
@@ -817,6 +896,7 @@ function viewClaim(){
       <label class="field">Date of loss<input id="clDate" type="date" value="${esc(cl.dateOfLoss)}"></label>
       <label class="field">Adjuster name<input id="clAdj" value="${esc(cl.adjuster)}"></label>
       <label class="field">Adjuster phone<input id="clAdjPh" type="tel" value="${esc(cl.adjPhone)}"></label>
+      <label class="field">Adjuster email<input id="clAdjEmail" type="email" value="${esc(cl.adjEmail||'')}"></label>
     </div>
     ${p?`<div class="row small"><span class="muted">Policy</span><span class="num">${esc(p.number)}</span></div>`:''}
     ${cl.number?`<span class="chip ok" style="align-self:flex-start"><span class="dot"></span>Claim saved</span>`:`<p class="small muted">Call ${p?esc(p.claimPhone):'the insurer'} to open a claim, then enter the number here.</p>`}
@@ -835,13 +915,19 @@ function viewClaim(){
       <p class="small muted">Enter the date of loss above first. This can\u2019t be undone.</p>`}
   </div>
 
-  <div class="card">
-    <h2>Ready-to-send reports</h2>
-    <div class="kv"><span class="k">${esc(cfg.contentsName)} inventory<br><span class="small muted">${inv.count} items, before photos, today’s prices</span></span><span class="v">${fmt(inv.today)}</span></div>
-    <div class="kv"><span class="k">Before & after photo set<br><span class="small muted">${P.exterior.length + P.rooms.reduce((s,r)=>s+roomPhotos(r),0)} dated "before" photos</span></span><span class="v">PDF</span></div>
-    <div class="kv"><span class="k">Receipts packet<br><span class="small muted">${P.rooms.reduce((s,r)=>s+r.items.filter(it=>it.r).length,0) + (P.upgrades||[]).filter(u=>u.r).length} purchase and upgrade receipts, ${cl.receipts.filter(r=>r.r).length} expense receipts</span></span><span class="v">PDF</span></div>
-    ${P.type==='business'?`<div class="kv"><span class="k">Lost income worksheet<br><span class="small muted">Built from 12 months of sales and payroll</span></span><span class="v">PDF</span></div>`:''}
-    <p class="small muted">The full app builds these as PDFs in the format adjusters use.</p>
+  <div class="card" style="border-color:var(--accent)">
+    <h2>Claim packet</h2>
+    <p class="small">One PDF with everything the adjuster needs: your policy summary, dated photos, ${esc(cfg.contentsName.toLowerCase())} list with receipts, ${esc(cfg.lossName.toLowerCase())}, call log and record history. It\u2019s made on this phone; nothing is uploaded.</p>
+    <div class="kv"><span class="k">${esc(cfg.contentsName)}<br><span class="small muted">${plural(inv.count,'item')} at today\u2019s prices</span></span><span class="v">${fmt(inv.today)}</span></div>
+    <div class="kv"><span class="k">Photos<br><span class="small muted">${P.exterior.length + P.rooms.reduce((s,r)=>s+roomPhotos(r),0)} dated photos</span></span><span class="v">${lockedAt(P)?'Locked':'Not locked'}</span></div>
+    <fieldset class="stack" style="border:0;padding:0;margin:0;gap:6px"><legend class="label" style="margin-bottom:4px">Include</legend>
+      <label class="check-row"><input type="checkbox" id="pk-policy" checked> Policy summary</label>
+      <label class="check-row"><input type="checkbox" id="pk-photos" checked> Photos</label>
+      <label class="check-row"><input type="checkbox" id="pk-receipts" checked> Receipt images</label>
+      <label class="check-row"><input type="checkbox" id="pk-history" checked> Record history</label>
+    </fieldset>
+    ${(S.me||{}).name?'':'<p class="small muted">Tip: add your name and phone in Settings so they print on the packet.</p>'}
+    <button class="primary" data-act="packet">Make the claim packet (PDF)</button>
   </div>
 
   ${P.type==='home' ? (()=>{ const ale = p && p.ale, st = cl.status;
@@ -872,7 +958,7 @@ function viewClaim(){
     ${cl.receipts.length ? `<div class="tblwrap"><table>
       ${Object.entries(cl.receipts.reduce((a,r)=>{ a[r.cat||'Other']=(a[r.cat||'Other']||0)+r.amt; return a; },{})).map(([k,v])=>`<tr><td><strong>${esc(k)}</strong></td><td>${fmt(v)}</td></tr>`).join('')}
     </table></div>
-    <details><summary class="src" style="display:inline">See all ${cl.receipts.length} expenses</summary><div class="tblwrap" style="margin-top:6px"><table>${cl.receipts.slice().reverse().map(r=>`<tr><td>${esc(r.what)}<br><span class="small muted">${esc(r.cat||'Other')} \u00B7 ${esc(r.date)}</span> ${r.r?'<span class="chip ok">Receipt \u2713</span>':'<span class="chip warn">No receipt</span>'}</td><td>${fmt(r.amt)}</td></tr>`).join('')}</table></div></details>`
+    <details><summary class="src" style="display:inline">See all ${cl.receipts.length} expenses</summary><div class="tblwrap" style="margin-top:6px"><table>${cl.receipts.slice().reverse().map(r=>`<tr><td>${esc(r.what)}<br><span class="small muted">${esc(r.cat||'Other')} \u00B7 ${esc(r.date)}</span> ${r.r?(r.rid?`<button class="chip ok chipbtn" data-viewfile="${esc(r.rid)}" data-cap="${esc('Receipt: '+r.what)}">Receipt \u2713 View</button>`:'<span class="chip ok">Receipt \u2713</span>'):'<span class="chip warn">No receipt</span>'}</td><td>${fmt(r.amt)}</td></tr>`).join('')}</table></div></details>`
     : `<p class="small muted">${esc(cfg.lossHelp)}</p>`}
     <form class="stack" id="addReceipt">
       <div class="grid2">
@@ -885,6 +971,30 @@ function viewClaim(){
       <button class="primary" type="submit">Add expense</button>
       ${P.type==='home'?`<label class="field">Mileage rate per mile<input id="clRate" type="number" step="0.01" value="${cl.mileRate}"></label>`:''}
     </form>
+  </div>
+
+  <div class="card">
+    <h2>Letters</h2>
+    <p class="small">Put it in writing. Pick a letter, check the wording, then copy it or open it in your email.</p>
+    <label class="field">Letter<select id="ltKind">${Object.entries(LETTERS).filter(([k,v])=>!v.only||v.only===P.type).map(([k,v])=>`<option value="${k}" ${S.ltKind===k?'selected':''}>${esc(v.label)}</option>`).join('')}</select></label>
+    <label class="field">${({followup:'What was discussed (leave blank to use your last log entry)', supplement:'What you found'})[S.ltKind||'followup']||'Anything to add (optional)'}<textarea id="ltExtra">${esc(S.ltExtra||'')}</textarea></label>
+    <textarea id="ltOut" readonly style="min-height:220px;font-size:13px;background:var(--surface-2)">${esc(letterText(P, LETTERS[S.ltKind]&&(!LETTERS[S.ltKind].only||LETTERS[S.ltKind].only===P.type)?S.ltKind:'followup', S.ltExtra||''))}</textarea>
+    <div class="grid2">
+      <button data-act="ltCopy">Copy letter</button>
+      <a class="btn-like" id="ltMail" href="${esc(ltMailto(P))}">Open in email</a>
+    </div>
+    ${cl.adjEmail?'':'<p class="small muted">Add the adjuster\u2019s email above to address it automatically.</p>'}
+    <p class="small muted">These are templates to help you write clearly. They aren\u2019t legal advice. Read and edit before you send.</p>
+  </div>
+
+  <div class="card">
+    <h2>Follow-up reminder</h2>
+    <p class="small">Insurance companies give dates: when to expect a call, a check or an inspection. Put the date on your calendar so it doesn\u2019t slip.</p>
+    <div class="grid2">
+      <label class="field">Date<input id="fuDate" type="date" value="${esc(S.fuDate||'')}"></label>
+      <label class="field">What to check<input id="fuNote" value="${esc(S.fuNote||'')}" placeholder="Adjuster said estimate by this date"></label>
+    </div>
+    <button class="primary" data-act="calFollow">Add to my calendar</button>
   </div>
 
   <div class="card">
@@ -1028,21 +1138,418 @@ function viewFeedback(){
   const answered = FB_Q.filter(x=>f[x.id]).length;
   return `
   <section class="stack"><p class="label">Test version</p><h1>Your feedback</h1>
-    <p class="small muted">Six taps and a few words. When you’re done, copy your answers and text or email them to the person who shared StormFile with you.</p></section>
+    <p class="small muted">Six taps and a few words. When you\u2019re done, tap Email my answers and they come straight to us.</p></section>
   ${FB_Q.map(x=>`<div class="card"><h3>${esc(x.q)}</h3><div class="choices" role="group" aria-label="${esc(x.q)}">
     ${x.opts.map(o=>`<button data-fbq="${x.id}" data-fba="${esc(o)}" aria-pressed="${f[x.id]===o}">${esc(o)}</button>`).join('')}</div></div>`).join('')}
   ${FB_T.map(x=>`<div class="card"><label class="field" style="color:var(--fg);font-size:15px;font-weight:600">${esc(x.q)}
     ${x.id==='name'?`<input id="fb-${x.id}" data-fbt="${x.id}" value="${esc(f[x.id]||'')}">`:`<textarea id="fb-${x.id}" data-fbt="${x.id}">${esc(f[x.id]||'')}</textarea>`}</label></div>`).join('')}
   <div class="card" style="border-color:var(--accent)">
     <div class="row"><h2>Send it</h2><span class="small muted">${answered} of ${FB_Q.length} answered</span></div>
-    <button class="primary" data-act="fbCopy">Copy my answers</button>
-    <p class="small muted">Then paste them into a text or email to the person who shared this link. If copying doesn’t work, press and hold the box below to select it.</p>
+    <a class="btn-like" id="fbMail" style="background:var(--accent);color:var(--accent-fg);border-color:var(--accent)" href="${esc(`mailto:info@coastlinecode.com?subject=${encodeURIComponent('StormFile feedback')}&body=${encodeURIComponent(fbText())}`)}">Email my answers to StormFile</a>
+    <button data-act="fbCopy">Copy my answers</button>
+    <p class="small muted">The email goes to info@coastlinecode.com. If your email app doesn\u2019t open, copy your answers and send them to that address, or text them to the person who shared StormFile with you.</p>
     <textarea id="fbOut" readonly style="min-height:140px;font-size:13px">${esc(fbText())}</textarea>
   </div>`;
 }
 
+/* ---------- Bytes ---------- */
+function u8ToB64(u8){ let x=''; const CH=0x8000; for(let i=0;i<u8.length;i+=CH) x+=String.fromCharCode.apply(null,u8.subarray(i,i+CH)); return btoa(x); }
+function b64ToU8(b){ const x=atob(b); const u=new Uint8Array(x.length); for(let i=0;i<x.length;i++) u[i]=x.charCodeAt(i); return u; }
+const enc = new TextEncoder(), dec = new TextDecoder();
+
+/* ---------- PIN and Face ID / fingerprint lock (same design as KidArmor) ---------- */
+const PINKEY='stormfile.pin', BIOKEY='stormfile.bio', LOCKKEY='stormfile.lockstate';
+async function pinHash(pin, saltB64, iter){ iter = iter || (saltB64?100000:600000); const salt = saltB64 ? b64ToU8(saltB64) : crypto.getRandomValues(new Uint8Array(16));
+  const k = await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveBits']);
+  const bits = new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2', salt, iterations:iter, hash:'SHA-256'}, k, 256)); return {s:u8ToB64(salt), h:u8ToB64(bits), i:iter}; }
+const getJ = k => { try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(e){ return null; } };
+const setJ = (k,v) => { try{ v==null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
+const pinRec = () => getJ(PINKEY), bioRec = () => getJ(BIOKEY);
+const BIONAME = () => IS_IOS ? 'Face ID' : 'your fingerprint';
+async function bioSupported(){ try{ if(window.self!==window.top) return false; }catch(e){ return false; }
+  if(!window.isSecureContext || !window.PublicKeyCredential || !PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) return false;
+  try{ return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); }catch(e){ return false; } }
+async function bioEnroll(){ const id = crypto.getRandomValues(new Uint8Array(16));
+  const cred = await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)), rp:{name:'StormFile'}, user:{id, name:'StormFile', displayName:'StormFile'},
+    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}], authenticatorSelection:{authenticatorAttachment:'platform', userVerification:'required', residentKey:'discouraged'}, timeout:60000, attestation:'none'}});
+  setJ(BIOKEY, {id:u8ToB64(new Uint8Array(cred.rawId))}); }
+async function bioUnlock(){ const r = bioRec(); if(!r) return false;
+  try{ const a = await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)), allowCredentials:[{type:'public-key', id:b64ToU8(r.id), transports:['internal','hybrid']}], userVerification:'required', timeout:60000}});
+    if(!a) return false; const flags = new Uint8Array(a.response.authenticatorData)[32]; return !!(flags & 0x04); }catch(e){ return false; } }
+const lockState = () => getJ(LOCKKEY) || {n:0, rounds:0, until:0};
+let BIO_OK = false;
+function showLock(){
+  if(document.querySelector('.lockscreen')) return; const rec = pinRec(); if(!rec) return; const bio = !!bioRec();
+  const l = document.createElement('div'); l.className = 'lockscreen'; l.setAttribute('role','dialog'); l.setAttribute('aria-modal','true'); l.setAttribute('aria-label','StormFile is locked');
+  l.innerHTML = `<div class="brand">Storm<span>File</span></div><h2>StormFile is locked</h2>
+    ${bio?`<p class="small" id="lockBioMsg">Signing you in with ${BIONAME()}…</p><button class="primary" id="lockBio" type="button">Use ${BIONAME()}</button><p class="small muted">or enter your PIN</p>`:`<p class="small">Enter your PIN to open your records.</p>`}
+    <label class="field" for="lockPin" style="align-items:center">PIN<input id="lockPin" type="password" inputmode="numeric" autocomplete="current-password" style="max-width:200px;text-align:center;font-size:20px;letter-spacing:.2em"></label>
+    <button class="${bio?'ghost':'primary'}" id="lockGo" type="button">Unlock with PIN</button><p class="small" id="lockErr" role="alert" style="color:var(--red)"></p>
+    <p class="small muted" style="margin-top:auto">Forgot your PIN? It can’t be reset, because nobody else holds your records. You can erase this app’s data in your phone’s settings and restore from a backup file.</p>`;
+  document.body.appendChild(l);
+  const behind = [...document.body.children].filter(x=>x!==l && !x.inert); behind.forEach(x=>x.inert=true);
+  const done = () => { l.remove(); behind.forEach(x=>x.inert=false); setJ(LOCKKEY, {n:0, rounds:0, until:0}); };
+  const go = async () => { const st = lockState();
+    if(Date.now() < st.until){ l.querySelector('#lockErr').textContent = `Too many tries. Wait ${Math.ceil((st.until-Date.now())/1000)} seconds.`; return; }
+    const inp = l.querySelector('#lockPin'); const h = await pinHash(inp.value.trim(), rec.s, rec.i||100000);
+    if(h.h === rec.h) return done();
+    inp.value = ''; const n = (st.n||0) + 1;
+    if(n >= 5){ const rounds = (st.rounds||0)+1, secs = Math.min(3600, 30*2**(rounds-1)); setJ(LOCKKEY, {n:0, rounds, until:Date.now()+secs*1000});
+      l.querySelector('#lockErr').textContent = `Too many tries. Wait ${secs>=120?Math.round(secs/60)+' minutes':secs+' seconds'}.`; }
+    else { setJ(LOCKKEY, {n, rounds:st.rounds||0, until:st.until||0}); l.querySelector('#lockErr').textContent = 'That PIN isn’t right.'; } };
+  l.querySelector('#lockGo').onclick = go; l.querySelector('#lockPin').onkeydown = e => { if(e.key==='Enter') go(); };
+  const lb = l.querySelector('#lockBio');
+  const tryBio = async auto => { if(!lb || lb.disabled) return; lb.disabled = true; const ok = await bioUnlock(); lb.disabled = false;
+    if(ok){ done(); toast('Signed in with ' + BIONAME()); return; }
+    l.querySelector('#lockBioMsg').textContent = auto ? `Tap Use ${BIONAME()} to sign in.` : `${BIONAME()} didn’t sign you in. Try again, or enter your PIN.`; };
+  if(lb){ lb.onclick = () => tryBio(false); setTimeout(()=>tryBio(true), 350); }
+  setTimeout(()=>{ try{ if(!bio) l.querySelector('#lockPin').focus(); }catch(e){} }, 50);
+}
+let hiddenAt = 0;
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) hiddenAt = Date.now(); else if(hiddenAt && Date.now()-hiddenAt > 60000) showLock(); });
+
+/* ---------- Encrypted backup (whole account + every photo and receipt) ---------- */
+async function aesKey(secret, salt, iter){ const base = await crypto.subtle.importKey('raw', enc.encode(secret), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:iter, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']); }
+async function sealJson(obj, secret, iter=150000){ const salt = crypto.getRandomValues(new Uint8Array(16)), nonce = crypto.getRandomValues(new Uint8Array(12));
+  const key = await aesKey(secret.normalize('NFKC'), salt, iter);
+  const ct = new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv:nonce}, key, enc.encode(JSON.stringify(obj))));
+  return JSON.stringify({format:'stormfile', type:'backup', v:1, kdf:{alg:'PBKDF2-SHA256', iter, salt:u8ToB64(salt)}, cipher:{alg:'AES-256-GCM', nonce:u8ToB64(nonce)}, data:u8ToB64(ct)}); }
+async function openJson(text, secret){ let env; const bad = 'This isn’t a StormFile backup file.';
+  try{ env = JSON.parse(text); }catch(e){ throw new Error(bad); }
+  if(!env || env.format!=='stormfile' || !env.data || !env.kdf || !env.cipher) throw new Error(bad);
+  const it = env.kdf.iter; if(!Number.isInteger(it) || it<1 || it>2000000) throw new Error(bad);
+  const key = await aesKey(secret.normalize('NFKC'), b64ToU8(env.kdf.salt), it);
+  let pt; try{ pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:b64ToU8(env.cipher.nonce)}, key, b64ToU8(env.data)); }catch(e){ throw new Error('That passphrase doesn’t match this backup.'); }
+  return JSON.parse(dec.decode(new Uint8Array(pt))); }
+function fileIdsInState(st){ const ids = new Set(); const add = x => { if(x && x.id) ids.add(x.id); };
+  (st.properties||[]).forEach(P=>{ (P.exterior||[]).forEach(add); (P.rooms||[]).forEach(r=>{ (r.photoData||[]).forEach(x=>add(photoObj(x))); r.items.forEach(it=>{ if(it.rid) ids.add(it.rid); }); });
+    (P.upgrades||[]).forEach(u=>{ if(u.rid) ids.add(u.rid); }); ((P.claim||{}).receipts||[]).forEach(r=>{ if(r.rid) ids.add(r.rid); }); });
+  return [...ids]; }
+async function saveFile(filename, blob){
+  // Phones: the share sheet lets people save straight to Files, iCloud Drive or Google Drive.
+  try{ const f = new File([blob], filename, {type: blob.type || 'application/octet-stream'});
+    if(navigator.canShare && navigator.canShare({files:[f]}) && /iphone|ipad|android/i.test(navigator.userAgent)){ await navigator.share({files:[f], title:filename}); return true; } }
+  catch(e){ if(e && e.name==='AbortError') return false; }
+  try{ const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u), 15000); return true; }
+  catch(e){ toast('Saving files isn’t available here.'); return false; }
+}
+const today = () => new Date().toISOString().slice(0,10);
+async function makeBackup(pass){
+  save(); const files = {};
+  for(const id of fileIdsInState(S)){ try{ const r = await getFile(id); if(r && r.blob) files[id] = {name:r.name, type:r.type, w:r.w, h:r.h, b64:u8ToB64(new Uint8Array(await r.blob.arrayBuffer()))}; }catch(e){} }
+  const text = await sealJson({app:'StormFile', made:nowISO(), state:S, files}, pass);
+  return new Blob([text], {type:'application/json'});
+}
+async function restoreBackup(text, pass){
+  const v = await openJson(text, pass);
+  if(!v || !v.state || !Array.isArray(v.state.properties)) throw new Error('This backup is missing its records.');
+  for(const [id, f] of Object.entries(v.files||{})){ await putFile({id, name:f.name, type:f.type, w:f.w, h:f.h, blob:new Blob([b64ToU8(f.b64)], {type:f.type}), at:nowISO()}); }
+  S = v.state; S.tab = 'home'; S.agreed = true; load2(); save();
+  return S.properties.length;
+}
+function load2(){ S.properties.forEach(p=>{ p.upgrades = p.upgrades||[]; p.vehicles = p.vehicles||[]; p.claim = Object.assign(blankClaim(), p.claim); }); }
+function hasRealData(){ return !S.sample && S.properties.some(P => (P.history||[]).length || P.policyId || P.rooms.some(r=>r.items.length || (r.photoData||[]).length)); }
+function backupDue(){
+  if(!hasRealData()) return null;
+  const last = S.lastBackupAt ? new Date(S.lastBackupAt).getTime() : 0;
+  const lastChange = Math.max(0, ...S.properties.flatMap(P => (P.history||[]).map(h => new Date(h.at).getTime() || 0)));
+  if(!last) return 'You haven’t made a backup yet.';
+  if(lastChange > last && Date.now() - last > 7*86400000) return `Your last backup was ${fmtDay(S.lastBackupAt)}, and you’ve added things since.`;
+  if(Date.now() - last > 30*86400000) return `Your last backup was ${fmtDay(S.lastBackupAt)}.`;
+  return null;
+}
+
+/* ---------- Claim packet PDF (made on this phone) ---------- */
+let pdfLibP = null;
+function loadPdfLib(){ if(window.PDFLib) return Promise.resolve(window.PDFLib);
+  if(!pdfLibP) pdfLibP = new Promise((res, rej)=>{ const sc = document.createElement('script'); sc.src = 'vendor/pdf-lib.min.js'; sc.onload = () => res(window.PDFLib); sc.onerror = () => { pdfLibP = null; rej(new Error('pdf')); }; document.head.appendChild(sc); });
+  return pdfLibP; }
+/* PDF standard fonts only know basic Latin characters. */
+function pdfText(x){ return String(x ?? '').replace(/[‘’ʼ]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,'-').replace(/[·•]/g,'-')
+  .replace(/…/g,'...').replace(/✓/g,'yes').replace(/ /g,' ').replace(/[\u0000-\u0008\u000B-\u001F]/g,'').replace(/[^\n\x20-\x7E\xA0-\xFF]/g,'?'); }
+async function jpegForPdf(id, thumb, max){
+  try{ const rec = await getFile(id); if(rec && rec.blob && /^image\//.test(rec.type||'')){ const img = await loadImg(rec.blob); const d = drawTo(img, max||1400);
+      const b = await new Promise(r=>d.canvas.toBlob(r,'image/jpeg',0.8)); return new Uint8Array(await b.arrayBuffer()); } }catch(e){}
+  if(thumb && safeImg(thumb) && /^data:image\/jpeg/.test(thumb)) return b64ToU8(thumb.split(',')[1]);
+  return null;
+}
+async function makeClaimPacket(P, opt){
+  const PL = await loadPdfLib(); const {PDFDocument, StandardFonts, rgb} = PL;
+  const doc = await PDFDocument.create(); doc.setTitle(pdfText(`StormFile claim record - ${P.name}`)); doc.setCreator('StormFile by Coastline Code'); doc.setProducer('StormFile');
+  const F = await doc.embedFont(StandardFonts.Helvetica), FB = await doc.embedFont(StandardFonts.HelveticaBold);
+  const W = 612, H = 792, M = 50, ink = rgb(0.08,0.13,0.17), mute = rgb(0.34,0.40,0.45), line = rgb(0.81,0.85,0.87), accent = rgb(0.05,0.36,0.48), amber = rgb(0.76,0.48,0);
+  let page, y;
+  const newPage = () => { page = doc.addPage([W,H]); y = H - M; };
+  const need = h => { if(y - h < M + 24) newPage(); };
+  const wrap = (txt, font, size, width) => { const out = []; String(pdfText(txt)).split('\n').forEach(par=>{ let ln = ''; par.split(/\s+/).forEach(w=>{ const t = ln ? ln+' '+w : w; if(font.widthOfTextAtSize(t,size) > width && ln){ out.push(ln); ln = w; } else ln = t; }); out.push(ln); }); return out; };
+  const text = (t, o={}) => { const size = o.size||10, font = o.bold?FB:F, width = o.width||(W-2*M), x = o.x||M, lh = size*1.35;
+    const lines = wrap(t, font, size, width); for(const l of lines){ need(lh); page.drawText(l, {x, y:y-size, size, font, color:o.color||ink}); y -= lh; } };
+  const gap = h => { y -= h; };
+  const h1 = t => { need(40); gap(6); text(t, {size:16, bold:true, color:accent}); page.drawLine({start:{x:M,y:y-2}, end:{x:W-M,y:y-2}, thickness:1, color:line}); gap(10); };
+  const kv = (k, v) => { if(v==null || v==='') return; const kl = wrap(k, FB, 10, 160), vl = wrap(v, F, 10, W-2*M-170), n = Math.max(kl.length, vl.length);
+    need(n*13.5 + 2);
+    for(let i=0;i<n;i++){ if(kl[i]) page.drawText(kl[i], {x:M, y:y-10, size:10, font:FB, color:mute}); if(vl[i]) page.drawText(vl[i], {x:M+170, y:y-10, size:10, font:F, color:ink}); y -= 13.5; } };
+  const table = (cols, rows, widths) => { const tw = W-2*M; const ws = widths.map(f=>f*tw); const size = 8.5, lh = 11.5;
+    const head = () => { need(18); let x = M; cols.forEach((c,i)=>{ page.drawText(pdfText(c), {x:x+2, y:y-10, size, font:FB, color:mute}); x += ws[i]; }); y -= 14; page.drawLine({start:{x:M,y}, end:{x:W-M,y}, thickness:0.6, color:line}); y -= 3; };
+    head();
+    rows.forEach(r=>{ const cells = r.map((c,i)=>wrap(c, F, size, ws[i]-6)); const hgt = Math.max(...cells.map(c=>c.length))*lh + 4;
+      if(y - hgt < M + 24){ newPage(); head(); }
+      let x = M; cells.forEach((c,i)=>{ c.forEach((l,j)=>page.drawText(l, {x:x+2, y:y-9-j*lh, size, font:F, color:ink})); x += ws[i]; });
+      y -= hgt; page.drawLine({start:{x:M,y:y+1}, end:{x:W-M,y:y+1}, thickness:0.3, color:line}); }); gap(6); };
+  const photoBlock = async (list, label) => {
+    const items = (list||[]).map(photoObj).filter(o=>o.id || safeImg(o.src)); if(!items.length) return 0;
+    need(30); text(label, {bold:true, size:11}); gap(2);
+    const cw = (W-2*M-14)/2; let col = 0, rowH = 0, n = 0;
+    for(const o of items){ const bytes = await jpegForPdf(o.id, o.src, 1400); if(!bytes) continue;
+      let im; try{ im = await doc.embedJpg(bytes); }catch(e){ continue; }
+      const sc = Math.min(cw/im.width, 190/im.height), iw = im.width*sc, ih = im.height*sc;
+      const cap = [(o.taken?'Taken '+fmtDay(o.taken):'')+(o.addedAt?(o.taken?' - added ':'Added ')+fmtWhen(o.addedAt):''), o.gps?`Location ${o.gps.lat}, ${o.gps.lng}${o.gps.acc?` (within ${o.gps.acc} m)`:''}`:'', isAfterLock(P,o)?'ADDED AFTER CLAIM STARTED':''].filter(Boolean);
+      const bh = 196 + cap.length*10 + 6;
+      if(col===0){ if(y - bh < M + 24) newPage(); rowH = bh; }
+      const x = M + col*(cw+14);
+      page.drawImage(im, {x, y:y-ih, width:iw, height:ih});
+      cap.forEach((c,i)=>page.drawText(pdfText(c), {x, y:y-196-i*10-6, size:7.5, font:i===2||c.startsWith('ADDED')?FB:F, color:c.startsWith('ADDED')?amber:mute}));
+      n++; col++; if(col===2){ col = 0; y -= rowH; }
+    }
+    if(col===1) y -= rowH; gap(6); return n;
+  };
+
+  const pol = polOf(P), c = calc(P), cl = P.claim, me = S.me || {}, cfg = TYPES[P.type];
+  // ---- Cover ----
+  newPage();
+  page.drawRectangle({x:0, y:H-8, width:W, height:8, color:accent});
+  text('CLAIM RECORD', {size:10, bold:true, color:mute}); gap(2);
+  text(P.name, {size:24, bold:true}); text(`${cfg.label} - ${P.address}`, {size:12, color:mute}); gap(14);
+  kv('Policyholder', me.name); kv('Phone', me.phone); kv('Email', me.email); kv('Mailing address', me.mail);
+  gap(6);
+  if(pol){ kv('Insurance company', pol.carrier); kv('Policy', `${pol.form} - ${pol.number}`); if(pol.agent && !/^Not /.test(pol.agent)) kv('Agent', pol.agent); }
+  kv('Claim number', cl.number || 'Not entered yet'); kv('Date of loss', cl.dateOfLoss); kv('Adjuster', [cl.adjuster, cl.adjPhone].filter(Boolean).join(' - '));
+  gap(6);
+  const items = P.rooms.flatMap(r=>r.items.map(it=>({...it, room:r.name})));
+  const photos = (P.exterior||[]).concat(P.rooms.flatMap(r=>(r.photoData||[]).map(photoObj)));
+  kv('Before-storm record', lockedAt(P) ? `Locked ${fmtWhen(lockedAt(P))}. Items and photos logged before then are marked as the before-storm record; anything added later is marked "added after claim."` : 'Not locked yet.');
+  kv('Contents logged', `${plural(items.length,'item')}, about ${fmt(c?c.inv.today:invTotals(P).today)} at today's prices`);
+  kv('Photos', `${plural(photos.length,'photo')} (${photos.filter(o=>o.gps).length} with location)`);
+  kv('Receipts', `${items.filter(i=>i.r).length + (P.upgrades||[]).filter(u=>u.r).length} purchase and upgrade receipts, ${(cl.receipts||[]).filter(r=>r.r).length} expense receipts`);
+  kv('Prepared', `${fmtWhen(nowISO())} with StormFile`);
+  gap(14);
+  text('How this record was made', {bold:true, size:10});
+  text('The policyholder created this record with the StormFile app on their own phone. Photos taken or added in the app carry the date and time they were added, the date the camera recorded when available, and the phone\'s location when allowed. Every addition, removal and receipt is listed with its date in the record history at the end of this packet.', {size:9, color:mute});
+  gap(6); text('StormFile helps people organize their records. It does not decide coverage or give insurance or legal advice. Coverage is decided by the policy and the insurance company.', {size:8, color:mute});
+
+  // ---- Policy summary ----
+  if(pol && opt.policy){ newPage(); h1('Policy summary');
+    kv('Insurance company', pol.carrier); kv('Policy type', pol.form); kv('Policy number', pol.number); if(pol.renewal) kv('Expires', fmtDay(pol.renewal+'T12:00:00'));
+    gap(6); table(['Coverage','What it pays for','Limit'], pol.coverages.map(x=>[x.name, x.plain, fmt(x.limit)]), [0.28,0.52,0.2]);
+    kv(hurDedLabel(pol, cfg), fmt(c.hurDed)); kv('Other claims deductible', fmt((pol.deductibles||{}).allPerils||0));
+    if((pol.notCovered||[]).length){ gap(8); text('Limits and exclusions noted', {bold:true}); pol.notCovered.forEach(x=>text(`- ${x.title}: ${x.plain}`, {size:9})); }
+    gap(6); text(pol.manual ? 'Summary built from details the policyholder entered from their declarations page.' : 'Summary of the declarations page.', {size:8, color:mute}); }
+
+  // ---- Photos ----
+  if(opt.photos && photos.length){ newPage(); h1('Photos');
+    await photoBlock(P.exterior, 'Outside of the building');
+    for(const r of P.rooms) await photoBlock(r.photoData, r.name); }
+
+  // ---- Contents ----
+  if(items.length){ need(140); gap(10); h1(P.type==='business'?'Equipment and contents':'Contents inventory');
+    table(['Room','Item','Bought','Paid','Today (est.)','Receipt','Logged'],
+      items.map(it=>[it.room, it.n + (isAfterLock(P,it)?' (added after claim)':''), String(it.y||''), fmt(it.v), fmt(itemToday(it)), it.r?'Yes':(it.v>=BIG?'No - over $1,000':'No'), it.addedAt?fmtDay(it.addedAt):'Before tracking']),
+      [0.14,0.3,0.08,0.11,0.12,0.13,0.12]);
+    text(`Total paid: ${fmt(items.reduce((a,b)=>a+(+b.v||0),0))}    Estimated replacement today: ${fmt(items.reduce((a,b)=>a+itemToday(b),0))}`, {bold:true, size:10});
+    text('Today\'s estimate adds about 3.1% a year for price increases. It is an estimate, not an appraisal.', {size:8, color:mute}); }
+  if((P.upgrades||[]).length){ need(60); gap(8); h1(P.type==='business'?'Building upgrades':'Home upgrades and repairs');
+    table(['Upgrade or repair','Year','Cost','Receipt'], P.upgrades.map(u=>[u.n, String(u.y||''), fmt(u.v), u.r?'Yes':'No']), [0.55,0.12,0.15,0.18]); }
+  if((P.vehicles||[]).length){ need(60); gap(8); h1('Vehicles, campers and boats');
+    table(['Vehicle','Type','Storm coverage'], P.vehicles.map(v=>[v.n, v.kind, (VCOV[v.cov]||{}).t||'']), [0.45,0.2,0.35]); }
+
+  // ---- Living expenses / lost income ----
+  if((cl.receipts||[]).length){ need(140); gap(10); h1(cfg.lossName);
+    const st = {home:'Living at home', evac:'Under a mandatory evacuation order', unlivable:'Home is not livable'}[cl.status]; if(P.type==='home' && st) kv('Situation', st + (cl.orderDate?` (order dated ${cl.orderDate})`:''));
+    table(['Date','Type','What','Amount','Receipt'], cl.receipts.map(r=>[r.date||'', r.cat||'', r.what, fmt(r.amt), r.r?'Yes':'No']), [0.14,0.18,0.4,0.13,0.15]);
+    const byCat = {}; cl.receipts.forEach(r=>{ byCat[r.cat||'Other'] = (byCat[r.cat||'Other']||0) + (+r.amt||0); });
+    Object.entries(byCat).forEach(([k,v])=>kv(k, fmt(v))); kv('Total', fmt(cl.receipts.reduce((a,b)=>a+(+b.amt||0),0))); }
+
+  // ---- Calls ----
+  if((cl.log||[]).length){ need(80); gap(8); h1('Calls and emails with the insurance company');
+    table(['Date','Note'], cl.log.map(l=>[l.at?fmtWhen(l.at):(l.date||''), l.note]), [0.25,0.75]); }
+
+  // ---- Receipts appendix ----
+  if(opt.receipts){ const recs = [...items.filter(i=>i.rid).map(i=>({id:i.rid, cap:`Receipt: ${i.n} (${i.room})`})), ...(P.upgrades||[]).filter(u=>u.rid).map(u=>({id:u.rid, cap:`Receipt: ${u.n}`})), ...(cl.receipts||[]).filter(r=>r.rid).map(r=>({id:r.rid, cap:`Expense receipt: ${r.what} (${fmt(r.amt)})`}))];
+    if(recs.length){ newPage(); h1('Receipts');
+      for(const r of recs){ const rec = await getFile(r.id).catch(()=>null); if(!rec) continue;
+        if(/pdf/i.test(rec.type||'')){ try{ const src = await PDFDocument.load(await rec.blob.arrayBuffer(), {ignoreEncryption:true}); const pages = await doc.copyPages(src, src.getPageIndices().slice(0,10));
+            need(20); text(r.cap + ' (PDF pages follow)', {bold:true, size:9}); pages.forEach(pg=>doc.addPage(pg)); newPage(); }catch(e){ text(r.cap + ' - PDF could not be added; it is kept in the app.', {size:9, color:mute}); } continue; }
+        const bytes = await jpegForPdf(r.id, '', 1600); if(!bytes) continue; let im; try{ im = await doc.embedJpg(bytes); }catch(e){ continue; }
+        const sc = Math.min((W-2*M)/im.width, 320/im.height); need(im.height*sc + 26); text(r.cap, {bold:true, size:9}); page.drawImage(im, {x:M, y:y-im.height*sc, width:im.width*sc, height:im.height*sc}); y -= im.height*sc + 14; } } }
+
+  // ---- History ----
+  if(opt.history && (P.history||[]).length){ newPage(); h1('Record history');
+    text('Every change to this record, in order. StormFile keeps this list automatically and it can\'t be edited in the app.', {size:8.5, color:mute}); gap(4);
+    table(['Date and time','What changed'], P.history.map(h=>[fmtWhen(h.at), h.what]), [0.28,0.72]); }
+
+  // ---- Footer on every page ----
+  const pages = doc.getPages(), stamp = pdfText(`StormFile claim record - ${P.name} - prepared ${fmtDay(nowISO())}`);
+  pages.forEach((pg,i)=>{ const {width} = pg.getSize(); pg.drawText(stamp, {x:M, y:26, size:7.5, font:F, color:mute}); const t = `Page ${i+1} of ${pages.length}`; pg.drawText(t, {x:width-M-F.widthOfTextAtSize(t,7.5), y:26, size:7.5, font:F, color:mute}); });
+  const bytes = await doc.save();
+  return new Blob([bytes], {type:'application/pdf'});
+}
+
+/* ---------- Calendar reminders (.ics, opens the phone's calendar) ---------- */
+const icsText = t => pdfText(t).replace(/\\/g,'\\\\').replace(/;/g,'\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+const icsDate = d => d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+const icsFold = l => { const o=[]; while(l.length>73){ o.push(l.slice(0,73)); l=' '+l.slice(73); } o.push(l); return o.join('\r\n'); };
+function at9(ymd){ const [y,m,d] = ymd.split('-').map(Number); return new Date(y, m-1, d, 9, 0, 0); }
+function addDays(ymd, n){ const d = at9(ymd); d.setDate(d.getDate()+n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function makeIcs(events){
+  const L = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Coastline Code//StormFile//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  events.forEach((e,i)=>{ const s = at9(e.date), end = new Date(s.getTime()+30*60000);
+    L.push('BEGIN:VEVENT', `UID:${Date.now().toString(36)}-${i}-${Math.random().toString(36).slice(2,8)}@stormfile`, `DTSTAMP:${icsDate(new Date())}`, `DTSTART:${icsDate(s)}`, `DTEND:${icsDate(end)}`,
+      `SUMMARY:${icsText(e.title)}`, `DESCRIPTION:${icsText(e.desc||'')}`,
+      'BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsText(e.title)}`,'TRIGGER:PT0M','END:VALARM',
+      ...(e.dayBefore?['BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsText(e.title)}`,'TRIGGER:-P1D','END:VALARM']:[]), 'END:VEVENT'); });
+  L.push('END:VCALENDAR'); return L.map(icsFold).join('\r\n') + '\r\n';
+}
+function addToCalendar(events, name){
+  const blob = new Blob([makeIcs(events)], {type:'text/calendar'});
+  try{ const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = name.replace(/[^\w .-]/g,'') + '.ics'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u), 60000);
+    toast(events.length>1 ? `Open the file to add ${events.length} reminders to your calendar.` : 'Open the file to add it to your calendar.'); return true; }
+  catch(e){ toast('Your calendar couldn\u2019t be opened from here.'); return false; }
+}
+function seasonEvents(){
+  const now = new Date(), y = (now.getMonth() > 9) ? now.getFullYear()+1 : now.getFullYear();
+  const mk = (md, title, desc) => { let yy = y; const d = `${yy}-${md}`; return {date: at9(d) < now ? `${yy+1}-${md}` : d, title, desc, dayBefore:false}; };
+  return [
+    mk('05-15', 'StormFile: get ready for hurricane season', 'Open StormFile. Walk each room for new photos, add receipts for big purchases, check your policy and flood coverage, and save a backup. New flood policies usually take 30 days to start.'),
+    mk('06-01', 'Hurricane season starts', 'Make sure your StormFile backup is current and your documents are together.'),
+    mk('08-01', 'StormFile: mid-season check', 'Peak hurricane season is August through October. Add anything new to StormFile and save a fresh backup.')
+  ];
+}
+
+/* ---------- Letters (templates the person reads and edits before sending) ---------- */
+const LETTERS = {
+  followup:{label:'Written summary of a phone call', subject:(P,cl)=>`Claim ${cl.number||''} - summary of our conversation`},
+  estimate:{label:'Request the adjuster\u2019s estimate and photos', subject:(P,cl)=>`Claim ${cl.number||''} - request for estimate and inspection report`},
+  status:{label:'Request a status update', subject:(P,cl)=>`Claim ${cl.number||''} - request for status update`},
+  ale:{label:'Request a living-expense advance', subject:(P,cl)=>`Claim ${cl.number||''} - request for additional living expense advance`, only:'home'},
+  supplement:{label:'Report more damage found', subject:(P,cl)=>`Claim ${cl.number||''} - additional damage found`},
+  policy:{label:'Request a full copy of my policy', subject:(P,cl)=>`Policy ${(polOf(P)||{}).number||''} - request for complete policy copy`}
+};
+function ltMailto(P){ const cl = P.claim, k = LETTERS[S.ltKind] && (!LETTERS[S.ltKind].only || LETTERS[S.ltKind].only===P.type) ? S.ltKind : 'followup';
+  let body = letterText(P, k, S.ltExtra||''); if(body.length > 6500) body = body.slice(0,6500);
+  return `mailto:${encodeURIComponent(cl.adjEmail||'')}?subject=${encodeURIComponent(LETTERS[k].subject(P, cl).replace(/\s+-/,' -'))}&body=${encodeURIComponent(body)}`; }
+function letterText(P, kind, extra){
+  const cl = P.claim, pol = polOf(P), me = S.me || {}, dt = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const to = cl.adjuster ? `Dear ${cl.adjuster},` : 'Dear Claims Department,';
+  const ref = [pol && pol.carrier && !/^Your insurer/.test(pol.carrier) ? `Insurance company: ${pol.carrier}` : '', pol && pol.number && pol.number!=='Not entered' ? `Policy number: ${pol.number}` : '', cl.number ? `Claim number: ${cl.number}` : '', cl.dateOfLoss ? `Date of loss: ${fmtDay(cl.dateOfLoss+'T12:00:00')}` : '', `Property: ${P.name}${P.address && P.address!=='Add your city' ? ', '+P.address : ''}`].filter(Boolean).join('\n');
+  const sig = ['Sincerely,', me.name || '[Your name]', me.phone || '', me.email || '', me.mail ? 'Mailing address: '+me.mail : ''].filter(Boolean).join('\n');
+  const last = (cl.log||[]).slice(-1)[0];
+  const daysSince = cl.dateOfLoss ? Math.max(0, Math.floor((Date.now()-at9(cl.dateOfLoss).getTime())/86400000)) : null;
+  const spent = (cl.receipts||[]).reduce((a,b)=>a+(+b.amt||0),0);
+  const body = {
+    followup: `Thank you for speaking with me${last && last.at ? ' on '+fmtDay(last.at) : ''}. I\u2019m writing to confirm what we discussed so we both have the same record:\n\n${extra || (last ? last.note : '[What was discussed, what was agreed, and any dates given]')}\n\nIf anything above doesn\u2019t match your understanding, please let me know in writing.`,
+    estimate: `Please send me a copy of the adjuster\u2019s estimate for this claim, including the line-item details, the photos taken during the inspection, and any inspection or engineering reports.\n\n${extra ? extra+'\n\n' : ''}Email is the easiest way to reach me. Thank you.`,
+    status: `I\u2019m writing to ask for an update on this claim${daysSince!=null ? `, which began ${plural(daysSince,'day')} ago` : ''}. Please let me know where it stands, what you still need from me, and when I can expect the next step.\n\n${extra ? extra+'\n\n' : ''}Thank you.`,
+    ale: `${{evac:'We are under a mandatory evacuation order.', unlivable:'Our home is not livable because of the damage.', home:'We are currently unable to stay in our home.'}[cl.status||'home']} I\u2019m asking for an advance on additional living expenses under this policy while the claim is being handled.\n\nSo far we have spent ${fmt(spent)} on extra costs such as lodging, meals and mileage. I have receipts for these and can send them.\n\n${extra ? extra+'\n\n' : ''}Please let me know what you need from me to process an advance.`,
+    supplement: `Since the inspection, I\u2019ve found more damage that wasn\u2019t included in the claim:\n\n${extra || '[Describe what you found, where, and when you found it]'}\n\nI have dated photos and can send them. Please let me know how you\u2019d like to review this additional damage.`,
+    policy: `Please send me a complete copy of my policy, including the declarations page and every form and endorsement that applies to it.\n\n${extra ? extra+'\n\n' : ''}Email is fine. Thank you.`
+  }[kind];
+  return `${dt}\n\n${to}\n\n${ref}\n\n${body}\n\n${sig}`;
+}
+
+/* ---------- Start screen ---------- */
+function viewWelcome(){
+  const mine = !S.sample || S.ownStarted;
+  return `
+  <section class="stack" style="gap:10px;padding-top:8px">
+    <p class="label">StormFile by Coastline Code</p>
+    <h1 style="font-size:34px">Be claim-ready before the storm</h1>
+    <p>StormFile explains your insurance in plain English, keeps a dated record of your home and belongings, and organizes your claim if a storm hits.</p>
+  </section>
+  <div class="card">
+    <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Your information stays on this phone</strong><span class="small muted">No account and no sign-up. Nothing is uploaded or sold. Lock it with a PIN or Face ID and keep a locked backup.</span></div></div>
+    <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Explains, doesn’t decide</strong><span class="small muted">StormFile helps you understand and organize. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</span></div></div>
+    <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Test version</strong><span class="small muted">This is an early version shared for feedback, so things may change. StormFile, including its name, design and code, belongs to Coastline Code LLC. Please use it for testing and feedback only.</span></div></div>
+  </div>
+  <p class="small muted">By tapping “I agree” you confirm you understand the points above. Questions: info@coastlinecode.com</p>
+  ${mine ? `<button class="primary" data-act="agree">I agree</button>` :
+    `<button class="primary" data-act="agreeOwn">I agree — set up my home</button>
+     <button data-act="agree">I agree — look around with sample data first</button>`}
+  <p class="foot">StormFile is made by Coastline Code LLC, a veteran-owned company in Pass Christian, Mississippi.</p>`;
+}
+
+/* ---------- Settings screen ---------- */
+function viewSettings(){
+  const on = !!pinRec(), bio = !!bioRec(), me = S.me || {}, due = backupDue();
+  return `
+  <section class="stack"><p class="label">StormFile</p><h1>Settings</h1></section>
+
+  <div class="card" id="lockCard">
+    <div class="row"><h2>Lock</h2><span class="chip ${on?'ok':'warn'}">${on?(bio?'PIN + '+BIONAME():'PIN on'):'Off'}</span></div>
+    <p class="small">${on ? (bio ? `StormFile opens with ${BIONAME()}. If that doesn’t work, it asks for your PIN.` : 'StormFile asks for your PIN each time it opens, and after a minute away.') : 'Set a PIN so nobody else can open your policy, photos and claim on this phone. Then you can add Face ID or fingerprint.'}</p>
+    <div class="grid2">
+      <label class="field">${on?'New PIN':'PIN'} (4–8 digits)<input id="pin1" type="password" inputmode="numeric" autocomplete="new-password"></label>
+      <label class="field">Type it again<input id="pin2" type="password" inputmode="numeric" autocomplete="new-password"></label>
+    </div>
+    <button class="primary" data-act="pinSave">${on?'Change PIN':'Set PIN'}</button>
+    ${on?`<button class="ghost" data-act="bioToggle" ${BIO_OK?'':'hidden'}>${bio?'Turn off '+BIONAME():'Turn on '+BIONAME()}</button>
+      ${BIO_OK?'':`<p class="small muted">${BIONAME()[0].toUpperCase()+BIONAME().slice(1)} works when StormFile is opened from its icon on your home screen.</p>`}
+      <button class="ghost" data-act="pinClear">Turn off the lock</button>`:''}
+  </div>
+
+  <div class="card" style="${due?'border-color:var(--amber)':''}">
+    <div class="row"><h2>Backup</h2><span class="chip ${due?'warn':'ok'}">${S.lastBackupAt?'Last: '+fmtDay(S.lastBackupAt):'None yet'}</span></div>
+    <p class="small">Your records live only on this phone. If a storm takes the phone, they go with it. A backup is one locked file with everything, including full-size photos and receipts. Save it to iCloud Drive, Google Drive or email it to yourself.</p>
+    ${due?`<div class="alert warn" style="background:var(--bg)"><p class="small">${esc(due)}</p></div>`:''}
+    <div class="grid2">
+      <label class="field">Backup passphrase (8+ characters)<input id="bk1" type="password" autocomplete="new-password"></label>
+      <label class="field">Type it again<input id="bk2" type="password" autocomplete="new-password"></label>
+    </div>
+    <p class="small muted">Write the passphrase down somewhere safe. Without it, nobody can open the backup, including us.</p>
+    <button class="primary" data-act="bkMake">Save a locked backup</button>
+    <details><summary class="src" style="display:inline">Restore from a backup</summary>
+      <div class="stack" style="margin-top:8px">
+        <label class="upload">Choose the backup file<input type="file" id="rsFile" accept=".json,application/json"></label>
+        <label class="field">Passphrase<input id="rsPass" type="password" autocomplete="current-password"></label>
+        <button class="primary" data-act="rsGo">Unlock and restore</button>
+        <p class="small muted">Restoring replaces everything on this phone with what’s in the backup.</p>
+      </div></details>
+  </div>
+
+  <div class="card">
+    <h2>About you</h2>
+    <p class="small muted">Used on your letters and claim packet. Saved only on this phone.</p>
+    <label class="field">Your name<input id="me-name" value="${esc(me.name||'')}" autocomplete="name"></label>
+    <div class="grid2">
+      <label class="field">Phone<input id="me-phone" type="tel" value="${esc(me.phone||'')}" autocomplete="tel"></label>
+      <label class="field">Email<input id="me-email" type="email" value="${esc(me.email||'')}" autocomplete="email"></label>
+    </div>
+    <label class="field">Mailing address (if you’re not at home)<input id="me-mail" value="${esc(me.mail||'')}" autocomplete="street-address"></label>
+  </div>
+
+  <div class="card">
+    <h2>Feedback</h2>
+    <p class="small">Tell us what worked, what didn’t, and what you’d add.</p>
+    <button class="primary" data-go="feedback">Give feedback</button>
+  </div>
+
+  <div class="card">
+    <h2>About StormFile</h2>
+    <p class="small">StormFile is made by Coastline Code LLC, a veteran-owned company in Pass Christian, Mississippi.</p>
+    <p class="small">StormFile helps you organize your insurance and home records. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</p>
+    <p class="small muted">This is a test version shared for feedback. StormFile, including its name, design and code, belongs to Coastline Code LLC. © 2026 Coastline Code LLC.</p>
+    <p class="small muted">Questions: info@coastlinecode.com</p>
+  </div>
+
+  <div class="card" style="border-color:var(--red)">
+    <h2>Erase everything</h2>
+    <p class="small">Removes every property, photo, receipt and setting from this phone. Make a backup first if you might want them back.</p>
+    <button class="ghost" data-act="wipe" style="color:var(--red)">Erase everything on this phone</button>
+  </div>`;
+}
+
 /* ---------- Render + events ---------- */
-const VIEWS = {home:viewHome, policy:viewPolicy, inventory:viewInventory, storm:viewStorm, claim:viewClaim, feedback:viewFeedback, policyForm:viewPolicyForm};
+const VIEWS = {home:viewHome, policy:viewPolicy, inventory:viewInventory, storm:viewStorm, claim:viewClaim, feedback:viewFeedback, policyForm:viewPolicyForm, settings:viewSettings};
 let LIVE = null;
 const INSTALLED = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
 const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
@@ -1062,12 +1569,15 @@ function render(){
       <div class="mline"><span class="muted">Claim</span><span>${p.claim.number?'#'+esc(p.claim.number):'No open claim'}</span></div>
       <div class="mlinks"><button data-mprop="${p.id}" data-mtab="home">Overview</button><button data-mprop="${p.id}" data-mtab="policy">Policy</button><button data-mprop="${p.id}" data-mtab="claim">Claim</button></div>
     </div>`;}).join('') + `<button class="primary" data-madd="1">+ Add a property</button>`;
+  const first = !S.agreed;
+  document.querySelector('nav.tabs').hidden = first; menuBtn.hidden = first; document.getElementById('fbBtn').parentElement.hidden = first;
+  if(first){ view.innerHTML = viewWelcome(); return; }
   view.innerHTML = VIEWS[S.tab]();
   document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-current', b.dataset.tab===S.tab?'page':'false'));
   document.getElementById('tabRooms').textContent = TYPES[P.type].tab;
   document.getElementById('samplePill').hidden = !S.sample || S.tab!=='home';
   document.getElementById('backHome').hidden = S.tab==='home';
-  document.getElementById('fbBtn').hidden = S.tab==='feedback';
+  document.getElementById('fbBtn').hidden = S.tab==='settings';
 }
 function go(tab){ S.tab = tab; save(); render(); window.scrollTo(0,0); }
 function toast(msg){
@@ -1283,13 +1793,15 @@ menu.addEventListener('click', e=>{
 document.addEventListener('click', e=>{ if(!menu.hidden && !e.target.closest('header.top')) setMenu(false); });
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') setMenu(false); });
 document.getElementById('backHome').addEventListener('click', ()=>go('home'));
-document.getElementById('fbBtn').addEventListener('click', ()=>go('feedback'));
+document.getElementById('fbBtn').addEventListener('click', ()=>go('settings'));
 document.querySelector('nav.tabs').addEventListener('click', e=>{ const b=e.target.closest('button[data-tab]'); if(b) go(b.dataset.tab); });
 
 view.addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
   const P = cur();
   if(t.dataset.prop){ S.current = t.dataset.prop; save(); render(); window.scrollTo(0,0); return; }
+  if(t.dataset.viewphoto !== undefined && t.classList.contains('phbtn')) return openViewer(t.dataset.viewphoto, t.dataset.thumb, t.dataset.cap);
+  if(t.dataset.viewfile) return openViewer(t.dataset.viewfile, '', t.dataset.cap);
   if(t.dataset.go) return go(t.dataset.go);
   if(t.dataset.act==='demoPolicy') return readPolicyDemo();
   if(t.dataset.act==='startOwn'){
@@ -1307,6 +1819,46 @@ view.addEventListener('click', e=>{
   }
   if(t.dataset.act==='rename'){ S.renaming = true; save(); return render(); }
   if(t.dataset.act==='install' && INSTALL_EVT){ const ev = INSTALL_EVT; INSTALL_EVT = null; ev.prompt(); ev.userChoice.finally(()=>render()); return; }
+  if(t.dataset.act==='pinSave'){ const a = document.getElementById('pin1').value.trim(), b = document.getElementById('pin2').value.trim();
+    if(!/^\d{4,8}$/.test(a)) return toast('Use 4 to 8 digits.'); if(a!==b) return toast('The two PINs don’t match.');
+    pinHash(a).then(h=>{ setJ(PINKEY, h); render(); toast('PIN set. StormFile is now locked when you’re away.'); }).catch(()=>toast('Couldn’t set a PIN in this browser.')); return; }
+  if(t.dataset.act==='pinClear'){ setJ(PINKEY, null); setJ(BIOKEY, null); render(); return toast('Lock turned off'); }
+  if(t.dataset.act==='bioToggle'){ if(bioRec()){ setJ(BIOKEY, null); render(); return toast(`${BIONAME()} turned off. Your PIN still locks StormFile.`); }
+    bioEnroll().then(()=>{ render(); toast(`Done. StormFile will open with ${BIONAME()}.`); }).catch(e=>toast(e && e.name==='NotAllowedError' ? `${BIONAME()} wasn’t confirmed. Try again.` : `This browser couldn’t set up ${BIONAME()}.`)); return; }
+  if(t.dataset.act==='bkMake'){ const a = document.getElementById('bk1').value, b = document.getElementById('bk2').value;
+    if(!hasRealData()) return toast('There’s nothing of yours to back up yet. Sample data isn’t included.');
+    if(a.length < 8) return toast('Use a passphrase of at least 8 characters.'); if(a!==b) return toast('The two passphrases don’t match.');
+    t.disabled = true; t.textContent = 'Locking your backup…';
+    makeBackup(a).then(blob=>saveFile(`StormFile-backup-${today()}.json`, blob)).then(ok=>{ if(ok){ S.lastBackupAt = nowISO(); save(); render(); toast('Backup saved. Keep the file somewhere safe, like iCloud Drive or Google Drive.'); } else { t.disabled=false; t.textContent='Save a locked backup'; } })
+      .catch(()=>{ t.disabled=false; t.textContent='Save a locked backup'; toast('The backup didn’t finish. Please try again.'); }); return; }
+  if(t.dataset.act==='rsGo'){ const f = document.getElementById('rsFile').files[0]; if(!f) return toast('Choose your backup file first.');
+    if(hasRealData() && !t.dataset.armed){ t.dataset.armed='1'; t.textContent='Tap again to replace what’s on this phone'; setTimeout(()=>{ if(t.isConnected){ delete t.dataset.armed; t.textContent='Unlock and restore'; } }, 6000); return; }
+    t.disabled = true; t.textContent = 'Unlocking…';
+    f.text().then(txt=>restoreBackup(txt, document.getElementById('rsPass').value)).then(n=>{ render(); window.scrollTo(0,0); toast(`Restored ${plural(n,'property')}.`.replace('propertys','properties')); })
+      .catch(e=>{ t.disabled=false; t.textContent='Unlock and restore'; toast(e.message || 'Couldn’t restore that backup.'); }); return; }
+  if(t.dataset.act==='wipe'){ if(!t.dataset.armed){ t.dataset.armed='1'; t.textContent='Tap again to erase everything'; setTimeout(()=>{ if(t.isConnected){ delete t.dataset.armed; t.textContent='Erase everything on this phone'; } }, 4000); return; }
+    clearFiles().catch(()=>{}).then(()=>{ Object.keys(localStorage).filter(k=>/^stormfile/.test(k)).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); S = DEFAULT_STATE(); S.agreed = false; save(); render(); window.scrollTo(0,0); toast('Everything was erased from this phone.'); }); return; }
+  if(t.dataset.act==='packet'){ const o = id => { const el = document.getElementById(id); return !el || el.checked; };
+    const opt = {policy:o('pk-policy'), photos:o('pk-photos'), receipts:o('pk-receipts'), history:o('pk-history')};
+    t.disabled = true; t.textContent = 'Making your PDF\u2026';
+    makeClaimPacket(P, opt).then(blob=>saveFile(`StormFile-claim-${P.name.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'')||'record'}-${today()}.pdf`, blob))
+      .then(ok=>{ if(ok){ logEvt(P, 'Claim packet PDF made'); save(); toast('Claim packet ready. Send it to your adjuster or save it to Files.'); } })
+      .catch(e=>{ console.warn(e); toast('The PDF didn\u2019t finish. Try again, or turn off photos to make it smaller.'); })
+      .finally(()=>{ if(t.isConnected){ t.disabled = false; t.textContent = 'Make the claim packet (PDF)'; } render(); }); return; }
+  if(t.dataset.act==='calRenewal'){ const pol = polOf(P); if(!pol || !pol.renewal) return toast('Add the renewal date first.');
+    const evs = [{date:addDays(pol.renewal,-45), title:`StormFile: check ${P.name} coverage before renewal`, desc:`Your ${pol.carrier} policy renews ${fmtDay(pol.renewal+'T12:00:00')}. Open StormFile, check "Enough to rebuild?" and the inflation check, and call your agent about any gaps.`, dayBefore:false},
+      {date:pol.renewal, title:`${P.name} policy renews today`, desc:'Add the new declarations page to StormFile and check what changed.', dayBefore:false}].filter(e=>at9(e.date) > new Date());
+    if(!evs.length) return toast('That renewal date has passed. Update it first.');
+    if(addToCalendar(evs, `StormFile renewal ${P.name}`)){ logEvt(P, 'Renewal reminders added to calendar'); save(); } return; }
+  if(t.dataset.act==='calSeason'){ addToCalendar(seasonEvents(), 'StormFile hurricane season'); return; }
+  if(t.dataset.act==='calFollow'){ const d = document.getElementById('fuDate').value, n = document.getElementById('fuNote').value.trim();
+    if(!d) return toast('Pick a date first.');
+    if(addToCalendar([{date:d, title:`Claim follow-up: ${n || P.name}`, desc:`${P.name}${P.claim.number?' - claim '+P.claim.number:''}. ${n}`, dayBefore:true}], `StormFile follow-up ${d}`)){ logEvt(P, `Follow-up reminder set for ${fmtDay(d+'T12:00:00')}${n?': '+n:''}`); S.fuDate=''; S.fuNote=''; save(); render(); } return; }
+  if(t.dataset.act==='ltCopy'){ const box = document.getElementById('ltOut'); const txt = box.value;
+    const fb = () => { box.removeAttribute('readonly'); box.focus(); box.select(); box.setAttribute('readonly',''); toast('Letter selected. Use Copy on your phone.'); };
+    try{ navigator.clipboard.writeText(txt).then(()=>toast('Letter copied'), fb); }catch(e){ fb(); } return; }
+  if(t.dataset.act==='agree'){ S.agreed = true; S.agreedAt = nowISO(); save(); render(); window.scrollTo(0,0); return; }
+  if(t.dataset.act==='agreeOwn'){ S.agreed = true; S.agreedAt = nowISO(); save(); const b = document.createElement('button'); b.dataset.act = 'startOwn'; view.appendChild(b); b.click(); return; }
   if(t.dataset.act==='hideWelcome'){ S.hideWelcome = true; save(); return render(); }
   if(t.dataset.fbq){ S.fb = S.fb || {}; S.fb[t.dataset.fbq] = t.dataset.fba; save(); const y = window.scrollY; render(); window.scrollTo(0,y); return; }
   if(t.dataset.act==='fbCopy'){
@@ -1340,8 +1892,10 @@ view.addEventListener('change', e=>{
   if(el.id==='polUpload'){ if(el.files.length) readDecPage(el.files[0], P); return; }
   if(el.id==='decUploadNew'){ if(el.files.length) readDecPage(el.files[0], null); return; }
   if(el.id==='stockUpload'){ if(el.files.length){ P.info.stockReport = `${el.files[0].name} · uploaded ${new Date().toLocaleDateString()}`; save(); render(); toast('Stock report saved'); } return; }
-  if(el.dataset.itemreceipt){ if(el.files.length){ const [rid,i]=el.dataset.itemreceipt.split(':'); const it = P.rooms.find(x=>x.id===rid).items[+i]; it.r = el.files[0].name; it.receiptAt = nowISO(); logEvt(P, `Receipt added for ${it.n}`); S.sample=false; save(); render(); toast('Receipt saved'); } return; }
-  if(el.dataset.upreceipt){ if(el.files.length){ const u = P.upgrades[+el.dataset.upreceipt]; u.r = el.files[0].name; u.receiptAt = nowISO(); logEvt(P, `Receipt added for ${u.n}`); save(); render(); toast('Receipt saved'); } return; }
+  if(el.dataset.itemreceipt){ if(el.files.length){ const [rid,i]=el.dataset.itemreceipt.split(':'); const it = P.rooms.find(x=>x.id===rid).items[+i]; const f = el.files[0];
+    storeDoc(f).then(d=>{ it.rid = d.id; it.r = f.name || 'Receipt'; it.receiptAt = nowISO(); logEvt(P, `Receipt added for ${it.n}`); S.sample=false; save(); render(); toast('Receipt saved'); }).catch(()=>toast('Couldn\u2019t save that receipt. Try a photo instead.')); } return; }
+  if(el.dataset.upreceipt){ if(el.files.length){ const u = P.upgrades[+el.dataset.upreceipt]; const f = el.files[0];
+    storeDoc(f).then(d=>{ u.rid = d.id; u.r = f.name || 'Receipt'; u.receiptAt = nowISO(); logEvt(P, `Receipt added for ${u.n}`); save(); render(); toast('Receipt saved'); }).catch(()=>toast('Couldn\u2019t save that receipt.')); } return; }
   if(el.dataset.vcov){ P.vehicles[+el.dataset.vcov].cov = el.value; save(); return render(); }
   if(el.id==='rcFile'){ const n=document.getElementById('rcFileName'); if(n) n.textContent = el.files.length ? 'Attached: '+el.files[0].name : ''; return; }
   if(el.dataset.extphoto){ addPhotos(P, el.files, P.exterior, 'outside of the building', el.dataset.source); return; }
@@ -1359,16 +1913,24 @@ view.addEventListener('change', e=>{
     flood:()=>P.info.flood=el.value, rent:()=>P.info.rent=num(el.value), renterProof:()=>P.info.renterProof=!!el.value,
     monthlyNeed:()=>P.info.monthlyNeed=num(el.value), monthsClosed:()=>P.info.monthsClosed=num(el.value),
     clNum:()=>P.claim.number=el.value.trim(), clDate:()=>P.claim.dateOfLoss=el.value,
-    clAdj:()=>P.claim.adjuster=el.value, clAdjPh:()=>P.claim.adjPhone=el.value,
+    clAdj:()=>P.claim.adjuster=el.value, clAdjPh:()=>P.claim.adjPhone=el.value, clAdjEmail:()=>P.claim.adjEmail=el.value.trim(),
     clStatus:()=>P.claim.status=el.value, clOrder:()=>P.claim.orderDate=el.value, clRate:()=>P.claim.mileRate=num(el.value)
   };
+  if(el.id==='ltKind'){ S.ltKind = el.value; S.ltExtra = ''; save(); render(); const c = document.getElementById('ltKind'); if(c) c.scrollIntoView({block:'center'}); return; }
   if(map[el.id]){ map[el.id](); save(); render(); }
 });
 
 view.addEventListener('input', e=>{
+  const mk = e.target.id && e.target.id.startsWith('me-') ? e.target.id.slice(3) : null;
+  if(e.target.id==='ltExtra' || e.target.id==='fuNote' || e.target.id==='fuDate'){ const P = cur();
+    if(e.target.id==='ltExtra'){ S.ltExtra = e.target.value; const o = document.getElementById('ltOut'); if(o) o.value = letterText(P, LETTERS[S.ltKind]&&(!LETTERS[S.ltKind].only||LETTERS[S.ltKind].only===P.type)?S.ltKind:'followup', S.ltExtra); const m = document.getElementById('ltMail'); if(m) m.href = ltMailto(P); }
+    else S[e.target.id] = e.target.value;
+    save(); return; }
+  if(mk){ S.me = S.me || {}; S.me[mk] = e.target.value; save(); return; }
   const k = e.target.dataset && e.target.dataset.fbt; if(!k) return;
   S.fb = S.fb || {}; S.fb[k] = e.target.value; save();
   const out = document.getElementById('fbOut'); if(out) out.value = fbText();
+  const fm = document.getElementById('fbMail'); if(fm) fm.href = 'mailto:info@coastlinecode.com?subject=' + encodeURIComponent('StormFile feedback') + '&body=' + encodeURIComponent(fbText());
 });
 view.addEventListener('submit', e=>{
   e.preventDefault();
@@ -1386,9 +1948,11 @@ view.addEventListener('submit', e=>{
     if(!what||!(raw>0)) return toast('Enter what it was for and the amount.');
     const file=document.getElementById('rcFile').files[0];
     const amt = cat==='Mileage' ? raw*(P.claim.mileRate||0) : raw;
-    P.claim.receipts.push({cat, what: cat==='Mileage' ? `${what} (${raw} mi)` : what, amt, date:new Date().toLocaleDateString(), at:nowISO(), r: file ? file.name : ''});
-    logEvt(P, `Expense logged: ${cat}, ${fmt(amt)}${file?' with receipt':''}`);
-    save(); render(); toast(cat==='Mileage' ? `Added ${raw} miles = ${fmt(amt)}` : 'Expense added');
+    const rec = {cat, what: cat==='Mileage' ? `${what} (${raw} mi)` : what, amt, date:new Date().toLocaleDateString(), at:nowISO(), r: file ? (file.name||'Receipt') : ''};
+    const finish = () => { P.claim.receipts.push(rec); logEvt(P, `Expense logged: ${cat}, ${fmt(amt)}${file?' with receipt':''}`);
+      save(); render(); toast(cat==='Mileage' ? `Added ${raw} miles = ${fmt(amt)}` : 'Expense added'); };
+    if(file){ storeDoc(file).then(d=>{ rec.rid = d.id; finish(); }).catch(()=>{ rec.r=''; finish(); toast('Expense added, but the receipt couldn\u2019t be saved.'); }); }
+    else finish();
   } else if(f.id==='addUpgrade'){
     const n=document.getElementById('upN').value.trim(), v=parseFloat(document.getElementById('upV').value), y=parseInt(document.getElementById('upY').value)||YEAR;
     if(!n||!(v>0)) return toast('Enter the upgrade and its cost.');
@@ -1428,7 +1992,8 @@ view.addEventListener('submit', e=>{
   }
 });
 
-load(); if(S.tab==='feedback' && !VIEWS.feedback) S.tab='home'; render();
+load(); if(!VIEWS[S.tab]) S.tab='home'; render(); showLock();
+bioSupported().then(ok=>{ BIO_OK = ok; if(S.tab==='settings') render(); });
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
 if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
 (async ()=>{
