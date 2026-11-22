@@ -1,4 +1,7 @@
 (function(){
+/* In the App Store / Google Play app, native/src/native.js sets SF_NATIVE so StormFile can use the phone's own share sheet, Face ID and calendar. */
+const NAT = window.SF_NATIVE || null;
+const TEST = !(NAT && NAT.store); // the shared test version shows tester notes; the App Store / Google Play version doesn't
 const YEAR = 2026;
 const CPI = 0.031;
 const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
@@ -384,7 +387,18 @@ const LEVELS = {
   after:{name:'Storm has passed',short:'After',cadence:'Claim mode',tone:'info',msg:'The storm has moved inland. Only go back once officials say it is safe.'}
 };
 const active = () => ['forecast','watch','warning','after'].includes(S.threat);
-const levelFor = P => (active() && !P.inPath) ? 'none' : S.threat;
+const DEMO = () => !!S.sample && TEST; // the storm-alert demo (Tropical Storm Delia) is only in the shared test version
+const levelFor = P => (DEMO() && active() && !P.inPath) ? 'none' : S.threat;
+/* With your own properties StormFile doesn't track storms yet, so you choose what's happening and it shows the right checklist. */
+const OWN_LEVELS = {
+  none:{name:'Getting ready',short:'Getting ready',tone:'ok',msg:'Use the quiet months to finish your photos, receipts and policy details.'},
+  preseason:{name:'Getting ready',short:'Getting ready',tone:'ok',msg:'Use the quiet months to finish your photos, receipts and policy details.'},
+  forecast:{name:'Storm on the way',short:'Storm on the way',tone:'bad',msg:'Finish the final checklist. Follow official alerts and leave if you are told to evacuate.'},
+  watch:{name:'Storm on the way',short:'Storm on the way',tone:'bad',msg:'Finish the final checklist. Follow official alerts and leave if you are told to evacuate.'},
+  warning:{name:'Storm on the way',short:'Storm on the way',tone:'bad',msg:'Finish the final checklist. Follow official alerts and leave if you are told to evacuate.'},
+  after:{name:'After the storm',short:'After the storm',tone:'info',msg:'Only go back once officials say it is safe. Photograph the damage before you clean up.'}
+};
+const lvOf = P => DEMO() ? LEVELS[levelFor(P)] : {...LEVELS[levelFor(P)], ...OWN_LEVELS[levelFor(P)]};
 
 /* ---------- Views ---------- */
 function ringSVG(pct){
@@ -400,7 +414,7 @@ function ringSVG(pct){
 }
 
 function viewHome(){
-  const P = cur(), cfg = TYPES[P.type], sc = score(P), lv = LEVELS[levelFor(P)], c = calc(P), ts = tasks(P);
+  const P = cur(), cfg = TYPES[P.type], sc = score(P), lv = lvOf(P), c = calc(P), ts = tasks(P);
   const next = ts.filter(t=>!t.done);
   return `
   <section class="stack">
@@ -442,8 +456,8 @@ function viewHome(){
     <p class="small">${esc(due)} If a storm takes this phone, a backup is the only copy of your photos and receipts.</p>
     <button class="primary" data-go="settings">Make a backup</button></div>` : ''; })()}
   ${S.hideWelcome || !S.sample ? '' : `<div class="card" style="border-color:var(--amber);background:var(--amber-bg)">
-    <div class="row"><span class="label" style="color:var(--amber)">Test version</span><button class="src" data-act="hideWelcome">Hide</button></div>
-    <h2>Thanks for testing StormFile</h2>
+    <div class="row"><span class="label" style="color:var(--amber)">${TEST?'Test version':'Sample data'}</span><button class="src" data-act="hideWelcome">Hide</button></div>
+    <h2>${TEST?'Thanks for testing StormFile':'Take a look around'}</h2>
     <p class="small">StormFile helps Gulf Coast homeowners understand their insurance and get ready for a hurricane claim. Everything here is sample data. Nothing you enter leaves this phone.</p>
     <ol class="steps small">
       <li>Open <strong>Policy</strong> to see a sample policy explained in plain English.</li>
@@ -471,7 +485,7 @@ function viewHome(){
       <div class="stack" style="min-width:0">
         <span class="chip ${lv.tone==='info'?'info':lv.tone}" style="align-self:flex-start"><span class="dot"></span>${esc(lv.name)}</span>
         <p class="small">${sc>=80?'Records are in good shape.':sc>=50?'Partway there. A few tasks left before a storm.':'If a storm hit today, this claim would be hard to prove.'}</p>
-        <button class="small-btn ghost" data-go="storm" style="align-self:flex-start">Storm alerts</button>
+        <button class="small-btn ghost" data-go="storm" style="align-self:flex-start">${DEMO()?'Storm alerts':'Storm prep'}</button>
       </div>
     </div>
   </div>
@@ -504,7 +518,7 @@ function viewHome(){
     <div class="stack">
     ${S.properties.map(p=>{ const s=score(p), l=levelFor(p); return `<button class="prop" data-prop="${p.id}" aria-current="${p.id===P.id}">
       <div class="stack" style="gap:0;min-width:0"><span class="typetag">${esc(TYPES[p.type].label)}</span><strong>${esc(p.name)}</strong>
-        <span class="small muted">${esc(p.address)}${active()&&p.inPath?' · <span style="color:var(--red);font-weight:600">In storm path</span>':''}</span></div>
+        <span class="small muted">${esc(p.address)}${DEMO()&&active()&&p.inPath?' · <span style="color:var(--red);font-weight:600">In storm path</span>':''}</span></div>
       <span class="sc" style="color:var(--${s>=80?'green':s>=50?'amber':'red'})">${s}</span></button>`;}).join('')}
     </div>
     <details class="add" ${S.openAdd?'open':''}><summary>+ Add a property</summary>
@@ -522,11 +536,10 @@ function viewHome(){
           </select></label>
         <p class="small muted">Some owners have one policy for several places, like a business policy that lists two locations.</p>
         <button class="primary" type="submit">Add property</button>
-        <p class="small muted">Each extra property adds a few dollars a month. Businesses use the business plan.</p>
       </form>
     </details>
   </div>
-  <p class="foot">StormFile prototype · sample data · not insurance advice</p>`;
+  <p class="foot">${S.sample?'Sample data · ':''}StormFile organizes your records. It isn’t insurance advice.</p>`;
 }
 
 function viewPolicy(){
@@ -569,7 +582,7 @@ function viewPolicy(){
     <div class="row small"><span class="muted">Agent</span><span>${esc(p.agent)}</span></div>
     <div class="row small"><span class="muted">Claims line</span><span class="num">${esc(p.claimPhone)}</span></div>
     ${(()=>{ const others = usersOf(p.id).filter(x=>x.id!==P.id); return others.length ? `<div class="alert ok" style="background:var(--bg)"><strong>This policy also covers ${esc(others.map(o=>o.name).join(', '))}</strong>
-      <p class="small">One policy, ${others.length+1} locations. Changes you make here apply to all of them. The full app reads the policy’s schedule of locations to show the limit for each place.</p></div>` : ''; })()}
+      <p class="small">One policy, ${others.length+1} locations. Changes you make here apply to all of them. Check the policy’s schedule of locations for the limit at each place.</p></div>` : ''; })()}
     <label class="field">Policy for this property
       <select id="polSwitch">
         ${S.policies.filter(po=>po.id===p.id || usersOf(po.id).length).map(po=>`<option value="${po.id}" ${po.id===p.id?'selected':''}>${esc(polLabel(po))}${po.id===p.id?'':' (also used by '+esc(usersOf(po.id).map(u=>u.name).join(', '))+')'}</option>`).join('')}
@@ -769,7 +782,6 @@ function viewInventory(){
           </div>
           <button class="primary" type="submit">Add item</button>
         </form>
-        <p class="small muted">In the full app, AI names items from your photos and suggests today’s price.</p>
       </div>`:''}
     </div>`;}).join('')}
   </div>
@@ -859,14 +871,19 @@ function coneSVG(P, level){
 }
 
 function viewStorm(){
-  const P = cur(), level = levelFor(P), lv = LEVELS[level], list = checklist(P, level);
+  const P = cur(), level = levelFor(P), lv = lvOf(P), list = checklist(P, level), demo = DEMO();
   const inPath = S.properties.filter(p=>p.inPath);
   return `
-  <section class="stack"><p class="label">${esc(P.name)} · storm alerts</p><h1>${esc(lv.name)}</h1></section>
-  <div class="alert ${lv.tone==='info'?'ok':lv.tone}" style="background:var(--surface)"><p>${esc(active() && !P.inPath ? 'Delia isn’t headed toward this property.' : lv.msg)}</p>
-    <span class="small muted">Alerts: <strong>${esc(lv.cadence)}</strong></span></div>
-  ${coneSVG(P, level)}
-  ${active() && S.properties.length>1 ? `<div class="card"><h3>Your properties in the path</h3>
+  <section class="stack"><p class="label">${esc(P.name)} · ${demo?'storm alerts':'storm prep'}</p><h1>${esc(lv.name)}</h1></section>
+  <div class="alert ${lv.tone==='info'?'ok':lv.tone}" style="background:var(--surface)"><p>${esc(demo && active() && !P.inPath ? 'Delia isn’t headed toward this property.' : lv.msg)}</p>
+    ${demo?`<span class="small muted">Alerts: <strong>${esc(lv.cadence)}</strong></span>`:''}</div>
+  ${demo ? coneSVG(P, level) : `<div class="card">
+    <h2>What’s happening?</h2>
+    <p class="small">StormFile doesn’t track storms on its own yet. Pick what’s happening and it shows the right checklist. For forecasts and warnings, follow the National Hurricane Center and your local officials.</p>
+    <div class="levels">${[['none','Getting ready'],['watch','Storm on the way'],['after','Storm has passed']].map(([k,t])=>`<button data-level="${k}" aria-pressed="${OWN_LEVELS[S.threat].name===OWN_LEVELS[k].name}">${t}</button>`).join('')}</div>
+    <a class="btn-like" href="https://www.hurricanes.gov" target="_blank" rel="noopener noreferrer">Open the National Hurricane Center</a>
+  </div>`}
+  ${demo && active() && S.properties.length>1 ? `<div class="card"><h3>Your properties in the path</h3>
     <div class="stack">${S.properties.map(p=>`<button class="prop" data-prop="${p.id}" aria-current="${p.id===P.id}">
       <div class="stack" style="gap:0;min-width:0"><strong>${esc(p.name)}</strong><span class="small muted">${esc(p.address)}</span></div>
       <span class="chip ${p.inPath?'bad':'ok'}">${p.inPath?LEVELS[S.threat].short:'Not in path'}</span></button>`).join('')}</div>
@@ -878,10 +895,10 @@ function viewStorm(){
       <div class="stack" style="gap:2px;min-width:0"><strong>${esc(t.t)}</strong><span class="small muted">${esc(t.d)}</span></div></div>`).join('')}</div>
     ${level==='after'?`<button class="primary" data-go="claim">Start claim mode</button>`:''}
   </div>
-  <div class="card">
+  ${!demo?'':`<div class="card">
     <h3>What your phone would show</h3>
     ${notifications(P, level).map(([t,m])=>`<div class="notif"><span class="ic">S</span><div class="stack" style="gap:0;min-width:0"><span class="small muted">StormFile · ${esc(t)}</span><span class="small">${esc(m)}</span></div></div>`).join('')}
-  </div>
+  </div>`}
   ${(()=>{ const st = stateOf(P), list = stateSeasons(P);
     if(!st) return `<div class="card" style="border-color:var(--amber)"><h2>Seasons where this property is</h2>
       <p class="small">Pick the state for ${esc(P.name)} to see its hurricane, wildfire, tornado and winter seasons and get reminders before each one.</p>
@@ -897,11 +914,11 @@ function viewStorm(){
       <p class="small muted">Adds a \u201Cget ready\u201D reminder 3 weeks before each season and one on the day it starts, repeating every year.</p>`:''}
     </div>`; })()}
   <button class="card linkcard" data-go="resources"><div class="stack" style="gap:2px;min-width:0"><strong>Emergency and disaster help</strong><span class="small muted">Your state’s emergency agency, FEMA and the National Hurricane Center</span></div><span aria-hidden="true">›</span></button>
-  <div class="card">
+  ${!demo?'':`<div class="card">
     <h3>Try each alert level</h3>
-    <p class="small muted">The real app follows National Hurricane Center forecasts and raises alerts only for properties in a storm’s path. In this sample, the house and the restaurant are in Delia’s path and the Baton Rouge rental is not.</p>
+    <p class="small muted">This sample shows how storm alerts could work. In it, the house and the restaurant are in Delia’s path and the Baton Rouge rental is not.</p>
     <div class="levels">${Object.entries(LEVELS).map(([k,v])=>`<button data-level="${k}" aria-pressed="${S.threat===k}">${esc(v.short)}</button>`).join('')}</div>
-  </div>`;
+  </div>`}`;
 }
 
 function viewClaim(){
@@ -1038,8 +1055,8 @@ function viewClaim(){
 
   <div class="card">
     <h3>Claim stalled or underpaid?</h3>
-    <p class="small">A licensed public adjuster works for you, not the insurer. They usually charge a share of the claim.${P.type==='business'?' Business claims, especially lost income, are where they help most.':''}</p>
-    <button data-act="pa">Connect with a public adjuster</button>
+    <p class="small">A licensed public adjuster works for you, not the insurer. They usually charge a share of the claim. Your state insurance department can tell you whether one is licensed, and can step in if your insurer stops answering.${P.type==='business'?' Business claims, especially lost income, are where they help most.':''}</p>
+    <button data-go="resources">Get help in your state</button>
   </div>`;
 }
 
@@ -1159,7 +1176,7 @@ function viewFeedback(){
   const f = S.fb || (S.fb = {});
   const answered = FB_Q.filter(x=>f[x.id]).length;
   return `
-  <section class="stack"><p class="label">Test version</p><h1>Your feedback</h1>
+  <section class="stack"><p class="label">${TEST?'Test version':'StormFile'}</p><h1>Your feedback</h1>
     <p class="small muted">Six taps and a few words. When you\u2019re done, tap Email my answers and they come straight to us.</p></section>
   ${FB_Q.map(x=>`<div class="card"><h3>${esc(x.q)}</h3><div class="choices" role="group" aria-label="${esc(x.q)}">
     ${x.opts.map(o=>`<button data-fbq="${x.id}" data-fba="${esc(o)}" aria-pressed="${f[x.id]===o}">${esc(o)}</button>`).join('')}</div></div>`).join('')}
@@ -1188,14 +1205,14 @@ const getJ = k => { try{ return JSON.parse(localStorage.getItem(k)||'null'); }ca
 const setJ = (k,v) => { try{ v==null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
 const pinRec = () => getJ(PINKEY), bioRec = () => getJ(BIOKEY);
 const BIONAME = () => IS_IOS ? 'Face ID' : 'your fingerprint';
-async function bioSupported(){ try{ if(window.self!==window.top) return false; }catch(e){ return false; }
+async function bioSupported(){ if(NAT) return NAT.bioSupported(); try{ if(window.self!==window.top) return false; }catch(e){ return false; }
   if(!window.isSecureContext || !window.PublicKeyCredential || !PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) return false;
   try{ return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); }catch(e){ return false; } }
-async function bioEnroll(){ const id = crypto.getRandomValues(new Uint8Array(16));
+async function bioEnroll(){ if(NAT){ await NAT.bioVerify('Turn on '+BIONAME()+' for StormFile'); setJ(BIOKEY, {native:true}); return; } const id = crypto.getRandomValues(new Uint8Array(16));
   const cred = await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)), rp:{name:'StormFile'}, user:{id, name:'StormFile', displayName:'StormFile'},
     pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}], authenticatorSelection:{authenticatorAttachment:'platform', userVerification:'required', residentKey:'discouraged'}, timeout:60000, attestation:'none'}});
   setJ(BIOKEY, {id:u8ToB64(new Uint8Array(cred.rawId))}); }
-async function bioUnlock(){ const r = bioRec(); if(!r) return false;
+async function bioUnlock(){ const r = bioRec(); if(!r) return false; if(NAT){ try{ await NAT.bioVerify('Unlock StormFile'); return true; }catch(e){ return false; } }
   try{ const a = await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)), allowCredentials:[{type:'public-key', id:b64ToU8(r.id), transports:['internal','hybrid']}], userVerification:'required', timeout:60000}});
     if(!a) return false; const flags = new Uint8Array(a.response.authenticatorData)[32]; return !!(flags & 0x04); }catch(e){ return false; } }
 const lockState = () => getJ(LOCKKEY) || {n:0, rounds:0, until:0};
@@ -1249,6 +1266,7 @@ function fileIdsInState(st){ const ids = new Set(); const add = x => { if(x && x
     (P.upgrades||[]).forEach(u=>{ if(u.rid) ids.add(u.rid); }); ((P.claim||{}).receipts||[]).forEach(r=>{ if(r.rid) ids.add(r.rid); }); });
   return [...ids]; }
 async function saveFile(filename, blob){
+  if(NAT) return NAT.saveFile(filename, blob);
   // Phones: the share sheet lets people save straight to Files, iCloud Drive or Google Drive.
   try{ const f = new File([blob], filename, {type: blob.type || 'application/octet-stream'});
     if(navigator.canShare && navigator.canShare({files:[f]}) && /iphone|ipad|android/i.test(navigator.userAgent)){ await navigator.share({files:[f], title:filename}); return true; } }
@@ -1432,7 +1450,13 @@ function makeIcs(events){
       ...(e.dayBefore?['BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsText(e.title)}`,'TRIGGER:-P1D','END:VALARM']:[]), 'END:VEVENT'); });
   L.push('END:VCALENDAR'); return L.map(icsFold).join('\r\n') + '\r\n';
 }
-function addToCalendar(events, name){
+async function addToCalendar(events, name){
+  if(NAT && NAT.addEvents){
+    const r = await NAT.addEvents(events.map(e=>{ const st = at9(e.date); return {title:e.title, description:e.desc||'', startDate:st.getTime(), endDate:st.getTime()+30*60000, yearly:!!e.yearly, alerts:e.dayBefore?[-1440,0]:[0]}; }));
+    if(r === true){ toast(events.length>1 ? `${events.length} reminders added to your calendar.` : 'Added to your calendar.'); return true; }
+    if(r === false) return false;
+    return saveFile(name.replace(/[^\w .-]/g,'') + '.ics', new Blob([makeIcs(events)], {type:'text/calendar'})); // calendar access not given: share the file instead
+  }
   const blob = new Blob([makeIcs(events)], {type:'text/calendar'});
   try{ const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = name.replace(/[^\w .-]/g,'') + '.ics'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u), 60000);
     toast(events.length>1 ? `Open the file to add ${events.length} reminders to your calendar.` : 'Open the file to add it to your calendar.'); return true; }
@@ -1551,7 +1575,7 @@ function viewWelcome(){
   <div class="card">
     <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Your information stays on this phone</strong><span class="small muted">No account and no sign-up. Nothing is uploaded or sold. Lock it with a PIN or Face ID and keep a locked backup.</span></div></div>
     <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Explains, doesn’t decide</strong><span class="small muted">StormFile helps you understand and organize. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</span></div></div>
-    <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Test version</strong><span class="small muted">This is an early version shared for feedback, so things may change. StormFile, including its name, design and code, belongs to Coastline Code LLC. Please use it for testing and feedback only.</span></div></div>
+    ${!TEST?'':`<div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Test version</strong><span class="small muted">This is an early version shared for feedback, so things may change. StormFile, including its name, design and code, belongs to Coastline Code LLC. Please use it for testing and feedback only.</span></div></div>`}
   </div>
   <p class="small muted">By tapping “I agree” you confirm you understand the points above and accept the <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>. Questions: info@coastlinecode.com</p>
   ${mine ? `<button class="primary" data-act="agree">I agree</button>` :
@@ -1780,7 +1804,7 @@ function viewSettings(){
     <h2>About StormFile</h2>
     <p class="small">StormFile is made by Coastline Code LLC, a veteran-owned company in Pass Christian, Mississippi.</p>
     <p class="small">StormFile helps you organize your insurance and home records. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</p>
-    <p class="small muted">This is a test version shared for feedback. StormFile, including its name, design and code, belongs to Coastline Code LLC. © 2026 Coastline Code LLC.</p>
+    <p class="small muted">${TEST?'This is a test version shared for feedback. ':''}StormFile, including its name, design and code, belongs to Coastline Code LLC. © 2026 Coastline Code LLC.</p>
     <p class="small muted">Questions: info@coastlinecode.com</p>
     <p class="small"><a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> · <a href="support.html" target="_blank" rel="noopener">Help</a></p>
   </div>
@@ -1795,7 +1819,7 @@ function viewSettings(){
 /* ---------- Render + events ---------- */
 const VIEWS = {home:viewHome, policy:viewPolicy, inventory:viewInventory, storm:viewStorm, claim:viewClaim, feedback:viewFeedback, policyForm:viewPolicyForm, settings:viewSettings, resources:viewResources};
 let LIVE = null;
-const INSTALLED = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+const INSTALLED = !!NAT || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
 const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
 let INSTALL_EVT = null;
 window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); INSTALL_EVT = e; if(S && S.tab==='home') render(); });
@@ -2082,7 +2106,7 @@ view.addEventListener('click', e=>{
     f.text().then(txt=>restoreBackup(txt, document.getElementById('rsPass').value)).then(n=>{ render(); window.scrollTo(0,0); toast(`Restored ${plural(n,'property')}.`.replace('propertys','properties')); })
       .catch(e=>{ t.disabled=false; t.textContent='Unlock and restore'; toast(e.message || 'Couldn’t restore that backup.'); }); return; }
   if(t.dataset.act==='wipe'){ if(!t.dataset.armed){ t.dataset.armed='1'; t.textContent='Tap again to erase everything'; setTimeout(()=>{ if(t.isConnected){ delete t.dataset.armed; t.textContent='Erase everything on this phone'; } }, 4000); return; }
-    clearFiles().catch(()=>{}).then(()=>{ Object.keys(localStorage).filter(k=>/^stormfile/.test(k)).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); S = DEFAULT_STATE(); S.agreed = false; save(); render(); window.scrollTo(0,0); toast('Everything was erased from this phone.'); }); return; }
+    clearFiles().catch(()=>{}).then(()=>{ if(NAT && NAT.wipe) NAT.wipe(); Object.keys(localStorage).filter(k=>/^stormfile/.test(k)).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); S = DEFAULT_STATE(); S.agreed = false; save(); render(); window.scrollTo(0,0); toast('Everything was erased from this phone.'); }); return; }
   if(t.dataset.act==='packet'){ const o = id => { const el = document.getElementById(id); return !el || el.checked; };
     const opt = {policy:o('pk-policy'), photos:o('pk-photos'), receipts:o('pk-receipts'), history:o('pk-history')};
     t.disabled = true; t.textContent = 'Making your PDF\u2026';
@@ -2094,13 +2118,13 @@ view.addEventListener('click', e=>{
     const evs = [{date:addDays(pol.renewal,-45), title:`StormFile: check ${P.name} coverage before renewal`, desc:`Your ${pol.carrier} policy renews ${fmtDay(pol.renewal+'T12:00:00')}. Open StormFile, check "Enough to rebuild?" and the inflation check, and call your agent about any gaps.`, dayBefore:false},
       {date:pol.renewal, title:`${P.name} policy renews today`, desc:'Add the new declarations page to StormFile and check what changed.', dayBefore:false}].filter(e=>at9(e.date) > new Date());
     if(!evs.length) return toast('That renewal date has passed. Update it first.');
-    if(addToCalendar(evs, `StormFile renewal ${P.name}`)){ logEvt(P, 'Renewal reminders added to calendar'); save(); } return; }
+    addToCalendar(evs, `StormFile renewal ${P.name}`).then(ok=>{ if(ok){ logEvt(P, 'Renewal reminders added to calendar'); save(); } }); return; }
   if(t.dataset.act==='calSeason'){ const ev = seasonEventsFor(P); if(!ev.length) return toast('Pick a state first.');
-    if(addToCalendar(ev, `StormFile seasons ${stateOf(P)}`)){ logEvt(P, `Season reminders added to calendar (${STATE_NAME[stateOf(P)]})`); save(); } return; }
+    addToCalendar(ev, `StormFile seasons ${stateOf(P)}`).then(ok=>{ if(ok){ logEvt(P, `Season reminders added to calendar (${STATE_NAME[stateOf(P)]})`); save(); } }); return; }
   if(t.dataset.act==='changeState'){ P.state = ''; P.address = String(P.address||'').replace(/,\s*[A-Za-z]{2}\s*$/,''); P.stateCleared = true; save(); return render(); }
   if(t.dataset.act==='calFollow'){ const d = document.getElementById('fuDate').value, n = document.getElementById('fuNote').value.trim();
     if(!d) return toast('Pick a date first.');
-    if(addToCalendar([{date:d, title:`Claim follow-up: ${n || P.name}`, desc:`${P.name}${P.claim.number?' - claim '+P.claim.number:''}. ${n}`, dayBefore:true}], `StormFile follow-up ${d}`)){ logEvt(P, `Follow-up reminder set for ${fmtDay(d+'T12:00:00')}${n?': '+n:''}`); S.fuDate=''; S.fuNote=''; save(); render(); } return; }
+    addToCalendar([{date:d, title:`Claim follow-up: ${n || P.name}`, desc:`${P.name}${P.claim.number?' - claim '+P.claim.number:''}. ${n}`, dayBefore:true}], `StormFile follow-up ${d}`).then(ok=>{ if(ok){ logEvt(P, `Follow-up reminder set for ${fmtDay(d+'T12:00:00')}${n?': '+n:''}`); S.fuDate=''; S.fuNote=''; save(); render(); } }); return; }
   if(t.dataset.act==='ltCopy'){ const box = document.getElementById('ltOut'); const txt = box.value;
     const fb = () => { box.removeAttribute('readonly'); box.focus(); box.select(); box.setAttribute('readonly',''); toast('Letter selected. Use Copy on your phone.'); };
     try{ navigator.clipboard.writeText(txt).then(()=>toast('Letter copied'), fb); }catch(e){ fb(); } return; }
@@ -2114,7 +2138,6 @@ view.addEventListener('click', e=>{
     try{ navigator.clipboard.writeText(txt).then(()=>toast('Copied. Paste it into a text or email.'), fallback); }catch(e){ fallback(); }
     return;
   }
-  if(t.dataset.act==='pa') return toast('In the full app, this connects you with a local licensed public adjuster.');
   if(t.dataset.src) return toast('Opens the policy at ' + t.dataset.src);
   if(t.dataset.room){ const r=P.rooms.find(x=>x.id===t.dataset.room); r.open=!r.open; save(); return render(); }
   if(t.dataset.delitem){ const [rid,i]=t.dataset.delitem.split(':'); const r=P.rooms.find(x=>x.id===rid); const it=r.items[+i];
@@ -2244,7 +2267,7 @@ view.addEventListener('submit', e=>{
 load(); if(!VIEWS[S.tab]) S.tab='home'; render(); showLock();
 bioSupported().then(ok=>{ BIO_OK = ok; if(S.tab==='settings') render(); });
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
-if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
+if(!NAT && 'serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
 (async ()=>{
   try{
     const sm = window.claude && window.claude.use ? await window.claude.use('sample') : null;
@@ -2252,4 +2275,12 @@ if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigato
   }catch(e){ LIVE = false; }
   if(S.tab==='home') render();
 })();
+/* Android back button in the phone app: close what's open, then go back to Home. */
+if(NAT && NAT.onBack) NAT.onBack(()=>{
+  const v = document.querySelector('.viewer'); if(v){ v.querySelector('[data-closeviewer]').click(); return true; }
+  if(document.querySelector('.lockscreen')) return true;
+  if(!menu.hidden){ setMenu(false); return true; }
+  if(S.agreed && S.tab!=='home'){ go('home'); return true; }
+  return false;
+});
 })();

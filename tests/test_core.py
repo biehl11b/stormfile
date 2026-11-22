@@ -78,6 +78,10 @@ with sync_playwright() as p:
     ics = open(dl.value.path()).read()
     # Mississippi: hurricane (2 + peak), tornado (2), fall tornado (2), winter (2) = 9 yearly reminders
     out['season_ics'] = ics.count('BEGIN:VEVENT') == 9 and ics.count('RRULE:FREQ=YEARLY') == 9 and 'Mississippi' in ics
+    v = pg.text_content('#view'); out['own_storm_no_demo'] = 'Delia' not in v and 'What’s happening?' in v and 'What your phone would show' not in v
+    pg.click('[data-level=watch]'); pg.wait_for_timeout(200)
+    out['own_storm_stage'] = pg.text_content('h1') == 'Storm on the way' and 'Final checklist' in pg.text_content('#view')
+    pg.click('[data-level=none]'); pg.wait_for_timeout(200)
     v = pg.text_content('#view'); out['ms_seasons_shown'] = all(x in v for x in ['Seasons in Mississippi', 'Hurricane season', 'Tornado season', 'Fall tornado season', 'Winter storms'])
     # feedback goes to the business email
     pg.click('#fbBtn'); pg.click('[data-go=feedback]'); pg.click('button[data-fbq=rating] >> nth=4'); pg.wait_for_timeout(200)
@@ -87,6 +91,7 @@ with sync_playwright() as p:
     import re as _re
     _txt = open('../app.js').read().lower().replace('free up', '').replace('only if free', '')
     out['no_free_claims'] = not _re.search(r'\bfree\b', _txt)
+    out['no_prototype_promises'] = not _re.search(r'full app|real app|a few dollars a month|prototype', _txt)
     out['errors'] = errs
     b.close()
 ok = all(v for k, v in out.items() if k != 'errors') and not out['errors']

@@ -1,0 +1,8 @@
+/node_modules/
+/www/
+/ios/
+/android/
+/out/
+/emu/
+*.log
+/.xcode-target
