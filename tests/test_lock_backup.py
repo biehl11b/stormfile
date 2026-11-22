@@ -24,7 +24,7 @@ with sync_playwright() as p:
     out['viewer_uses_full_file'] = pg.evaluate("()=>document.querySelector('.viewer img').src.startsWith('blob:')")
     pg.click('[data-closeviewer]')
     # receipt stored as a file
-    pg.fill('input[name=n] >> nth=0', 'Sofa'); pg.fill('input[name=v] >> nth=0', '2400')
+    pg.fill('input[name=n] >> nth=0', 'Plaid sleeper sofa'); pg.fill('input[name=v] >> nth=0', '2400')
     pg.click('form[data-additem] button[type=submit] >> nth=0'); pg.wait_for_timeout(300)
     pg.set_input_files('input[data-itemreceipt] >> nth=0', [fx['small']]); pg.wait_for_timeout(1200)
     out['receipt_viewable'] = pg.is_visible('button[data-viewfile]')
@@ -43,7 +43,7 @@ with sync_playwright() as p:
         pg.click('[data-act=bkMake]')
     path = os.path.join(tempfile.mkdtemp(), 'b.json'); dl.value.save_as(path)
     txt = open(path).read()
-    out['backup_is_encrypted'] = '"format":"stormfile"' in txt and 'Sofa' not in txt
+    out['backup_is_encrypted'] = '"format":"stormfile"' in txt and 'Plaid sleeper' not in txt and 'Plaid sleeper sofa' not in json.dumps(json.loads(txt))
     out['backup_has_photos_size_kb'] = round(len(txt) / 1024)
     pg.click('[data-act=wipe]'); pg.click('[data-act=wipe]'); pg.wait_for_timeout(800)
     left = pg.evaluate("""async()=>{const d=await new Promise(r=>{const q=indexedDB.open('stormfile');q.onsuccess=()=>r(q.result)});
@@ -56,7 +56,7 @@ with sync_playwright() as p:
     out['wrong_passphrase_refused'] = "match" in pg.text_content('body')
     pg.fill('#rsPass', 'correct horse 1'); pg.click('[data-act=rsGo]'); pg.wait_for_timeout(2500)
     st = pg.evaluate("()=>JSON.parse(localStorage.getItem('stormfile_v4'))")
-    out['restore_brings_back_items'] = any(it['n'] == 'Sofa' for r in st['properties'][0]['rooms'] for it in r['items'])
+    out['restore_brings_back_items'] = any(it['n'] == 'Plaid sleeper sofa' for r in st['properties'][0]['rooms'] for it in r['items'])
     n = pg.evaluate("""async()=>{const d=await new Promise(r=>{const q=indexedDB.open('stormfile');q.onsuccess=()=>r(q.result)});
       return await new Promise(r=>{const g=d.transaction('files').objectStore('files').count();g.onsuccess=()=>r(g.result)})}""")
     out['restore_brings_back_files'] = n >= 2

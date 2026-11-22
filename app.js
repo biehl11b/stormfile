@@ -1573,7 +1573,7 @@ function viewWelcome(){
     <p>StormFile explains your insurance in plain English, keeps a dated record of your home and belongings, and organizes your claim if a storm hits.</p>
   </section>
   <div class="card">
-    <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Your information stays on this phone</strong><span class="small muted">No account and no sign-up. Nothing is uploaded or sold. Lock it with a PIN or Face ID and keep a locked backup.</span></div></div>
+    <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Your information stays on this phone</strong><span class="small muted">No account and no sign-up. Nothing is uploaded or sold. Lock it with a PIN, Face ID or fingerprint and keep a locked backup.</span></div></div>
     <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Explains, doesn’t decide</strong><span class="small muted">StormFile helps you understand and organize. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</span></div></div>
     ${!TEST?'':`<div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Test version</strong><span class="small muted">This is an early version shared for feedback, so things may change. StormFile, including its name, design and code, belongs to Coastline Code LLC. Please use it for testing and feedback only.</span></div></div>`}
   </div>
