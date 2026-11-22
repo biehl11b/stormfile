@@ -1,5 +1,5 @@
 // StormFile offline support: keep the app on the phone so it opens without signal.
-const CACHE = 'stormfile-v5';
+const CACHE = 'stormfile-v6';
 const SHELL = ['./', 'index.html', 'app.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'vendor/pdf-lib.min.js'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 self.addEventListener('install', e => {

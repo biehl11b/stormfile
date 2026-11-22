@@ -413,8 +413,10 @@ function viewHome(){
     <label class="field">Name<input id="rnName" value="${esc(P.name)}" placeholder="e.g. Our house"></label>
     <div class="grid2">
       <label class="field">Type<select id="rnType"><option value="home" ${P.type==='home'?'selected':''}>Home I live in</option><option value="rental" ${P.type==='rental'?'selected':''}>Rental I own</option><option value="business" ${P.type==='business'?'selected':''}>Business</option></select></label>
-      <label class="field">City, state<input id="rnAddr" value="${esc(P.address==='Add your city'?'':P.address)}" placeholder="Pass Christian, MS"></label>
+      <label class="field">City<input id="rnAddr" value="${esc(String(P.address==='Add your city'?'':P.address).replace(/,\s*[A-Za-z]{2}\s*$/,''))}" placeholder="Pass Christian" autocomplete="address-level2"></label>
     </div>
+    <label class="field">State<select id="rnState">${stateOptions(stateOf(P))}</select></label>
+    <p class="small muted">Your state sets which storm and fire seasons StormFile reminds you about.</p>
     <button class="primary" data-act="saveName">Save and add the policy</button>
   </div>` : ''}
   ${INSTALLED ? '' : `<div class="card" style="border-color:var(--accent)">
@@ -427,6 +429,14 @@ function viewHome(){
     ${IS_IOS && !S.sample ? `<div class="alert warn" style="background:var(--bg)"><p class="small"><strong>Important on iPhone:</strong> if StormFile isn\u2019t on your Home Screen, Safari can erase what you\u2019ve saved after about a week of not opening it. Add it to your Home Screen, and make a backup in Settings.</p></div>` : ''}
     <p class="small muted">Your information is saved only on this phone. Once it\u2019s installed, always open StormFile from the icon so your records stay in one place.</p>
   </div>`}
+  ${(()=>{ if(S.sample) return ''; const list = seasonHeadsUp(P); if(!list.length) return '';
+    const soon = list.find(h=>h.win.state==='soon'), lead = soon || list[0];
+    return `<div class="card" style="border-color:${soon?'var(--amber)':'var(--red)'}">
+      <div class="row"><h2>Seasons in ${esc(STATE_NAME[stateOf(P)])}</h2></div>
+      ${list.map(h=>`<div class="row" style="flex-wrap:nowrap"><div class="stack" style="gap:0;min-width:0"><strong>${esc(h.name)}</strong><span class="small muted">${esc(mdLabel(h.start))} \u2013 ${esc(mdLabel(h.end))}</span></div>
+        <span class="chip ${h.win.state==='now'?'bad':'warn'}">${h.win.state==='now'?'In season now':'Starts in '+plural(h.win.days,'day')}</span></div>`).join('')}
+      <p class="small"><strong>Next step:</strong> ${esc(lead.prep[0])}.</p>
+      <button data-go="storm">See the get-ready lists</button></div>`; })()}
   ${(()=>{ const due = backupDue(); return due ? `<div class="card" style="border-color:var(--amber)">
     <div class="row"><h2>Back up your records</h2><span class="chip warn">Recommended</span></div>
     <p class="small">${esc(due)} If a storm takes this phone, a backup is the only copy of your photos and receipts.</p>
@@ -502,8 +512,9 @@ function viewHome(){
         <label class="field">Name<input id="apName" placeholder="e.g. Camp house" required></label>
         <div class="grid2">
           <label class="field">Type<select id="apType"><option value="home">Home</option><option value="rental">Rental</option><option value="business">Business</option></select></label>
-          <label class="field">City, state<input id="apAddr" placeholder="Biloxi, MS" required></label>
+          <label class="field">City<input id="apAddr" placeholder="Biloxi" required></label>
         </div>
+        <label class="field">State<select id="apState" required>${stateOptions(stateOf(P))}</select></label>
         <label class="field">Insurance policy
           <select id="apPolicy">
             <option value="">Its own policy (upload next)</option>
@@ -871,11 +882,20 @@ function viewStorm(){
     <h3>What your phone would show</h3>
     ${notifications(P, level).map(([t,m])=>`<div class="notif"><span class="ic">S</span><div class="stack" style="gap:0;min-width:0"><span class="small muted">StormFile · ${esc(t)}</span><span class="small">${esc(m)}</span></div></div>`).join('')}
   </div>
-  <div class="card">
-    <h2>Hurricane season reminders</h2>
-    <p class="small">Three reminders on your phone\u2019s calendar: May 15 to get your records ready, June 1 when the season starts, and August 1 before the peak.</p>
-    <button class="primary" data-act="calSeason">Add season reminders to my calendar</button>
-  </div>
+  ${(()=>{ const st = stateOf(P), list = stateSeasons(P);
+    if(!st) return `<div class="card" style="border-color:var(--amber)"><h2>Seasons where this property is</h2>
+      <p class="small">Pick the state for ${esc(P.name)} to see its hurricane, wildfire, tornado and winter seasons and get reminders before each one.</p>
+      <label class="field">State<select id="pState">${stateOptions('')}</select></label></div>`;
+    return `<div class="card">
+      <div class="row"><h2>Seasons in ${esc(STATE_NAME[st])}</h2><button class="src" data-act="changeState">Change state</button></div>
+      ${list.length ? list.map(h=>{ const w = h.win; const badge = w && w.state==='now' ? '<span class="chip bad">In season now</span>' : w && w.days<=30 ? `<span class="chip warn">Starts in ${plural(w.days,'day')}</span>` : `<span class="chip info">${esc(mdLabel(h.start))}</span>`;
+        return `<details class="season"><summary><div class="row" style="flex-wrap:nowrap"><div class="stack" style="gap:0;min-width:0"><strong>${esc(h.name)}</strong><span class="small muted">${esc(mdLabel(h.start))} \u2013 ${esc(mdLabel(h.end))}${h.official?' (official)':' (typical)'}</span></div>${badge}</div></summary>
+          <p class="small">${esc(h.peak)}</p><p class="label" style="margin-top:4px">Get ready</p><ul class="small" style="margin:4px 0 0;padding-left:18px">${h.prep.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details>`; }).join('')
+        : '<p class="small">No major storm or fire season is listed for this state. You can still add reminders to review your records each year.</p>'}
+      <p class="small muted">Hurricane dates are the official season. Other seasons are the usual times of highest risk and change from year to year. Always follow local weather alerts and evacuation orders.</p>
+      ${list.length?`<button class="primary" data-act="calSeason">Add yearly reminders to my calendar</button>
+      <p class="small muted">Adds a \u201Cget ready\u201D reminder 3 weeks before each season and one on the day it starts, repeating every year.</p>`:''}
+    </div>`; })()}
   <div class="card">
     <h3>Try each alert level</h3>
     <p class="small muted">The real app follows National Hurricane Center forecasts and raises alerts only for properties in a storm’s path. In this sample, the house and the restaurant are in Delia’s path and the Baton Rouge rental is not.</p>
@@ -1405,7 +1425,7 @@ function makeIcs(events){
   const L = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Coastline Code//StormFile//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
   events.forEach((e,i)=>{ const s = at9(e.date), end = new Date(s.getTime()+30*60000);
     L.push('BEGIN:VEVENT', `UID:${Date.now().toString(36)}-${i}-${Math.random().toString(36).slice(2,8)}@stormfile`, `DTSTAMP:${icsDate(new Date())}`, `DTSTART:${icsDate(s)}`, `DTEND:${icsDate(end)}`,
-      `SUMMARY:${icsText(e.title)}`, `DESCRIPTION:${icsText(e.desc||'')}`,
+      ...(e.yearly?['RRULE:FREQ=YEARLY']:[]), `SUMMARY:${icsText(e.title)}`, `DESCRIPTION:${icsText(e.desc||'')}`,
       'BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsText(e.title)}`,'TRIGGER:PT0M','END:VALARM',
       ...(e.dayBefore?['BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsText(e.title)}`,'TRIGGER:-P1D','END:VALARM']:[]), 'END:VEVENT'); });
   L.push('END:VCALENDAR'); return L.map(icsFold).join('\r\n') + '\r\n';
@@ -1416,15 +1436,75 @@ function addToCalendar(events, name){
     toast(events.length>1 ? `Open the file to add ${events.length} reminders to your calendar.` : 'Open the file to add it to your calendar.'); return true; }
   catch(e){ toast('Your calendar couldn\u2019t be opened from here.'); return false; }
 }
-function seasonEvents(){
-  const now = new Date(), y = (now.getMonth() > 9) ? now.getFullYear()+1 : now.getFullYear();
-  const mk = (md, title, desc) => { let yy = y; const d = `${yy}-${md}`; return {date: at9(d) < now ? `${yy+1}-${md}` : d, title, desc, dayBefore:false}; };
-  return [
-    mk('05-15', 'StormFile: get ready for hurricane season', 'Open StormFile. Walk each room for new photos, add receipts for big purchases, check your policy and flood coverage, and save a backup. New flood policies usually take 30 days to start.'),
-    mk('06-01', 'Hurricane season starts', 'Make sure your StormFile backup is current and your documents are together.'),
-    mk('08-01', 'StormFile: mid-season check', 'Peak hurricane season is August through October. Add anything new to StormFile and save a fresh backup.')
-  ];
+
+/* ---------- States and their storm and fire seasons ---------- */
+const STATES = [['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],['CO','Colorado'],['CT','Connecticut'],['DE','Delaware'],['DC','District of Columbia'],['FL','Florida'],['GA','Georgia'],['HI','Hawaii'],['ID','Idaho'],['IL','Illinois'],['IN','Indiana'],['IA','Iowa'],['KS','Kansas'],['KY','Kentucky'],['LA','Louisiana'],['ME','Maine'],['MD','Maryland'],['MA','Massachusetts'],['MI','Michigan'],['MN','Minnesota'],['MS','Mississippi'],['MO','Missouri'],['MT','Montana'],['NE','Nebraska'],['NV','Nevada'],['NH','New Hampshire'],['NJ','New Jersey'],['NM','New Mexico'],['NY','New York'],['NC','North Carolina'],['ND','North Dakota'],['OH','Ohio'],['OK','Oklahoma'],['OR','Oregon'],['PA','Pennsylvania'],['RI','Rhode Island'],['SC','South Carolina'],['SD','South Dakota'],['TN','Tennessee'],['TX','Texas'],['UT','Utah'],['VT','Vermont'],['VA','Virginia'],['WA','Washington'],['WV','West Virginia'],['WI','Wisconsin'],['WY','Wyoming']];
+const STATE_NAME = Object.fromEntries(STATES);
+function stateOf(P){
+  if(P.state && STATE_NAME[P.state]) return P.state;
+  const a = String(P.address||''); const m = a.match(/,\s*([A-Za-z]{2})\b\.?\s*(\d{5})?\s*$/);
+  if(m && STATE_NAME[m[1].toUpperCase()]) return m[1].toUpperCase();
+  const hit = STATES.find(([c,n]) => new RegExp('\\b'+n+'\\b','i').test(a)); return hit ? hit[0] : '';
 }
+/* Seasons: hurricane dates are the official NOAA seasons. The others are typical times of highest risk and vary by year and place. */
+const HAZ = {
+  hurricane:{name:'Hurricane season', official:true, start:'06-01', end:'11-30', peak:'Peak is mid-August through mid-October.',
+    prep:['Photograph every room, closets, the garage, the roof and all four sides','Add receipts for big purchases and home upgrades','Check you have flood coverage. New flood policies usually take 30 days to start','Know your hurricane deductible in dollars (Policy tab)','Plan where you’d stay if ordered to evacuate, and keep receipts if you do','Save a locked backup off this phone']},
+  hurricanePac:{name:'Hurricane season', official:true, start:'06-01', end:'11-30', peak:'Central Pacific hurricane season. Most storms come August through October.',
+    prep:['Photograph every room, the roof and all four sides','Add receipts for big purchases','Check whether your policy covers hurricane wind and flood','Save a locked backup off this phone']},
+  wildfire:{name:'Wildfire season', start:'06-01', end:'10-31', peak:'Fires can start any time it’s dry; this is when risk is usually highest.',
+    prep:['Photograph every room, closet, drawer and the garage. After a wildfire there may be nothing left to photograph','Clear dead plants, leaves and anything burnable within 5 feet of the house','Check your policy for smoke damage and living expenses if you have to leave','Know your evacuation zone and keep a go-bag ready','Save a locked backup off this phone']},
+  grassfire:{name:'Grass and wildfire season', start:'01-15', end:'04-30', peak:'Dry, windy late winter and spring brings the most grass fires.',
+    prep:['Photograph every room and the outside of the house and outbuildings','Clear dry grass and debris near the house and fences','Add receipts for equipment and big purchases','Save a locked backup off this phone']},
+  tornado:{name:'Tornado season', start:'03-01', end:'06-30', peak:'Tornadoes can happen any month; spring is the busiest time.',
+    prep:['Photograph every room, the roof and all four sides','Know your wind and hail deductible (Policy tab)','Pick your safe spot: a basement, storm shelter or inside room on the lowest floor','Add receipts for big purchases','Save a locked backup off this phone']},
+  tornadoFall:{name:'Fall tornado season', start:'11-01', end:'12-31', peak:'The Southeast has a second tornado season in late fall.',
+    prep:['Update photos of rooms and the roof','Know your wind and hail deductible (Policy tab)','Review your safe spot','Save a fresh backup']},
+  winter:{name:'Winter storms and hard freezes', start:'12-01', end:'02-28', peak:'Freezes can burst pipes and ice can bring down trees and power lines.',
+    prep:['Know where your main water shut-off is','Protect outdoor and attic pipes; let faucets drip in a hard freeze','Check what your policy pays for water damage from frozen pipes','Photograph rooms and add receipts for anything new']}
+};
+const COAST_ATL = ['TX','LA','MS','AL','FL','GA','SC','NC','VA','MD','DE','NJ','NY','CT','RI','MA','NH','ME','DC','PA'];
+const STATE_HAZ = (st) => {
+  const out = [];
+  if(COAST_ATL.includes(st)) out.push({k:'hurricane'});
+  if(st==='HI') out.push({k:'hurricanePac'});
+  if(st==='CA') out.push({k:'wildfire', start:'06-01', end:'11-30', note:'In California fires can happen year-round; summer and fall are the highest-risk months.'});
+  if(['OR','WA','ID','MT'].includes(st)) out.push({k:'wildfire', start:'07-01', end:'10-15'});
+  if(['NV','UT','CO','WY'].includes(st)) out.push({k:'wildfire', start:'06-01', end:'10-31'});
+  if(['AZ','NM'].includes(st)) out.push({k:'wildfire', start:'04-15', end:'07-31', note:'Risk usually peaks before the summer monsoon rains.'});
+  if(st==='AK') out.push({k:'wildfire', start:'05-15', end:'08-31'});
+  if(['TX','OK','KS','NE'].includes(st)) out.push({k:'grassfire'});
+  if(st==='FL') out.push({k:'grassfire', start:'01-15', end:'05-31', note:'Florida’s dry season, before the summer rains, brings the most wildfires.'});
+  if(['TX','OK','KS','NE','SD','ND','MO','AR','LA','MS','AL','TN','KY','IA','IL','IN','OH','GA','MN','WI'].includes(st)) out.push({k:'tornado', start: ['MS','AL','LA','TN','AR','GA','KY'].includes(st) ? '02-15' : '03-15', end: ['MS','AL','LA','TN','AR','GA','KY'].includes(st) ? '05-31' : '06-30'});
+  if(['MS','AL','LA','AR','TN','GA'].includes(st)) out.push({k:'tornadoFall'});
+  if(st && !['HI','FL'].includes(st)) out.push({k:'winter'});
+  return out.map(h => Object.assign({}, HAZ[h.k], {key:h.k}, h.start?{start:h.start}:{}, h.end?{end:h.end}:{}, h.note?{peak:h.note}:{}));
+};
+const mdDate = (y, md) => { const [m,d] = md.split('-').map(Number); return new Date(y, m-1, d, 9, 0, 0); };
+function seasonWindow(h, now){
+  now = now || new Date(); const y = now.getFullYear();
+  for(const yy of [y-1, y, y+1]){ const s = mdDate(yy, h.start); let e = mdDate(yy, h.end); if(e < s) e = mdDate(yy+1, h.end); e.setHours(23,59);
+    if(now >= s && now <= e) return {state:'now', start:s, end:e}; }
+  for(const yy of [y, y+1]){ const s = mdDate(yy, h.start); if(s > now){ let e = mdDate(yy, h.end); if(e < s) e = mdDate(yy+1, h.end); return {state:'soon', start:s, end:e, days:Math.ceil((s-now)/86400000)}; } }
+  return null;
+}
+const mdLabel = md => { const [m,d] = md.split('-').map(Number); return new Date(2026, m-1, d).toLocaleDateString('en-US',{month:'long',day:'numeric'}); };
+function stateSeasons(P){ const st = stateOf(P); return st ? STATE_HAZ(st).map(h => Object.assign(h, {win:seasonWindow(h)})) : []; }
+function seasonHeadsUp(P){
+  return stateSeasons(P).filter(h=>h.win && (h.win.state==='now' || h.win.days <= 30))
+    .sort((a,b)=> (a.win.state==='now'?0:1) - (b.win.state==='now'?0:1) || (a.win.days||0) - (b.win.days||0));
+}
+function seasonEventsFor(P){
+  const ev = []; const st = stateOf(P);
+  stateSeasons(P).forEach(h=>{ const w = h.win || seasonWindow(h); if(!w) return; const s = w.start, ymd = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const prep = new Date(s); prep.setDate(prep.getDate()-21);
+    ev.push({date:ymd(prep), yearly:true, title:`StormFile: get ready for ${h.name.toLowerCase()} (${STATE_NAME[st]})`, desc:`${h.name} starts ${mdLabel(h.start)}. Open StormFile and:\n- ${h.prep.join('\n- ')}`});
+    ev.push({date:ymd(s), yearly:true, title:`${h.name} starts (${STATE_NAME[st]})`, desc:`${h.peak} Make sure your StormFile record and backup are current.`});
+    if(h.key==='hurricane'){ const pk = mdDate(s.getFullYear(), '08-01'); ev.push({date:ymd(pk), yearly:true, title:'StormFile: hurricane season peak is coming', desc:'Peak hurricane season is mid-August through mid-October. Add anything new to StormFile and save a fresh backup.'}); }
+  });
+  return ev;
+}
+const stateOptions = sel => `<option value="">Choose a state</option>` + STATES.map(([c,n])=>`<option value="${c}" ${sel===c?'selected':''}>${esc(n)}</option>`).join('');
 
 /* ---------- Letters (templates the person reads and edits before sending) ---------- */
 const LETTERS = {
@@ -1812,8 +1892,9 @@ view.addEventListener('click', e=>{
     toast('Sample data removed. Name your property below.'); return;
   }
   if(t.dataset.act==='saveName'){
-    const n = document.getElementById('rnName').value.trim(), a = document.getElementById('rnAddr').value.trim(), ty = document.getElementById('rnType').value;
-    if(n) P.name = n; if(a) P.address = a;
+    const n = document.getElementById('rnName').value.trim(), a = document.getElementById('rnAddr').value.trim(), ty = document.getElementById('rnType').value, stv = document.getElementById('rnState').value;
+    if(!stv) return toast('Pick your state so StormFile can remind you about its storm seasons.');
+    if(n) P.name = n; P.state = stv; P.address = (a ? a.replace(/,\s*[A-Za-z]{2}\s*$/,'') + ', ' : '') + stv;
     if(ty !== P.type){ P.type = ty; P.info = defaultInfo(ty); P.rooms = TYPES[ty].rooms.map(x=>room(x)); P.policyId = null; }
     S.renaming = false; S.tab = P.policyId ? 'home' : 'policy'; save(); render(); window.scrollTo(0,0); return;
   }
@@ -1850,7 +1931,9 @@ view.addEventListener('click', e=>{
       {date:pol.renewal, title:`${P.name} policy renews today`, desc:'Add the new declarations page to StormFile and check what changed.', dayBefore:false}].filter(e=>at9(e.date) > new Date());
     if(!evs.length) return toast('That renewal date has passed. Update it first.');
     if(addToCalendar(evs, `StormFile renewal ${P.name}`)){ logEvt(P, 'Renewal reminders added to calendar'); save(); } return; }
-  if(t.dataset.act==='calSeason'){ addToCalendar(seasonEvents(), 'StormFile hurricane season'); return; }
+  if(t.dataset.act==='calSeason'){ const ev = seasonEventsFor(P); if(!ev.length) return toast('Pick a state first.');
+    if(addToCalendar(ev, `StormFile seasons ${stateOf(P)}`)){ logEvt(P, `Season reminders added to calendar (${STATE_NAME[stateOf(P)]})`); save(); } return; }
+  if(t.dataset.act==='changeState'){ P.state = ''; P.address = String(P.address||'').replace(/,\s*[A-Za-z]{2}\s*$/,''); P.stateCleared = true; save(); return render(); }
   if(t.dataset.act==='calFollow'){ const d = document.getElementById('fuDate').value, n = document.getElementById('fuNote').value.trim();
     if(!d) return toast('Pick a date first.');
     if(addToCalendar([{date:d, title:`Claim follow-up: ${n || P.name}`, desc:`${P.name}${P.claim.number?' - claim '+P.claim.number:''}. ${n}`, dayBefore:true}], `StormFile follow-up ${d}`)){ logEvt(P, `Follow-up reminder set for ${fmtDay(d+'T12:00:00')}${n?': '+n:''}`); S.fuDate=''; S.fuNote=''; save(); render(); } return; }
@@ -1916,6 +1999,7 @@ view.addEventListener('change', e=>{
     clAdj:()=>P.claim.adjuster=el.value, clAdjPh:()=>P.claim.adjPhone=el.value, clAdjEmail:()=>P.claim.adjEmail=el.value.trim(),
     clStatus:()=>P.claim.status=el.value, clOrder:()=>P.claim.orderDate=el.value, clRate:()=>P.claim.mileRate=num(el.value)
   };
+  if(el.id==='pState'){ P.state = el.value; P.stateCleared = false; if(el.value && !/,\s*[A-Z]{2}\s*$/.test(P.address||'')) P.address = (P.address && P.address!=='Add your city' ? P.address + ', ' : '') + el.value; save(); render(); if(el.value) toast(`Showing seasons for ${STATE_NAME[el.value]}.`); return; }
   if(el.id==='ltKind'){ S.ltKind = el.value; S.ltExtra = ''; save(); render(); const c = document.getElementById('ltKind'); if(c) c.scrollIntoView({block:'center'}); return; }
   if(map[el.id]){ map[el.id](); save(); render(); }
 });
@@ -1984,10 +2068,11 @@ view.addEventListener('submit', e=>{
     if(a.roofYear){ P.upgrades = (P.upgrades||[]).filter(u=>!/^Roof \(from policy\)/.test(u.n)); }
     S.tab = 'policy'; save(); render(); window.scrollTo(0,0); toast('Here\u2019s what your policy covers.');
   } else if(f.id==='addProp'){
-    const name=document.getElementById('apName').value.trim(), type=document.getElementById('apType').value, addr=document.getElementById('apAddr').value.trim();
-    if(!name||!addr) return;
+    const name=document.getElementById('apName').value.trim(), type=document.getElementById('apType').value, city=document.getElementById('apAddr').value.trim(), stv=document.getElementById('apState').value;
+    if(!name||!city) return; if(!stv) return toast('Pick the state this property is in.');
+    const addr = city.replace(/,\s*[A-Za-z]{2}\s*$/,'') + ', ' + stv;
     const info = defaultInfo(type);
-    const np = {upgrades:[], vehicles:[], id:uid(), type, name, address:addr, inPath:false, policyId:document.getElementById('apPolicy').value||null, info, exterior:[], manual:{}, claim:blankClaim(), rooms:TYPES[type].rooms.map(n=>room(n))};
+    const np = {upgrades:[], vehicles:[], id:uid(), type, name, address:addr, state:stv, inPath:false, policyId:document.getElementById('apPolicy').value||null, info, exterior:[], manual:{}, claim:blankClaim(), rooms:TYPES[type].rooms.map(n=>room(n))};
     S.properties.push(np); S.current = np.id; S.openAdd = false; S.tab = np.policyId ? 'home' : 'policy'; save(); render(); window.scrollTo(0,0); toast(np.policyId ? 'Added '+name : 'Added '+name+'. Now upload its policy.');
   }
 });

@@ -20,11 +20,11 @@ def agree(pg):
     pg.evaluate("()=>{const a=document.querySelector('[data-act=agree]'); a&&a.click();}")
     pg.wait_for_timeout(200)
 
-def start_own(pg, name='Test house'):
+def start_own(pg, name='Test house', state='MS'):
     pg.evaluate("()=>{const b=document.querySelector('[data-act=startOwn]'); b&&b.click();}")
     pg.wait_for_timeout(300)
     if pg.is_visible('#rnName'):
-        pg.fill('#rnName', name); pg.click('[data-act=saveName]'); pg.wait_for_timeout(300)
+        pg.fill('#rnName', name); pg.select_option('#rnState', state); pg.click('[data-act=saveName]'); pg.wait_for_timeout(300)
 
 _FX = None
 def fixtures():

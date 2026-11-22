@@ -9,7 +9,8 @@ Everything a person enters stays on their own phone. There is no account, no ser
 - "Enough to rebuild?" and inflation checks; homes, rentals and businesses; shared or separate policies
 - Room-by-room inventory with full-size photos stamped with date, time and location, and receipts saved as files
 - Home upgrades, vehicles, campers and boats
-- Storm alert levels and checklists; hurricane season, renewal and follow-up reminders for the phone's calendar
+- Each property's state sets its seasons (hurricane, wildfire, grass fire, tornado, winter freezes) with get-ready lists, a Home heads-up 30 days ahead, and yearly calendar reminders
+- Storm alert levels and checklists; renewal and follow-up reminders for the phone's calendar
 - Claim tracker: before-storm record lock, record history, living expenses with receipts, call log, letters
 - Claim packet PDF made on the phone
 - PIN and Face ID lock, encrypted backup and restore

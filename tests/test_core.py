@@ -16,7 +16,10 @@ with sync_playwright() as p:
     out['start_says_not_advice'] = "doesn’t sell insurance" in pg.text_content('#view')
     pg.click('[data-act=agreeOwn]'); pg.wait_for_timeout(400)
     out['own_setup_no_sample'] = pg.is_visible('#rnName') and not pg.is_visible('#samplePill')
-    pg.fill('#rnName', 'Our house'); pg.fill('#rnAddr', 'Pass Christian, MS'); pg.click('[data-act=saveName]'); pg.wait_for_timeout(300)
+    pg.fill('#rnName', 'Our house'); pg.fill('#rnAddr', 'Pass Christian')
+    pg.click('[data-act=saveName]'); pg.wait_for_timeout(200)
+    out['state_required'] = pg.is_visible('#rnName')
+    pg.select_option('#rnState', 'MS'); pg.click('[data-act=saveName]'); pg.wait_for_timeout(300)
     # policy by hand, real-looking numbers
     pg.click('text=Enter it by hand')
     for k, v in {'#pf-carrier': 'Orchid', '#pf-number': 'X1', '#pf-renewal': '2027-07-30', '#pf-lim-A': '635000', '#pf-lim-C': '127000', '#pf-lim-D': '63500', '#pf-allPerils': '5000', '#pf-windAmt': '5'}.items():
@@ -72,13 +75,18 @@ with sync_playwright() as p:
     pg.click('nav.tabs button[data-tab=storm]')
     with pg.expect_download() as dl:
         pg.click('[data-act=calSeason]')
-    out['season_ics'] = open(dl.value.path()).read().count('BEGIN:VEVENT') == 3
+    ics = open(dl.value.path()).read()
+    # Mississippi: hurricane (2 + peak), tornado (2), fall tornado (2), winter (2) = 9 yearly reminders
+    out['season_ics'] = ics.count('BEGIN:VEVENT') == 9 and ics.count('RRULE:FREQ=YEARLY') == 9 and 'Mississippi' in ics
+    v = pg.text_content('#view'); out['ms_seasons_shown'] = all(x in v for x in ['Seasons in Mississippi', 'Hurricane season', 'Tornado season', 'Fall tornado season', 'Winter storms'])
     # feedback goes to the business email
     pg.click('#fbBtn'); pg.click('[data-go=feedback]'); pg.click('button[data-fbq=rating] >> nth=4'); pg.wait_for_timeout(200)
     href = pg.get_attribute('#fbMail', 'href')
     out['feedback_email'] = href.startswith('mailto:info@coastlinecode.com') and '5%20Very%20useful' in href
     # nothing says "free"
-    out['no_free_claims'] = ' free' not in open('../app.js').read().lower().replace('free up', '').replace('free of', '').replace('only if free', '')
+    import re as _re
+    _txt = open('../app.js').read().lower().replace('free up', '').replace('only if free', '')
+    out['no_free_claims'] = not _re.search(r'\bfree\b', _txt)
     out['errors'] = errs
     b.close()
 ok = all(v for k, v in out.items() if k != 'errors') and not out['errors']
