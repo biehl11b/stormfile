@@ -1,0 +1,28 @@
+name: Bundle QR libraries
+# Copies the QR code maker (qrcode-generator, MIT) and reader (jsQR, Apache-2.0) into vendor/ so household sharing works offline.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/vendor-qr.yml']
+permissions:
+  contents: write
+jobs:
+  qr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Download into vendor/
+        run: |
+          mkdir -p /tmp/q && cd /tmp/q && npm init -y >/dev/null
+          npm i qrcode-generator@1.4.4 jsqr@1.4.0
+          D=$GITHUB_WORKSPACE/vendor
+          cp node_modules/qrcode-generator/qrcode.js $D/qrcode.js
+          cp node_modules/qrcode-generator/LICENSE $D/qrcode-LICENSE.txt
+          cp node_modules/jsqr/dist/jsQR.js $D/jsQR.js
+          cp node_modules/jsqr/LICENSE $D/jsQR-LICENSE.txt
+          ls -la $D
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vendor; git commit -m "Bundle QR code libraries for household sharing" || echo nothing; git push
