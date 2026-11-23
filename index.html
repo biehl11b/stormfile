@@ -208,7 +208,7 @@ details.add summary::-webkit-details-marker{display:none}
 <div class="app">
   <header class="top">
     <div class="row" style="flex-wrap:nowrap">
-      <div class="brand">Storm<span>File</span></div>
+      <div class="brand" data-notr>Storm<span>File</span></div>
       <div class="row" style="gap:8px;flex-wrap:nowrap"><span class="sample-pill" id="samplePill">Sample data</span><button class="small-btn" id="fbBtn" aria-label="Settings">Settings</button><button class="small-btn" id="backHome" hidden>← Home</button></div>
     </div>
     <button id="menuBtn" aria-expanded="false" aria-controls="menu"><span class="stack" style="gap:0;min-width:0"><span class="label">Property</span><strong id="menuName"></strong></span><span class="caret" aria-hidden="true">▾</span></button>
@@ -228,6 +228,7 @@ details.add summary::-webkit-details-marker{display:none}
 </nav>
 
 <div id="srLive" class="sr-only" role="status" aria-live="polite"></div>
+<script src="es.js"></script>
 <script src="app.js"></script>
 
 </body>

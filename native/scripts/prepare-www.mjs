@@ -6,7 +6,7 @@ const www = path.join(root, "www");
 fs.rmSync(www, { recursive: true, force: true });
 fs.mkdirSync(path.join(www, "vendor"), { recursive: true });
 // The app itself, its libraries and fonts (nothing is downloaded from other sites)
-for (const f of ["app.js", "privacy.html", "terms.html", "support.html", "icon-192.png", "icon-512.png", "apple-touch-icon.png"]) fs.copyFileSync(path.join(site, f), path.join(www, f));
+for (const f of ["app.js", "es.js", "privacy.html", "terms.html", "support.html", "icon-192.png", "icon-512.png", "apple-touch-icon.png"]) fs.copyFileSync(path.join(site, f), path.join(www, f));
 fs.cpSync(path.join(site, "vendor"), path.join(www, "vendor"), { recursive: true });
 fs.copyFileSync(path.join(root, "src/native.js"), path.join(www, "native.js"));
 const core = ["dist/capacitor.js", "dist/capacitor.min.js"].map(f => path.join(root, "node_modules/@capacitor/core", f)).find(f => fs.existsSync(f));

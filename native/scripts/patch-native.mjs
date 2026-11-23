@@ -20,6 +20,8 @@ function patchIOS() {
   add("NSRemindersUsageDescription", str("StormFile doesn't use Reminders."));
   add("NSRemindersFullAccessUsageDescription", str("StormFile doesn't use Reminders."));
   add("ITSAppUsesNonExemptEncryption", "<false/>");
+  // StormFile is in English and Spanish; this lets the App Store list both languages.
+  add("CFBundleLocalizations", "<array><string>en</string><string>es</string></array>");
   fs.writeFileSync(f, s); console.log("iOS Info.plist patched");
   // iPhone only (it still runs on iPad in iPhone mode). Avoids needing iPad screenshots and iPad review.
   const pbx = path.join(root, "ios/App/App.xcodeproj/project.pbxproj"); let p = fs.readFileSync(pbx, "utf8");

@@ -26,7 +26,7 @@ Marketing URL (optional): https://coastlinecode.com
 
 ## Keywords (Apple, 100 characters, comma separated, no spaces)
 
-hurricane,insurance,home inventory,claim,flood,deductible,storm,homeowners,adjuster,wildfire,receipts
+hurricane,insurance,home inventory,claim,flood,deductible,storm,homeowners,adjuster,huracán,seguro
 
 ## Categories
 
@@ -60,8 +60,9 @@ STORM AND FIRE SEASONS FOR YOUR STATE
 
 ORGANIZE THE CLAIM
 • Claim number, adjuster, and a dated log of every call and email
+• Claim deadlines worked out for you: the time limits Texas, Florida, Louisiana and Alabama set for insurers, plus the flood insurance proof-of-loss deadline, added to your calendar
 • Evacuation and living-expense receipts (ALE) with running totals
-• Ready-to-send letters: follow-up, request for the estimate, status, living expenses, supplement and policy request
+• Ready-to-send letters: follow-up, request for the estimate, status, living expenses, supplement, policy request, and a complaint to your state insurance department built from your call log
 • One claim packet PDF with your policy summary, photos, contents list, receipts and call log, made on your phone
 
 HELP IN YOUR STATE
@@ -72,15 +73,28 @@ HELP IN YOUR STATE
 MORE THAN ONE PLACE
 • Homes, rentals and businesses in one app, each with its own policy or sharing one
 
+SHARE WITH YOUR HOUSEHOLD
+• Give a spouse or co-owner their own copy, phone to phone, unlocked with a QR code. No account and nothing uploaded
+
 PRIVATE BY DESIGN
 • Lock with a PIN and Face ID or fingerprint
 • Locked backups you control (encrypted with your passphrase) to keep off your phone or move to a new one
+
+EN ESPAÑOL Y ACCESIBLE
+• The whole app in English or Spanish (letters and the claim packet stay in English for your insurer)
+• Works with VoiceOver and TalkBack, follows your phone's text size, and respects Reduce Motion
 
 StormFile organizes your records and explains your policy in plain English. It doesn't sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company. Always follow official weather alerts and evacuation orders.
 
 Made in Pass Christian, Mississippi, by Coastline Code LLC, a veteran-owned company.
 
 ---
+
+## Languages and accessibility
+
+- Languages: English and Spanish (the Info.plist lists both, so the App Store shows "English, Spanish"). A Spanish (Mexico or U.S.) store page can be added later with a translated description.
+- Apple "Accessibility Nutrition Label" (App Store Connect → Accessibility): only claim what's been checked on a real iPhone in TestFlight. Ready to claim after a quick check with VoiceOver on: VoiceOver, Larger Text, Dark Interface, Reduced Motion. Check before claiming: Voice Control, Sufficient Contrast, Differentiate Without Color Alone. Captions/Audio Descriptions: not applicable (no video or audio). Checked by the automated accessibility test: every control has a spoken name, screens fit at 150% and 200% text, announcements are spoken, motion stops when Reduce Motion is on.
+- StormFile does not give legal answers or quote laws as advice. The claim deadlines show what each state's rules say, with a link to the official source, and say they're general information, not legal advice.
 
 ## Apple: App Privacy ("nutrition label")
 

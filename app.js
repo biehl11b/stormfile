@@ -517,7 +517,7 @@ function viewHome(){
     <div class="row"><h2>All properties</h2><span class="muted small">${S.properties.length}</span></div>
     <div class="stack">
     ${S.properties.map(p=>{ const s=score(p), l=levelFor(p); return `<button class="prop" data-prop="${p.id}" aria-current="${p.id===P.id}">
-      <div class="stack" style="gap:0;min-width:0"><span class="typetag">${esc(TYPES[p.type].label)}</span><strong>${esc(p.name)}</strong>
+      <div class="stack" style="gap:0;min-width:0"><span class="typetag" data-es="${({home:'Casa',rental:'Alquiler',business:'Negocio'})[p.type]||''}">${esc(TYPES[p.type].label)}</span><strong>${esc(p.name)}</strong>
         <span class="small muted">${esc(p.address)}${DEMO()&&active()&&p.inPath?' · <span style="color:var(--red);font-weight:600">In storm path</span>':''}</span></div>
       <span class="sc" style="color:var(--${s>=80?'green':s>=50?'amber':'red'})">${s}</span></button>`;}).join('')}
     </div>
@@ -605,7 +605,7 @@ function viewPolicy(){
     ${p.notCovered.map(x=>`<div class="alert ${x.sev}">
       <div class="row"><strong>${esc(x.title)}</strong>${x.fromPage===false?'<span class="chip info">Check full policy</span>':''}</div>
       <p class="small">${esc(x.plain)}</p>
-      ${x.quote?`<details><summary class="src" style="display:inline">${esc(x.src)}</summary><p class="quote" style="margin-top:6px">\u201C${esc(x.quote)}\u201D</p></details>`:`<span class="small muted">${esc(x.src)}</span>`}
+      ${x.quote?`<details><summary class="src" style="display:inline">${esc(x.src)}</summary><p class="quote" style="margin-top:6px">\u201C${esc(x.quote)}\u201D</p>${S.lang==='es'?'<p class="small muted">Quoted from your policy, which is in English.</p>':''}</details>`:`<span class="small muted">${esc(x.src)}</span>`}
     </div>`).join('')}
   </div>
 
@@ -1025,6 +1025,7 @@ function viewClaim(){
     </div>
     ${S.ltKind==='complaint' ? (()=>{ const st = stateOf(P), ins = RES_INS[st]; return ins ? `<p class="small">Send this to the ${esc(ins[0])}: paste it into their online complaint form${ins[3]?` (${extLink(ins[3],'open the form')})`:''}, or call ${telLink(ins[2])}. Attach your claim packet if the form allows it.</p>` : '<p class="small">Pick the property\u2019s state on the Help screen to see where to send this.</p>'; })() : (cl.adjEmail?'':'<p class="small muted">Add the adjuster\u2019s email above to address it automatically.</p>')}
     <p class="small muted">These are templates to help you write clearly. They aren\u2019t legal advice. Read and edit before you send.</p>
+    ${S.lang==='es' ? '<p class="small">Letters go to your insurance company, so they\u2019re written in English.</p>' : ''}
   </div>
 
   <div class="card">
@@ -1575,10 +1576,72 @@ function letterText(P, kind, extra){
   return `${dt}\n\n${to}\n\n${ref}\n\n${body}\n\n${sig}`;
 }
 
+
+/* ---------- Español: translates what's on screen using es.js. The app is written in English; when Spanish is on, every
+   text and label is swapped as it appears, and swapped back when English is chosen. Letters and the claim packet stay English. */
+const I18N = (()=>{
+  const D = window.SF_ES || {}, exact = new Map(), tpl = [], cache = new Map(), missing = new Set(), done = new Set(Object.values(D)); window.SF_I18N_MISSING = missing; // checked by the tests
+  const PAT = {N:'([$]?\\d[\\d,]*(?:\\.\\d+)?%?)', D:'((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \\d{1,2}, \\d{4})', S:'(.+?)', X:'(.+?)',
+    M:'(January|February|March|April|May|June|July|August|September|October|November|December)'};
+  for(const [k, v] of Object.entries(D)){
+    if(!/\{[NDSXM]\}/.test(k)){ exact.set(k, v); continue; }
+    const kinds = []; const re = k.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\\?\{([NDSXM])\\?\}/g, (m, t)=>{ kinds.push(t); return PAT[t]; });
+    tpl.push({re:new RegExp('^' + re + '$'), kinds, v, lit:k.replace(/\{[NDSXM]\}/g,'').length});
+  }
+  tpl.sort((a,b)=>b.lit - a.lit);
+  const esDate = x => { const d = new Date(x); return isNaN(d) ? x : d.toLocaleDateString('es-US', {day:'numeric', month:'short', year:'numeric'}); };
+  function tr(text){
+    const key = String(text).replace(/\s+/g,' ').trim(); if(!key || !/[A-Za-z]/.test(key)) return text;
+    if(cache.has(key)) return cache.get(key);
+    if(done.has(key)) return key; // already Spanish
+    let out = exact.has(key) ? exact.get(key) : null;
+    if(out === null) for(const t of tpl){ const m = key.match(t.re); if(!m) continue;
+      const vals = {N:[], D:[], S:[], X:[], M:[]}; t.kinds.forEach((k, i)=>vals[k].push(m[i+1]));
+      const pos = {N:0, D:0, S:0, X:0, M:0};
+      out = t.v.replace(/\{([NDSXM])\}/g, (z, k)=>{ const v = vals[k][pos[k]++] ?? ''; return k==='D' ? esDate(v) : (k==='N' ? v : (exact.get(v) ?? v)); });
+      break; }
+    if(out === null){ out = key; missing.add(key); } else done.add(out);
+    cache.set(key, out); return out;
+  }
+  const ORIG = new WeakMap(), ATTRS = ['placeholder','aria-label','title','alt'];
+  const skip = el => !el || el.closest('textarea,script,style,[data-notr],.qr');
+  function doText(n, on){
+    if(skip(n.parentElement)) return;
+    if(on){ const cur = n.nodeValue; if(!/[A-Za-z]/.test(cur)) return; const fixed = n.parentElement.getAttribute('data-es'); const t = fixed || tr(cur); /* data-es: a fixed Spanish word where the English is ambiguous */ if(t !== cur.replace(/\s+/g,' ').trim()){ const lead = cur.match(/^\s*/)[0], tail = cur.match(/\s*$/)[0];
+        ORIG.set(n, cur); n.nodeValue = lead + t + tail; } }
+    else if(ORIG.has(n)){ n.nodeValue = ORIG.get(n); ORIG.delete(n); }
+  }
+  function doAttrs(el, on){ if(skip(el)) return; for(const a of ATTRS){ const v = el.getAttribute(a); if(!v) continue;
+    const k = 'data-en-' + a.replace('-','');
+    if(on){ if(el.getAttribute(k) === null || el.getAttribute(k) !== v && tr(el.getAttribute(k)) !== v){ const t = tr(v); if(t !== v){ el.setAttribute(k, v); el.setAttribute(a, t); } } }
+    else if(el.hasAttribute(k)){ el.setAttribute(a, el.getAttribute(k)); el.removeAttribute(k); } } }
+  function walk(root, on){
+    if(root.nodeType === 3){ doText(root, on); return; }
+    if(root.nodeType !== 1) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n; const list = []; while(n = w.nextNode()) list.push(n); list.forEach(x=>doText(x, on));
+    doAttrs(root, on); root.querySelectorAll('[placeholder],[aria-label],[title],[alt]').forEach(e=>doAttrs(e, on));
+  }
+  let obs = null, busy = false;
+  function set(lang){
+    document.documentElement.lang = lang;
+    if(lang === 'es'){
+      walk(document.body, true);
+      if(!obs){ obs = new MutationObserver(ms=>{ if(busy) return; busy = true; try{ for(const m of ms){
+          if(m.type === 'characterData') doText(m.target, true);
+          else if(m.type === 'attributes') doAttrs(m.target, true);
+          else m.addedNodes.forEach(x=>walk(x, true)); } } finally { busy = false; } });
+        obs.observe(document.body, {subtree:true, childList:true, characterData:true, attributes:true, attributeFilter:ATTRS}); }
+    } else { if(obs){ obs.disconnect(); obs = null; } walk(document.body, false); }
+  }
+  return {tr, set};
+})();
+const T = x => (S.lang === 'es' ? I18N.tr(x) : x);
+
 /* ---------- Start screen ---------- */
 function viewWelcome(){
   const mine = !S.sample || S.ownStarted;
   return `
+  <div class="row" style="justify-content:flex-end" data-notr><button class="small-btn ghost" data-lang="${S.lang==='es'?'en':'es'}" lang="${S.lang==='es'?'en':'es'}">${S.lang==='es'?'English':'Español'}</button></div>
   <section class="stack" style="gap:10px;padding-top:8px">
     <p class="label">StormFile by Coastline Code</p>
     <h1 style="font-size:34px">Be claim-ready before the storm</h1>
@@ -1888,6 +1951,12 @@ function viewSettings(){
   return `
   <section class="stack"><p class="label">StormFile</p><h1>Settings</h1></section>
 
+  <div class="card" id="langCard" data-notr>
+    <h2>${S.lang==='es'?'Idioma':'Language'}</h2>
+    <div class="levels" style="grid-template-columns:repeat(2,minmax(0,1fr))"><button data-lang="en" aria-pressed="${S.lang!=='es'}" lang="en">English</button><button data-lang="es" aria-pressed="${S.lang==='es'}" lang="es">Español</button></div>
+    <p class="small muted">${S.lang==='es'?'StormFile en inglés o en español. Las cartas y el paquete del reclamo se quedan en inglés porque van a su compañía de seguros.':'StormFile in English or Spanish. Letters and the claim packet stay in English because they go to your insurance company.'}</p>
+  </div>
+
   <div class="card" id="lockCard">
     <div class="row"><h2>Lock</h2><span class="chip ${on?'ok':'warn'}">${on?(bio?'PIN + '+BIONAME():'PIN on'):'Off'}</span></div>
     <p class="small">${on ? (bio ? `StormFile opens with ${BIONAME()}. If that doesn’t work, it asks for your PIN.` : 'StormFile asks for your PIN each time it opens, and after a minute away.') : 'Set a PIN so nobody else can open your policy, photos and claim on this phone. Then you can add Face ID or fingerprint.'}</p>
@@ -1971,7 +2040,7 @@ function render(){
   document.getElementById('menuName').textContent = `${P.name} · ${TYPES[P.type].label}`;
   menu.innerHTML = S.properties.map(p=>{ const po = polOf(p), shared = po && usersOf(po.id).length>1;
     return `<div class="mprop" aria-current="${p.id===P.id}">
-      <div class="row" style="flex-wrap:nowrap"><div class="stack" style="gap:0;min-width:0"><span class="typetag">${esc(TYPES[p.type].label)}</span><strong>${esc(p.name)}</strong><span class="small muted">${esc(p.address)}</span></div>
+      <div class="row" style="flex-wrap:nowrap"><div class="stack" style="gap:0;min-width:0"><span class="typetag" data-es="${({home:'Casa',rental:'Alquiler',business:'Negocio'})[p.type]||''}">${esc(TYPES[p.type].label)}</span><strong>${esc(p.name)}</strong><span class="small muted">${esc(p.address)}</span></div>
         <span class="num" style="color:var(--${score(p)>=80?'green':score(p)>=50?'amber':'red'})">${score(p)}</span></div>
       <div class="mline"><span class="muted">Policy</span><span>${po?esc(polLabel(po))+(shared?' <span class="chip info">Shared</span>':''):'<span style="color:var(--amber);font-weight:600">Not uploaded</span>'}</span></div>
       <div class="mline"><span class="muted">Claim</span><span>${p.claim.number?'#'+esc(p.claim.number):'No open claim'}</span></div>
@@ -2241,6 +2310,8 @@ view.addEventListener('click', e=>{
     t.disabled = true; t.textContent = 'Locking your backup…';
     makeBackup(a).then(blob=>saveFile(`StormFile-backup-${today()}.json`, blob)).then(ok=>{ if(ok){ S.lastBackupAt = nowISO(); save(); render(); toast('Backup saved. Keep the file somewhere safe, like iCloud Drive or Google Drive.'); } else { t.disabled=false; t.textContent='Save a locked backup'; } })
       .catch(()=>{ t.disabled=false; t.textContent='Save a locked backup'; toast('The backup didn’t finish. Please try again.'); }); return; }
+  if(t.dataset.lang){ const l = t.dataset.lang === 'es' ? 'es' : 'en'; if(l === S.lang) return; S.lang = l; save();
+    if(l === 'en') I18N.set('en'); render(); if(l === 'es') I18N.set('es'); return; }
   if(t.dataset.act==='shareMake'){
     const boxes = [...document.querySelectorAll('[data-shareprop]')], ids = boxes.length ? boxes.filter(b=>b.checked).map(b=>b.dataset.shareprop) : S.properties.map(x=>x.id);
     if(!ids.length) return toast('Pick at least one place to share.');
@@ -2432,7 +2503,9 @@ view.addEventListener('submit', e=>{
   }
 });
 
-load(); if(!VIEWS[S.tab]) S.tab='home'; render(); showLock();
+load(); if(!VIEWS[S.tab]) S.tab='home';
+if(!S.lang) S.lang = /^es\b/i.test(navigator.language || '') ? 'es' : 'en'; // Spanish phones start in Spanish
+render(); if(S.lang === 'es') I18N.set('es'); showLock();
 bioSupported().then(ok=>{ BIO_OK = ok; if(S.tab==='settings') render(); });
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
 if(!NAT && 'serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
