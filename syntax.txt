@@ -1,0 +1,2 @@
+out/pdf.min.js parses as ES2018
+out/pdf.worker.min.js parses as ES2017
