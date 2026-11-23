@@ -940,6 +940,7 @@ function viewClaim(){
     ${cl.number?`<span class="chip ok" style="align-self:flex-start"><span class="dot"></span>Claim saved</span>`:`<p class="small muted">Call ${p?esc(p.claimPhone):'the insurer'} to open a claim, then enter the number here.</p>`}
   </div>
 
+  ${cl.dateOfLoss || cl.number ? deadlinesCard(P) : ''}
   <button class="card linkcard" data-go="resources"><div class="stack" style="gap:2px;min-width:0"><strong>Claim stuck? Get help${stateOf(P)?' in '+esc(STATE_NAME[stateOf(P)]):''}</strong><span class="small muted">Your state insurance department, FEMA, SBA and flood insurance contacts</span></div><span aria-hidden="true">›</span></button>
   <div class="card" style="border-color:${lockedAt(P)?'var(--green)':'var(--amber)'}">
     <div class="row"><h2>Before-storm record</h2><span class="chip ${lockedAt(P)?'ok':'warn'}">${lockedAt(P)?'Locked':'Not locked'}</span></div>
@@ -1016,13 +1017,13 @@ function viewClaim(){
     <h2>Letters</h2>
     <p class="small">Put it in writing. Pick a letter, check the wording, then copy it or open it in your email.</p>
     <label class="field">Letter<select id="ltKind">${Object.entries(LETTERS).filter(([k,v])=>!v.only||v.only===P.type).map(([k,v])=>`<option value="${k}" ${S.ltKind===k?'selected':''}>${esc(v.label)}</option>`).join('')}</select></label>
-    <label class="field">${({followup:'What was discussed (leave blank to use your last log entry)', supplement:'What you found'})[S.ltKind||'followup']||'Anything to add (optional)'}<textarea id="ltExtra">${esc(S.ltExtra||'')}</textarea></label>
+    <label class="field">${({followup:'What was discussed (leave blank to use your last log entry)', supplement:'What you found', complaint:'What\u2019s gone wrong with your claim'})[S.ltKind||'followup']||'Anything to add (optional)'}<textarea id="ltExtra">${esc(S.ltExtra||'')}</textarea></label>
     <textarea id="ltOut" readonly style="min-height:220px;font-size:13px;background:var(--surface-2)">${esc(letterText(P, LETTERS[S.ltKind]&&(!LETTERS[S.ltKind].only||LETTERS[S.ltKind].only===P.type)?S.ltKind:'followup', S.ltExtra||''))}</textarea>
     <div class="grid2">
       <button data-act="ltCopy">Copy letter</button>
       <a class="btn-like" id="ltMail" href="${esc(ltMailto(P))}">Open in email</a>
     </div>
-    ${cl.adjEmail?'':'<p class="small muted">Add the adjuster\u2019s email above to address it automatically.</p>'}
+    ${S.ltKind==='complaint' ? (()=>{ const st = stateOf(P), ins = RES_INS[st]; return ins ? `<p class="small">Send this to the ${esc(ins[0])}: paste it into their online complaint form${ins[3]?` (${extLink(ins[3],'open the form')})`:''}, or call ${telLink(ins[2])}. Attach your claim packet if the form allows it.</p>` : '<p class="small">Pick the property\u2019s state on the Help screen to see where to send this.</p>'; })() : (cl.adjEmail?'':'<p class="small muted">Add the adjuster\u2019s email above to address it automatically.</p>')}
     <p class="small muted">These are templates to help you write clearly. They aren\u2019t legal advice. Read and edit before you send.</p>
   </div>
 
@@ -1539,14 +1540,15 @@ const LETTERS = {
   status:{label:'Request a status update', subject:(P,cl)=>`Claim ${cl.number||''} - request for status update`},
   ale:{label:'Request a living-expense advance', subject:(P,cl)=>`Claim ${cl.number||''} - request for additional living expense advance`, only:'home'},
   supplement:{label:'Report more damage found', subject:(P,cl)=>`Claim ${cl.number||''} - additional damage found`},
-  policy:{label:'Request a full copy of my policy', subject:(P,cl)=>`Policy ${(polOf(P)||{}).number||''} - request for complete policy copy`}
+  policy:{label:'Request a full copy of my policy', subject:(P,cl)=>`Policy ${(polOf(P)||{}).number||''} - request for complete policy copy`},
+  complaint:{label:'Complaint to the state insurance department', subject:(P,cl)=>`Request for help with claim ${cl.number||''}${(polOf(P)||{}).carrier?' - '+(polOf(P)||{}).carrier:''}`, toDept:true}
 };
 function ltMailto(P){ const cl = P.claim, k = LETTERS[S.ltKind] && (!LETTERS[S.ltKind].only || LETTERS[S.ltKind].only===P.type) ? S.ltKind : 'followup';
   let body = letterText(P, k, S.ltExtra||''); if(body.length > 6500) body = body.slice(0,6500);
-  return `mailto:${encodeURIComponent(cl.adjEmail||'')}?subject=${encodeURIComponent(LETTERS[k].subject(P, cl).replace(/\s+-/,' -'))}&body=${encodeURIComponent(body)}`; }
+  return `mailto:${encodeURIComponent(LETTERS[k].toDept ? '' : (cl.adjEmail||''))}?subject=${encodeURIComponent(LETTERS[k].subject(P, cl).replace(/\s+-/,' -'))}&body=${encodeURIComponent(body)}`; }
 function letterText(P, kind, extra){
   const cl = P.claim, pol = polOf(P), me = S.me || {}, dt = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
-  const to = cl.adjuster ? `Dear ${cl.adjuster},` : 'Dear Claims Department,';
+  const to = kind==='complaint' ? 'Dear Consumer Services,' : cl.adjuster ? `Dear ${cl.adjuster},` : 'Dear Claims Department,';
   const ref = [pol && pol.carrier && !/^Your insurer/.test(pol.carrier) ? `Insurance company: ${pol.carrier}` : '', pol && pol.number && pol.number!=='Not entered' ? `Policy number: ${pol.number}` : '', cl.number ? `Claim number: ${cl.number}` : '', cl.dateOfLoss ? `Date of loss: ${fmtDay(cl.dateOfLoss+'T12:00:00')}` : '', `Property: ${P.name}${P.address && P.address!=='Add your city' ? ', '+P.address : ''}`].filter(Boolean).join('\n');
   const sig = ['Sincerely,', me.name || '[Your name]', me.phone || '', me.email || '', me.mail ? 'Mailing address: '+me.mail : ''].filter(Boolean).join('\n');
   const last = (cl.log||[]).slice(-1)[0];
@@ -1558,6 +1560,16 @@ function letterText(P, kind, extra){
     status: `I\u2019m writing to ask for an update on this claim${daysSince!=null ? `, which began ${plural(daysSince,'day')} ago` : ''}. Please let me know where it stands, what you still need from me, and when I can expect the next step.\n\n${extra ? extra+'\n\n' : ''}Thank you.`,
     ale: `${{evac:'We are under a mandatory evacuation order.', unlivable:'Our home is not livable because of the damage.', home:'We are currently unable to stay in our home.'}[cl.status||'home']} I\u2019m asking for an advance on additional living expenses under this policy while the claim is being handled.\n\nSo far we have spent ${fmt(spent)} on extra costs such as lodging, meals and mileage. I have receipts for these and can send them.\n\n${extra ? extra+'\n\n' : ''}Please let me know what you need from me to process an advance.`,
     supplement: `Since the inspection, I\u2019ve found more damage that wasn\u2019t included in the claim:\n\n${extra || '[Describe what you found, where, and when you found it]'}\n\nI have dated photos and can send them. Please let me know how you\u2019d like to review this additional damage.`,
+    complaint: (()=>{
+      const st = stateOf(P), today = new Date().toISOString().slice(0,10);
+      const log = (cl.log||[]).filter(x=>x && x.note).map(x=>`- ${fmtDay(x.at || x.date)}: ${x.note}`).join('\n');
+      const missed = claimDeadlines(P).filter(x=>x.due && x.due < today && x.from!=='loss').map(x=>`- ${x.what.replace(/^Insurer/,'The insurer').replace(/\byour\b/g,'my').replace(/\byou\b/g,'me')} (due about ${fmtDay(x.due+'T12:00:00')}, ${x.n} ${UNIT[x.unit]} ${FROM_LABEL[x.from].replace('after you report','after I reported').replace('your proof','my proof')})`).join('\n');
+      return `I\u2019m asking for the department\u2019s help with my insurance claim${pol && pol.carrier && !/^Your insurer/.test(pol.carrier) ? ' with '+pol.carrier : ''}.${cl.adjuster ? ` The adjuster assigned to my claim is ${cl.adjuster}${cl.adjPhone ? ' ('+cl.adjPhone+')' : ''}.` : ''}${cl.reportedOn ? ` I reported the claim on ${fmtDay(cl.reportedOn+'T12:00:00')}.` : ''}${cl.proofOn ? ` The company received my proof of loss on ${fmtDay(cl.proofOn+'T12:00:00')}.` : ''}\n\n`
+        + `${extra || '[Describe the problem in a few sentences: for example, no response, no inspection, no estimate, or a payment you think is too low or late.]'}\n\n`
+        + (missed ? `Based on the dates above, these time limits${st?' under '+STATE_NAME[st]+' rules':''} appear to have passed:\n${missed}\n\n` : '')
+        + (log ? `My record of contacts with the company:\n${log}\n\n` : '')
+        + `I can send copies of my photos, receipts, letters and claim packet. Please let me know what else you need from me. Thank you for your help.`;
+    })(),
     policy: `Please send me a complete copy of my policy, including the declarations page and every form and endorsement that applies to it.\n\n${extra ? extra+'\n\n' : ''}Email is fine. Thank you.`
   }[kind];
   return `${dt}\n\n${to}\n\n${ref}\n\n${body}\n\n${sig}`;
@@ -1744,6 +1756,66 @@ function viewResources(){
   <p class="small muted" style="padding:0 4px">Checked against official websites in ${RES_CHECKED}. Phone numbers and programs can change. If a number doesn’t work, use the website, and please <a href="mailto:info@coastlinecode.com?subject=${encodeURIComponent('StormFile: wrong contact for ' + (STATE_NAME[st]||'a state'))}">tell us</a>. StormFile isn’t connected to any of these agencies.</p>`;
 }
 
+/* ---------- Claim deadlines by state (checked against official sources, Nov 2026) ----------
+   from: 'reported' = day you reported the claim, 'proof' = day the insurer got your proof of loss / what it asked for, 'loss' = date of loss.
+   unit: 'd' calendar days, 'bd' business days (weekends skipped; holidays not counted, so the real date can be a little later). */
+const CLAIM_RULES = {
+  TX:{src:[['Texas Department of Insurance','https://tdi.texas.gov/tips/getting-your-insurance-claim-paid.html'],['TWIA','https://www.twia.org/claims/']], items:[
+    {from:'reported', n:15, unit:'bd', what:'Insurer must acknowledge your claim, start its review and ask for anything it needs'},
+    {from:'proof', n:15, unit:'bd', what:'Insurer must tell you whether it will pay. It can take 45 more days if it tells you why'},
+    {note:'Once it agrees to pay, it has 5 business days to pay. After a weather catastrophe, TDI can extend these deadlines by 15 days.'},
+    {from:'loss', n:365, unit:'d', what:'TWIA wind policies: last day to report the claim', wind:true}]},
+  FL:{src:[['Florida Statutes 627.70131','https://m.flsenate.gov/statutes/627.70131'],['Florida Statutes 627.70132','https://flsenate.gov/laws/statutes/2025/627.70132']], items:[
+    {from:'reported', n:7, unit:'d', what:'Insurer must acknowledge your claim'},
+    {from:'proof', n:7, unit:'d', what:'Insurer must start its investigation'},
+    {from:'proof', n:30, unit:'d', what:'Any physical inspection must be done'},
+    {from:'reported', n:60, unit:'d', what:'Insurer must pay or deny the claim, or the part in question, in writing'},
+    {note:'The insurer must send you any detailed estimate within 7 days after its adjuster makes it.'},
+    {from:'loss', n:365, unit:'d', what:'Last day to give notice of a new or reopened claim'},
+    {from:'loss', n:18, unit:'mo', what:'Last day to give notice of a supplemental claim'},
+    {note:'For hurricanes and other storms, the date of loss is the day the storm made landfall or the date NOAA verifies.'}]},
+  LA:{src:[['Louisiana R.S. 22:1892','https://legis.la.gov/Legis/Law.aspx?d=509041']], items:[
+    {from:'reported', n:14, unit:'d', what:'Insurer must start adjusting the loss (30 days after a catastrophic loss)'},
+    {from:'proof', n:30, unit:'d', what:'Insurer must pay what it owes and make a written offer to settle'},
+    {note:'If you ask in writing, the insurer must give you a copy of the field adjuster’s report within 15 days.'}]},
+  AL:{src:[['Alabama Admin. Code 482-1-125','https://admincode.legislature.state.al.us/api/rule/482-1-125-.07']], items:[
+    {from:'reported', n:15, unit:'d', what:'Insurer must acknowledge your claim and send any forms you need'},
+    {from:'proof', n:30, unit:'d', what:'Insurer must accept or deny the claim, or tell you in writing why it needs more time (unless your policy sets a different time)'},
+    {note:'Once it accepts the claim and agrees on the amount, it has 30 days to pay (or the time in your policy). It must answer your letters within 15 days.'}]},
+  MS:{none:'StormFile hasn’t found day-by-day deadlines for home insurance claims in Mississippi’s rules. Check the conditions section of your policy, and call the Mississippi Insurance Department if your claim stalls.'}
+};
+const NFIP_RULE = {from:'loss', n:60, unit:'d', what:'Flood (NFIP) policies: signed proof of loss due, unless FEMA extends it', src:['FEMA','https://www.fema.gov/fact-sheet/submit-flood-insurance-proof-loss-form-within-60-days-loss']};
+function addBizDays(iso, n){ const d = new Date(iso+'T12:00:00'); let k = 0; while(k < n){ d.setDate(d.getDate()+1); const w = d.getDay(); if(w && w<6) k++; } return d.toISOString().slice(0,10); }
+function ruleDue(cl, r){ const base = {reported:cl.reportedOn, proof:cl.proofOn, loss:cl.dateOfLoss}[r.from]; if(!base) return ''; return r.unit==='bd' ? addBizDays(base, r.n) : r.unit==='mo' ? addMonths(base, r.n) : addDays(base, r.n); }
+function addMonths(ymd, n){ const d = at9(ymd), day = d.getDate(); d.setDate(1); d.setMonth(d.getMonth()+n); d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth()+1, 0).getDate())); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const UNIT = {d:'days', bd:'business days', mo:'months'};
+const FROM_LABEL = {reported:'after you report the claim', proof:'after the insurer gets your proof of loss', loss:'after the date of loss'};
+function claimDeadlines(P){
+  const st = stateOf(P), R = CLAIM_RULES[st], cl = P.claim, out = [];
+  if(R && R.items) R.items.forEach(r=>{ if(r.note){ out.push({note:r.note}); return; } out.push({...r, due:ruleDue(cl, r)}); });
+  if(P.info.flood !== 'no') out.push({...NFIP_RULE, due:ruleDue(cl, NFIP_RULE)});
+  return out;
+}
+function deadlinesCard(P){
+  const st = stateOf(P), R = CLAIM_RULES[st], cl = P.claim, list = claimDeadlines(P), today = new Date().toISOString().slice(0,10);
+  const dated = list.filter(x=>x.due);
+  return `<div class="card" id="deadlines">
+    <div class="row"><h2>Deadlines${st?' in '+esc(STATE_NAME[st]):''}</h2></div>
+    <p class="small">Time limits the law sets for your insurance company, and a few for you. Enter your dates and StormFile works out each due date.</p>
+    <div class="grid2">
+      <label class="field">Day you reported the claim<input id="clReported" type="date" value="${esc(cl.reportedOn||'')}"></label>
+      <label class="field">Day they got your proof of loss<input id="clProof" type="date" value="${esc(cl.proofOn||'')}"></label>
+    </div>
+    ${R && R.none ? `<p class="small">${esc(R.none)}</p>` : ''}
+    ${!R && st ? `<p class="small">StormFile doesn’t list ${esc(STATE_NAME[st])}’s claim deadlines yet. Ask the ${esc((RES_INS[st]||[])[0]||'state insurance department')} what applies to your claim.</p>` : ''}
+    ${list.map(x=> x.note ? `<p class="small muted">${esc(x.note)}</p>` : `<div class="dl ${x.due && x.due < today ? 'past' : ''}">
+      <span class="dl-when num">${x.due ? esc(fmtDay(x.due+'T12:00:00')) : '—'}</span>
+      <span class="small"><strong>${esc(x.what)}</strong><br><span class="muted">${x.n} ${UNIT[x.unit]} ${FROM_LABEL[x.from]}${x.due?'':' (enter that date above)'}</span></span></div>`).join('')}
+    ${dated.length ? `<button class="small-btn" data-act="calDeadlines">Add these dates to my calendar</button>` : ''}
+    <p class="small muted">Business-day dates skip weekends but not holidays, so the real date can be a little later. Insurers can sometimes take longer if they tell you why in writing. This is general information, not legal advice. Sources: ${[...(R&&R.src||[]), ...(P.info.flood!=='no'?[NFIP_RULE.src]:[])].map(([t,u])=>extLink(u,t)).join(', ')||'none'}.</p>
+  </div>`;
+}
+
 /* ---------- Settings screen ---------- */
 function viewSettings(){
   const on = !!pinRec(), bio = !!bioRec(), me = S.me || {}, due = backupDue();
@@ -1850,7 +1922,8 @@ function render(){
 function go(tab){ S.tab = tab; save(); render(); window.scrollTo(0,0); }
 function toast(msg){
   document.querySelectorAll('.toast').forEach(x=>x.remove());
-  const t = document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg; document.body.appendChild(t);
+  const t = document.createElement('div'); t.className='toast'; t.setAttribute('aria-hidden','true'); t.textContent=msg; document.body.appendChild(t);
+  const live = document.getElementById('srLive'); if(live){ live.textContent=''; setTimeout(()=>{ live.textContent = msg; }, 50); } // read aloud by VoiceOver / TalkBack
   setTimeout(()=>t.remove(), Math.max(2400, msg.length*45));
 }
 
@@ -2122,6 +2195,8 @@ view.addEventListener('click', e=>{
   if(t.dataset.act==='calSeason'){ const ev = seasonEventsFor(P); if(!ev.length) return toast('Pick a state first.');
     addToCalendar(ev, `StormFile seasons ${stateOf(P)}`).then(ok=>{ if(ok){ logEvt(P, `Season reminders added to calendar (${STATE_NAME[stateOf(P)]})`); save(); } }); return; }
   if(t.dataset.act==='changeState'){ P.state = ''; P.address = String(P.address||'').replace(/,\s*[A-Za-z]{2}\s*$/,''); P.stateCleared = true; save(); return render(); }
+  if(t.dataset.act==='calDeadlines'){ const P = cur(); const ev = claimDeadlines(P).filter(x=>x.due).map(x=>({date:x.due, title:`Claim deadline: ${x.what}`, desc:`${P.name}${P.claim.number?' - claim '+P.claim.number:''}. ${x.n} ${UNIT[x.unit]} ${FROM_LABEL[x.from]}.`, dayBefore:true}));
+    addToCalendar(ev, `StormFile claim deadlines ${P.name}`).then(ok=>{ if(ok){ logEvt(P, `Claim deadline reminders added to calendar (${ev.length})`); save(); } }); return; }
   if(t.dataset.act==='calFollow'){ const d = document.getElementById('fuDate').value, n = document.getElementById('fuNote').value.trim();
     if(!d) return toast('Pick a date first.');
     addToCalendar([{date:d, title:`Claim follow-up: ${n || P.name}`, desc:`${P.name}${P.claim.number?' - claim '+P.claim.number:''}. ${n}`, dayBefore:true}], `StormFile follow-up ${d}`).then(ok=>{ if(ok){ logEvt(P, `Follow-up reminder set for ${fmtDay(d+'T12:00:00')}${n?': '+n:''}`); S.fuDate=''; S.fuNote=''; save(); render(); } }); return; }
@@ -2183,6 +2258,7 @@ view.addEventListener('change', e=>{
     flood:()=>P.info.flood=el.value, rent:()=>P.info.rent=num(el.value), renterProof:()=>P.info.renterProof=!!el.value,
     monthlyNeed:()=>P.info.monthlyNeed=num(el.value), monthsClosed:()=>P.info.monthsClosed=num(el.value),
     clNum:()=>P.claim.number=el.value.trim(), clDate:()=>P.claim.dateOfLoss=el.value,
+    clReported:()=>P.claim.reportedOn=el.value, clProof:()=>P.claim.proofOn=el.value,
     clAdj:()=>P.claim.adjuster=el.value, clAdjPh:()=>P.claim.adjPhone=el.value, clAdjEmail:()=>P.claim.adjEmail=el.value.trim(),
     clStatus:()=>P.claim.status=el.value, clOrder:()=>P.claim.orderDate=el.value, clRate:()=>P.claim.mileRate=num(el.value)
   };

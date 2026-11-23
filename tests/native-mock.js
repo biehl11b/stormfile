@@ -8,7 +8,8 @@ window.__calls = [];
     App: {addListener: function(ev, fn){ window.__calls.push(['App','addListener',ev]); if(ev === 'backButton') window.__back = fn; return Promise.resolve({remove:function(){}}); }, minimizeApp: rec('App','minimizeApp', {})},
     NativeBiometric: {isAvailable: rec('NativeBiometric','isAvailable', {isAvailable:true}), verifyIdentity: rec('NativeBiometric','verifyIdentity', {})},
     CapacitorCalendar: {createEventWithPrompt: rec('CapacitorCalendar','createEventWithPrompt', {id:'e1'}), requestWriteOnlyCalendarAccess: rec('CapacitorCalendar','requestWriteOnlyCalendarAccess', {result:'granted'}), createEvent: rec('CapacitorCalendar','createEvent', {id:'e2'})},
-    SplashScreen: {hide: rec('SplashScreen','hide', {})}
+    SplashScreen: {hide: rec('SplashScreen','hide', {})},
+    TextZoom: {getPreferred: rec('TextZoom','getPreferred', {value:1.6}), set: rec('TextZoom','set', {})}
   };
   window.Capacitor = {isNativePlatform: function(){ return true; }, getPlatform: function(){ return 'ios'; }, Plugins: plugins, registerPlugin: function(n){ return plugins[n]; }};
 })();

@@ -24,6 +24,7 @@ with sync_playwright() as p:
     pg.on('console', lambda m: errs.append(m.text) if m.type == 'error' else None)
     pg.goto(URL, wait_until='networkidle'); pg.wait_for_timeout(600)
     out['bridge_loaded'] = pg.evaluate('()=>!!window.SF_NATIVE && document.documentElement.classList.contains("native")')
+    out['follows_phone_text_size'] = any(c[2] == {'value': 1.6} for c in calls(pg, 'TextZoom', 'set'))
     out['no_service_worker'] = pg.evaluate('async()=>!(navigator.serviceWorker && (await navigator.serviceWorker.getRegistrations()).length)')
     out['store_no_test_notes'] = 'Test version' not in pg.text_content('#view')
     pg.click('[data-act=agreeOwn]'); pg.wait_for_timeout(300)

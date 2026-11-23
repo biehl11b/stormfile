@@ -46,6 +46,10 @@
     if(/^https?:/i.test(a.href)){ e.preventDefault(); window.location.href = a.href; return; }
     if(/^blob:/.test(href)){ e.preventDefault(); fetch(href).then(function(r){ return r.blob(); }).then(function(b){ return saveFile('receipt.pdf', b); }).catch(function(){}); }
   }, true);
+  /* Larger text: follow the phone's text size setting (iPhone Larger Text / Android Font size), now and whenever StormFile comes back to the front */
+  var TZ = P('TextZoom');
+  function textSize(){ if(TZ && TZ.getPreferred) TZ.getPreferred().then(function(r){ if(r && r.value) return TZ.set({value:Math.min(Math.max(r.value, 1), 2.4)}); }).catch(function(){}); }
+  textSize(); APP.addListener('resume', textSize);
   /* hide the logo screen once StormFile has drawn its first screen */
   window.addEventListener('load', function(){ try{ var SP = P('SplashScreen'); SP && SP.hide && SP.hide().catch(function(){}); }catch(e){} });
   setTimeout(function(){ FS.rmdir({path:OUT, directory:'CACHE', recursive:true}).catch(function(){}); }, 5000);
