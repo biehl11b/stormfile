@@ -140,14 +140,19 @@ life = [l for l in (adb("logcat", "-d", "-s", "SF_LIFE:*", timeout=60) or "").sp
 log("info", "screen start-ups during first open", " / ".join(x.split("SF_LIFE")[-1].strip(" :()0123456789") for x in life)[:300] or "none logged")
 
 if n is not None:
-    adb("shell", "input", "tap", *map(str, center(n))); time.sleep(3)
-    root, nxt = wait_for(r"About this property|Edit name and city|isn't responding", 30, "after-agree")
-    if nxt is not None and re.search(r"isn't responding", label(nxt)): root = clear_anr(root); root, nxt = wait_for(r"About this property|Edit name and city", 30, "after-agree")
+    root = clear_anr(dump()); n2 = agree_box(root) or n
+    adb("shell", "input", "tap", *map(str, center(n2))); time.sleep(3)
+    end2 = time.time() + 40; nxt = None
+    while time.time() < end2:
+        root = clear_anr(dump()); nxt = find(root, r"About this property|Edit name and city")
+        if nxt is not None: break
+        time.sleep(2)
+    dump("after-agree")
     log("ok" if nxt is not None else "FAIL", "I agree opens the first setup screen", screen_text(root)[:200])
     snap("4-after-agree")
     # the bottom tabs are there and work: open Policy, then Claim
     for tab, want in (("Policy", r"policy|Póliza"), ("Claim", r"claim|reclamo")):
-        t = next((nd for nd in nodes(root) if re.fullmatch(r"\s*" + tab + r"\s*", label(nd), re.I)), None)
+        root = clear_anr(dump()); t = next((nd for nd in nodes(root) if re.fullmatch(r"\s*" + tab + r"\s*", label(nd), re.I)), None)
         if t is None: log("FAIL", f"{tab} tab found", screen_text(root)[:200]); continue
         adb("shell", "input", "tap", *map(str, center(t))); time.sleep(2); root = clear_anr(dump()); dump(f"tab-{tab.lower()}")
         log("ok" if find(root, want) is not None else "FAIL", f"{tab} tab opens", screen_text(root)[:160]); snap(f"5-{tab.lower()}")
