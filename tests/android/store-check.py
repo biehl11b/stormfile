@@ -115,19 +115,19 @@ while time.time() < end:
     if anr < 3 and find(root, r"Predicted app|Google Lens|Voice search") is not None:
         anr += 1; ra = re.search(r"ResumedActivity[^\n]*", adb("shell", "dumpsys", "activity", "activities") or "")
         log("info", "home screen was in front; reopening StormFile", ra.group(0).strip()[:160] if ra else "")
-        adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1"); time.sleep(3); continue
+        adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1"); t0 = time.time(); time.sleep(3); continue
     d = find(root, r"isn't responding")
     if d is not None and anr < 3:
         anr += 1; w = find(root, r"^\s*Wait\s*$") or find(root, r"Wait")
         if w is not None: adb("shell", "input", "tap", *map(str, center(w)))
         else: adb("shell", "input", "keyevent", "KEYCODE_BACK")
-        time.sleep(2); adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1")
+        time.sleep(2); adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1"); t0 = time.time()  # time StormFile from this open, not the frozen home screen
         log("info", "the test phone's home screen froze; tapped Wait and reopened StormFile", f"time {anr}")
     time.sleep(0.5)
 dump("welcome")
 if n is not None:
     secs = time.time() - t0
-    log("ok", "start screen shows (I agree button on screen)", f"after {secs:.1f} s from tapping the icon (test phones are slower than real ones)")
+    log("ok", "start screen shows (I agree button on screen)", f"after {secs:.1f} s from {'reopening it' if anr else 'tapping the icon'} (test phones are slower than real ones)")
     log("ok" if secs <= 20 else "FAIL", "loads in a reasonable time", f"{secs:.1f} s")
 else:
     upd = find(root, r"update|WebView")
