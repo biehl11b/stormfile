@@ -1816,6 +1816,72 @@ function deadlinesCard(P){
   </div>`;
 }
 
+
+/* ---------- Household sharing: a locked copy goes phone to phone; the code to open it is shown as a QR code ----------
+   Nothing is uploaded. The file travels however the person sends it (AirDrop, Nearby Share, text, email), and the code that
+   unlocks it is only on the sender's screen, so the file alone is useless to anyone else. */
+let shareShown = null; // {code, svg} for the copy just sent; kept only while StormFile is open
+function loadLib(src, ready){ if(ready()) return Promise.resolve(ready());
+  return new Promise((res, rej)=>{ const sc = document.createElement('script'); sc.src = src; sc.onload = () => ready() ? res(ready()) : rej(new Error(src)); sc.onerror = () => rej(new Error(src)); document.head.appendChild(sc); }); }
+const loadQrMaker = () => loadLib('vendor/qrcode.js', () => window.qrcode);
+const loadQrReader = () => loadLib('vendor/jsQR.js', () => window.jsQR);
+const SHARE_ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function shareCodeNew(){ let s = ''; while(s.length < 16){ for(const x of crypto.getRandomValues(new Uint8Array(24))){ if(x < 256 - 256 % SHARE_ABC.length && s.length < 16) s += SHARE_ABC[x % SHARE_ABC.length]; } } return s.match(/.{4}/g).join('-'); }
+function shareCodeClean(x){ const s = String(x||'').toUpperCase().replace(/^STORMFILE-SHARE:/,'').replace(/[^A-Z0-9]/g,''); return s.length===16 ? s.match(/.{4}/g).join('-') : ''; }
+async function makeShare(ids, code){
+  save(); const props = S.properties.filter(P=>ids.includes(P.id)).map(P=>Object.assign(JSON.parse(JSON.stringify(P)), {origin: P.origin || P.id}));
+  const polIds = new Set(props.map(P=>P.policyId).filter(Boolean));
+  const pols = S.policies.filter(po=>polIds.has(po.id)).map(po=>Object.assign(JSON.parse(JSON.stringify(po)), {origin: po.origin || po.id}));
+  const files = {};
+  for(const id of fileIdsInState({properties:props})){ try{ const r = await getFile(id); if(r && r.blob) files[id] = {name:r.name, type:r.type, w:r.w, h:r.h, b64:u8ToB64(new Uint8Array(await r.blob.arrayBuffer()))}; }catch(e){} }
+  const text = await sealJson({app:'StormFile', kind:'share', made:nowISO(), from:(S.me||{}).name||'', properties:props, policies:pols, files}, code.replace(/-/g,''));
+  return new Blob([text], {type:'application/json'});
+}
+async function openShare(text, code){
+  let v; try{ v = await openJson(text, code.replace(/-/g,'')); }catch(e){ throw new Error(/backup file/.test(e.message||'') ? 'That isn’t a StormFile shared copy. Choose the file that was sent to you.' : 'That code doesn’t open this file. Check the code, or ask for it to be shared again.'); }
+  if(!v || v.kind !== 'share' || !Array.isArray(v.properties)) throw new Error(v && v.state ? 'That’s a backup, not a shared copy. Use “Restore from a backup” for it.' : 'That shared copy is missing its records.');
+  return v;
+}
+async function addShare(v){
+  for(const [id, f] of Object.entries(v.files||{})){ await putFile({id, name:f.name, type:f.type, w:f.w, h:f.h, blob:new Blob([b64ToU8(f.b64)], {type:f.type}), at:nowISO()}); }
+  if(S.sample){ S.properties = []; S.policies = []; S.sample = false; S.ownStarted = true; S.threat = 'none'; }
+  const polMap = {};
+  (v.policies||[]).forEach(po=>{ const old = po.id, mine = S.policies.find(x=>(x.origin||x.id)===po.origin);
+    if(mine){ const keep = mine.id; Object.assign(mine, po, {id:keep}); polMap[old] = keep; } else { const nid = uid(); S.policies.push(Object.assign(po, {id:nid})); polMap[old] = nid; } });
+  let added = 0, updated = 0; const who = v.from ? ' from ' + v.from : '';
+  v.properties.forEach(P=>{ P.policyId = P.policyId ? (polMap[P.policyId] || null) : null;
+    const i = S.properties.findIndex(x=>(x.origin||x.id)===P.origin);
+    if(i >= 0){ P.id = S.properties[i].id; S.properties[i] = P; updated++; } else { P.id = uid(); S.properties.push(P); added++; }
+    logEvt(P, `Shared copy received${who} (made ${fmtDay(v.made)})`); });
+  S.current = (S.properties.find(x=>x.origin===v.properties[0].origin) || S.properties[0]).id;
+  load2(); save(); return {added, updated};
+}
+function shareCard(){
+  const mine = hasRealData(), many = S.properties.length > 1;
+  return `<div class="card" id="shareCard">
+    <h2>Share with your household</h2>
+    <p class="small">Give a spouse, family member or co-owner their own copy of your records, photos and receipts. It goes from your phone to theirs. Nothing is uploaded, and there’s no account.</p>
+    ${shareShown ? `<div class="stack" style="align-items:center;text-align:center">
+        <p class="small"><strong>Step 2.</strong> On their phone, open StormFile → Settings → “Open a shared copy.” They choose the file you sent, then scan this code.</p>
+        <div class="qr" role="img" aria-label="QR code with the code below">${shareShown.svg}</div>
+        <p class="num" style="font-size:20px;letter-spacing:1px" aria-label="Code ${esc(shareShown.code.split('').join(' '))}">${esc(shareShown.code)}</p>
+        <p class="small muted">They can also type the code. Only someone with both the file and this code can open the copy. This is a copy as of today. Share again after big changes, and their phone updates the same places instead of adding new ones.</p>
+        <button class="small-btn ghost" data-act="shareDone">Done</button></div>`
+    : !mine ? `<p class="small muted">Add your own property first. Sample data can’t be shared.</p>`
+    : `${many ? `<fieldset class="stack" style="border:0;padding:0;margin:0"><legend class="small">Places to share</legend>${S.properties.map(P=>`<label class="check-row"><input type="checkbox" data-shareprop="${esc(P.id)}" checked> ${esc(P.name)}</label>`).join('')}</fieldset>` : ''}
+      <button class="primary" data-act="shareMake">Share my records</button>
+      <p class="small muted"><strong>Step 1</strong> sends a locked file. Pick AirDrop, Nearby Share, a text or an email. <strong>Step 2</strong> shows the code that opens it.</p>`}
+    <details ${S.shareOpen?'open':''} data-sharerecv><summary class="src" style="display:inline">Open a shared copy someone sent you</summary>
+      <div class="stack" style="margin-top:8px">
+        <label class="upload">1. Choose the file they sent<input type="file" id="shFile" accept=".json,application/json"></label>
+        <label class="upload">2. Scan their code with your camera<input type="file" id="shScan" accept="image/*" capture="environment"></label>
+        <label class="field">Or type the code<input id="shCode" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX-XXXX"></label>
+        <button class="primary" data-act="shareOpen">Add to this phone</button>
+        <p class="small muted">Places you already have from them are updated. Everything else on this phone stays as it is.</p>
+      </div></details>
+  </div>`;
+}
+
 /* ---------- Settings screen ---------- */
 function viewSettings(){
   const on = !!pinRec(), bio = !!bioRec(), me = S.me || {}, due = backupDue();
@@ -1834,6 +1900,8 @@ function viewSettings(){
       ${BIO_OK?'':`<p class="small muted">${BIONAME()[0].toUpperCase()+BIONAME().slice(1)} works when StormFile is opened from its icon on your home screen.</p>`}
       <button class="ghost" data-act="pinClear">Turn off the lock</button>`:''}
   </div>
+
+  ${shareCard()}
 
   <div class="card" style="${due?'border-color:var(--amber)':''}">
     <div class="row"><h2>Backup</h2><span class="chip ${due?'warn':'ok'}">${S.lastBackupAt?'Last: '+fmtDay(S.lastBackupAt):'None yet'}</span></div>
@@ -2173,6 +2241,24 @@ view.addEventListener('click', e=>{
     t.disabled = true; t.textContent = 'Locking your backup…';
     makeBackup(a).then(blob=>saveFile(`StormFile-backup-${today()}.json`, blob)).then(ok=>{ if(ok){ S.lastBackupAt = nowISO(); save(); render(); toast('Backup saved. Keep the file somewhere safe, like iCloud Drive or Google Drive.'); } else { t.disabled=false; t.textContent='Save a locked backup'; } })
       .catch(()=>{ t.disabled=false; t.textContent='Save a locked backup'; toast('The backup didn’t finish. Please try again.'); }); return; }
+  if(t.dataset.act==='shareMake'){
+    const boxes = [...document.querySelectorAll('[data-shareprop]')], ids = boxes.length ? boxes.filter(b=>b.checked).map(b=>b.dataset.shareprop) : S.properties.map(x=>x.id);
+    if(!ids.length) return toast('Pick at least one place to share.');
+    const code = shareCodeNew(); t.disabled = true; t.textContent = 'Locking the copy\u2026';
+    Promise.all([makeShare(ids, code), loadQrMaker()]).then(([blob, qrcode])=>saveFile(`StormFile-shared-copy-${today()}.json`, blob).then(ok=>{
+      if(!ok){ t.disabled=false; t.textContent='Share my records'; return; }
+      const q = qrcode(0, 'M'); q.addData('STORMFILE-SHARE:' + code); q.make();
+      shareShown = {code, svg:q.createSvgTag({cellSize:6, margin:4, scalable:true})};
+      S.properties.filter(x=>ids.includes(x.id)).forEach(x=>logEvt(x, 'Shared a copy with the household'));
+      save(); render(); const c = document.getElementById('shareCard'); if(c) c.scrollIntoView({block:'start'}); toast('Now show them the code on your screen.'); }))
+      .catch(e=>{ console.warn('share', e); t.disabled=false; t.textContent='Share my records'; toast('The copy didn\u2019t finish. Please try again.'); }); return; }
+  if(t.dataset.act==='shareDone'){ shareShown = null; render(); return; }
+  if(t.dataset.act==='shareOpen'){ const f = document.getElementById('shFile').files[0], code = shareCodeClean(document.getElementById('shCode').value);
+    if(!f) return toast('Choose the file they sent you first.'); if(!code) return toast('Scan their code, or type all 16 letters and numbers.');
+    t.disabled = true; t.textContent = 'Opening\u2026';
+    f.text().then(txt=>openShare(txt, code)).then(addShare).then(r=>{ S.shareOpen = false; S.tab = 'home'; save(); render(); window.scrollTo(0,0);
+      const n = x => plural(x,'place').replace('places','places'); toast([r.added?`Added ${n(r.added)}`:'', r.updated?`Updated ${n(r.updated)}`:''].filter(Boolean).join(', ') + ' from the shared copy.'); })
+      .catch(e=>{ t.disabled=false; t.textContent='Add to this phone'; toast(e.message || 'Couldn\u2019t open that shared copy.'); }); return; }
   if(t.dataset.act==='rsGo'){ const f = document.getElementById('rsFile').files[0]; if(!f) return toast('Choose your backup file first.');
     if(hasRealData() && !t.dataset.armed){ t.dataset.armed='1'; t.textContent='Tap again to replace what’s on this phone'; setTimeout(()=>{ if(t.isConnected){ delete t.dataset.armed; t.textContent='Unlock and restore'; } }, 6000); return; }
     t.disabled = true; t.textContent = 'Unlocking…';
@@ -2263,6 +2349,12 @@ view.addEventListener('change', e=>{
     clStatus:()=>P.claim.status=el.value, clOrder:()=>P.claim.orderDate=el.value, clRate:()=>P.claim.mileRate=num(el.value)
   };
   if(el.id==='pState'){ P.state = el.value; P.stateCleared = false; if(el.value && !/,\s*[A-Z]{2}\s*$/.test(P.address||'')) P.address = (P.address && P.address!=='Add your city' ? P.address + ', ' : '') + el.value; save(); render(); if(el.value) toast(`${P.name} is set to ${STATE_NAME[el.value]}.`); return; }
+  if(el.id==='shScan'){ const f = el.files[0]; if(!f) return; S.shareOpen = true;
+    Promise.all([loadQrReader(), loadImg(f)]).then(([jsQR, img])=>{ const d = drawTo(img, 1600), data = d.canvas.getContext('2d').getImageData(0, 0, d.canvas.width, d.canvas.height);
+      const r = jsQR(data.data, data.width, data.height, {inversionAttempts:'attemptBoth'}); const code = r && shareCodeClean(r.data);
+      if(!code || !/^STORMFILE-SHARE:/i.test(r.data)) return toast('Couldn\u2019t read a StormFile code in that photo. Fill the screen with the code and try again, or type it.');
+      const c = document.getElementById('shCode'); if(c){ c.value = code; } toast('Code scanned. Now tap \u201cAdd to this phone.\u201d'); })
+      .catch(()=>toast('Couldn\u2019t read that photo. Try again, or type the code.')); el.value=''; return; }
   if(el.id==='ltKind'){ S.ltKind = el.value; S.ltExtra = ''; save(); render(); const c = document.getElementById('ltKind'); if(c) c.scrollIntoView({block:'center'}); return; }
   if(map[el.id]){ map[el.id](); save(); render(); }
 });

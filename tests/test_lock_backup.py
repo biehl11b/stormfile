@@ -51,7 +51,7 @@ with sync_playwright() as p:
     out['erase_clears_files'] = left == 0
     pg.evaluate("()=>{const a=document.querySelector('[data-act=agree]'); a&&a.click();}")
     pg.click('#fbBtn'); pg.wait_for_timeout(300)
-    pg.evaluate("()=>document.querySelector('details summary.src').click()")
+    pg.evaluate("()=>{document.getElementById('rsFile').closest('details').open=true}")
     pg.set_input_files('#rsFile', path); pg.fill('#rsPass', 'wrong pass 99'); pg.click('[data-act=rsGo]'); pg.wait_for_timeout(1500)
     out['wrong_passphrase_refused'] = "match" in pg.text_content('body')
     pg.fill('#rsPass', 'correct horse 1'); pg.click('[data-act=rsGo]'); pg.wait_for_timeout(2500)
