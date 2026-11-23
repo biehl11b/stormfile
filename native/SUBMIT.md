@@ -37,5 +37,8 @@ Until the signing key is set up, each build still makes a **StormFile-test-apk**
 - Built with Xcode 26 / iOS 26 SDK and targets Android API 36, as the stores require.
 - Apple privacy manifest, permission explanations, export-compliance flag; iPhone-only so no iPad screenshots are needed.
 - Android: only the permissions StormFile uses; records are kept out of Google cloud backups and phone-to-phone transfers (people use StormFile's own locked backup).
-- Fonts and the PDF library are inside the app. StormFile makes no network requests of its own.
+- Age check for Texas (and Utah, Louisiana and California in 2027): uses Apple's Declared Age Range and Google's Play Age Signals, only where the law requires it. Under 18 can't use the app.
+- Privacy Policy, Terms and Help links in the app open the web pages in the phone's browser.
+- Help and resources says StormFile isn't a government app and links each official source (Google Play's rule for apps that share government information).
+- - Fonts and the PDF library are inside the app. StormFile makes no network requests of its own.
 - Automated checks: `sh tests/run-all.sh` (features, lock and backup, claim packet, security, phone layouts, state help, store pages and the phone-app build).

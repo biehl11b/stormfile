@@ -36,6 +36,34 @@
         return true;
       }catch(e){ return cancelled(e) ? false : 'fallback'; }
     },
+    /* Age check required by some states (Texas now; Utah, Louisiana and California in 2027). StormFile asks Apple or Google
+       only where the law applies. Returns 'ok', 'minor' (under 18), 'unverified' (age not shared) or 'verify' (confirm age in Google Play).
+       Only a yes/no is kept on the phone; the age range is never stored or sent anywhere. If the check can't run (offline,
+       old phone, store problem), StormFile stays usable so records are never locked away during a storm. */
+    ageCheck: async function(){
+      var AGE = P('AgeSignals'), KEY = 'stormfile_age_ok';
+      var wait = function(p, ms){ return Promise.race([p, new Promise(function(_, no){ setTimeout(function(){ no(new Error('timeout')); }, ms); })]); };
+      var was = function(){ try{ return localStorage.getItem(KEY) === '1'; }catch(e){ return false; } };
+      var keep = function(v){ try{ if(v) localStorage.setItem(KEY, '1'); else localStorage.removeItem(KEY); }catch(e){} };
+      if(!AGE) return 'ok';
+      try{
+        var a = await wait(AGE.isAvailable(), 5000); if(!a || !a.available) return 'ok';
+        var req = await wait(AGE.getRegulatoryRequirements(), 8000);
+        if(!req || !req.ageAssuranceRequired) return 'ok';
+      }catch(e){ return 'ok'; }
+      try{
+        var r = await wait(AGE.requestAgeRange({ageGates:[18]}), 180000);
+        var g = (r && r.ageRange) || {};
+        if(r && r.status === 'SHARED'){
+          if(g.lowerBound != null && g.lowerBound >= 18){ keep(true); return 'ok'; }
+          if(g.upperBound != null && g.upperBound < 18){ keep(false); return 'minor'; }
+          if(g.lowerBound != null && g.lowerBound < 18 && g.upperBound == null){ keep(false); return 'minor'; }
+        }
+        if(r && r.status === 'VERIFICATION_REQUIRED') return was() ? 'ok' : 'verify';
+        if(r && r.status === 'NOT_SHARED') return 'unverified';
+        return was() ? 'ok' : 'unverified';
+      }catch(e){ return was() ? 'ok' : 'unverified'; }
+    },
     wipe: function(){ FS.rmdir({path:OUT, directory:'CACHE', recursive:true}).catch(function(){}); },
     onBack: function(handler){ APP.addListener('backButton', function(){ if(!handler()) APP.minimizeApp().catch(function(){}); }); }
   };
@@ -43,6 +71,9 @@
   document.addEventListener('click', function(e){
     var a = e.target.closest && e.target.closest('a[target="_blank"]'); if(!a) return;
     var href = a.getAttribute('href') || '';
+    /* StormFile's own Privacy Policy, Terms and Help pages open on the web in the phone's browser */
+    var own = a.href.indexOf(location.origin + '/') === 0 && /^[a-z]+\.html([?#].*)?$/.test(a.href.slice(location.origin.length + 1));
+    if(own){ e.preventDefault(); window.location.href = 'https://biehl11b.github.io/stormfile/' + a.href.slice(location.origin.length + 1); return; }
     if(/^https?:/i.test(a.href)){ e.preventDefault(); window.location.href = a.href; return; }
     if(/^blob:/.test(href)){ e.preventDefault(); fetch(href).then(function(r){ return r.blob(); }).then(function(b){ return saveFile('receipt.pdf', b); }).catch(function(){}); }
   }, true);

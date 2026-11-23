@@ -11,3 +11,4 @@
 @capgo/capacitor-native-biometric@8.9.1
 @ebarooni/capacitor-calendar@8.10.0
 @capacitor/assets@4.0.0
+@capawesome/capacitor-age-signals@0.5.1

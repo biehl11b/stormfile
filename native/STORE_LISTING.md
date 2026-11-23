@@ -84,6 +84,9 @@ EN ESPAÑOL Y ACCESIBLE
 • The whole app in English or Spanish (letters and the claim packet stay in English for your insurer)
 • Works with VoiceOver and TalkBack, follows your phone's text size, and respects Reduce Motion
 
+NOT A GOVERNMENT APP
+StormFile isn't made by, connected to or approved by any government agency. Government contacts and rules in the app come from official sources, each linked in the app: state insurance departments and emergency management agencies (their official .gov websites), FEMA (fema.gov, disasterassistance.gov, ready.gov), SBA disaster loans (sba.gov), the National Flood Insurance Program (floodsmart.gov), the National Hurricane Center (hurricanes.gov), and state laws on claim deadlines (official state legislature websites).
+
 StormFile organizes your records and explains your policy in plain English. It doesn't sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company. Always follow official weather alerts and evacuation orders.
 
 Made in Pass Christian, Mississippi, by Coastline Code LLC, a veteran-owned company.
@@ -103,14 +106,19 @@ Choose **Data Not Collected**. StormFile has no account, no analytics, no ad net
 - If someone emails us from the app, that's the user choosing to contact us, not data the app collects.
 - Tracking: **No**.
 
-## Apple: Age rating questionnaire
+## Apple: Age rating questionnaire (2026 version)
 
-Answer **None** to every content question. User-generated content shared with other users: **No**. Messaging or chat: **No**. Advertising: **No**. Unrestricted web access: **No** (links open official agency websites in the browser). Gambling, contests: **No**. Expected result: **4+**.
+Answer **None** to every content question. In-app controls: Parental controls **No**; Age assurance **Yes** (the app asks Apple for the person's age range where state law requires it and is not usable by anyone under 18). Capabilities: Unrestricted web access **No** (links open official agency websites in Safari); User-generated content shared with other users **No** (household sharing is a private, phone-to-phone copy with no feed or discovery); Messaging or chat **No**; Advertising **No**; Social media capabilities **No**. Medical or wellness topics **No**. Gambling, contests, loot boxes **No**. Expected result: **4+**. (Optional: App Store Connect lets you raise it to 18+ with "Age Rating Override". Not required, since StormFile has no mature content, and the in-app age check already enforces 18+.)
+
+## Age check law (Texas now; Utah, Louisiana and California in 2027)
+
+Texas's App Store Accountability Act has been enforceable since June 4, 2026; Utah (May 6, 2027), Louisiana (July 1, 2027) and California (Jan. 1, 2027) follow. Apps must use the stores' age APIs. Done in the code: on each launch the phone app asks Apple (Declared Age Range) or Google (Play Age Signals) whether an age check is required for this person. Only if it is, it asks for the age range: 18+ continues; under 18 sees "StormFile is for adults"; not shared sees "Confirm you're 18 or older" with a button to share. Only a yes/no stays on the phone. If the check can't run (offline, older phone), StormFile stays usable so records are never locked away in a storm. StormFile has no in-app purchases, so there's nothing to rate or approve separately. Apple: the bundle ID needs the **Declared Age Range** capability (Xcode turns it on automatically when it signs the build with the App Store Connect key; if the upload fails on this, tick "Declared Age Range" for com.coastlinecode.stormfile in Certificates, Identifiers & Profiles → Identifiers).
 
 ## Apple: Notes for the reviewer (App Review Information)
 
 StormFile needs no login. On first open, tap "I agree — look around with sample data first" to see a sample home with a policy, rooms and a claim, or "I agree — set up my home" to start with your own.
-To try the main features with the sample: Policy tab (coverage explained, deductible in dollars, renewal reminder); Rooms tab (take or choose a photo, add an item); Storm tab (seasons for the property's state, "Add yearly reminders to my calendar"); Claim tab (call log, letters, "Make the claim packet (PDF)"); Claim tab → "Claim stuck? Get help in Mississippi" (state insurance department and emergency contacts). Settings → Lock sets a PIN and Face ID; Settings → Backup makes an encrypted backup file through the share sheet.
+To try the main features with the sample: Policy tab (coverage explained, deductible in dollars, renewal reminder, "What's this?" links that explain insurance words); Rooms tab (take or choose a photo, add an item); Storm tab (seasons for the property's state, "Add yearly reminders to my calendar"); Claim tab (the "Next step" box, then tap a section to open it: claim deadlines, call log, letters, and "Make the claim packet (PDF)"); the "Help and resources" card on the Claim tab (state insurance department and emergency contacts). Settings (top right) → tap "Lock" to set a PIN and Face ID; tap "Backup" to make an encrypted backup file through the share sheet. Settings → Language switches between English and Spanish. The Privacy Policy and Terms links are in Settings → About.
+Age check: StormFile asks for the age range only where state law requires it (Texas). Under 18 can't use the app (it's for adults managing their homes and businesses).
 All data is stored only on the device; there is no account or server.
 Features that use the phone itself: camera and photo library for room and receipt photos, location (optional) to record where a photo was taken, Face ID / passcode lock, the system "New Event" calendar screen and calendar write access for reminders, and the share sheet for letters, PDFs and encrypted backups.
 StormFile is not an insurance company, agent or adjuster and doesn't sell insurance. Demo account: not needed.
@@ -126,6 +134,7 @@ The app uses only standard encryption (AES, built into the system) to protect th
 - Do you provide a way for users to request that their data be deleted? **Yes**. Users delete everything in the app (Settings → Erase everything) or by uninstalling.
 - Data deletion URL (if asked): https://stormfile.coastlinecode.com/privacy.html (section 8)
 - Location: used only on the device to tag photos; not collected (never leaves the device).
+- Age range (Play Age Signals): read on the device only to confirm 18+, never sent off the phone, so it isn't "collected" for the form.
 
 ## Google Play: Permissions
 
@@ -143,7 +152,8 @@ Category: **Utility, Productivity, Communication or Other**. Answer **No** to vi
 
 - Ads: **No**
 - App access: **All functionality is available without special access**
-- Government app: **No** (it links to government websites but isn't made by or for a government)
+- Government apps: **No** (it isn't made by or for a government). Because it shares government information, Google's policy requires the store description to name the sources and say it isn't a government app: the "NOT A GOVERNMENT APP" paragraph in the description does both, and the Help and resources screen says the same.
+- Age signals: StormFile uses the Play Age Signals API only to confirm users are 18+ where the law requires it (no setup needed in Play Console).
 - Financial features: **None** (StormFile doesn't sell or arrange insurance, loans or payments)
 - Health apps declaration: **My app does not have any health features**
 

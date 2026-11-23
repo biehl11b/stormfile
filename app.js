@@ -1181,6 +1181,8 @@ const FB_T = [
   {id:'missing',q:'What’s missing that you’d want?'},
   {id:'name',q:'Your name and city (optional)'}
 ];
+if(!TEST){ const i = FB_Q.findIndex(x=>x.id==='pay'); if(i>=0) FB_Q.splice(i,1);
+  const b = FB_Q.find(x=>x.id==='best'); if(b) b.opts = b.opts.map(o=>o==='Storm alerts'?'Storm and fire seasons':o); }
 function fbText(){
   const f = S.fb || {};
   const lines = ['StormFile feedback'];
@@ -1193,7 +1195,7 @@ function viewFeedback(){
   const answered = FB_Q.filter(x=>f[x.id]).length;
   return `
   <section class="stack"><p class="label">${TEST?'Test version':'StormFile'}</p><h1>Your feedback</h1>
-    <p class="small muted">Six taps and a few words. When you\u2019re done, tap Email my answers and they come straight to us.</p></section>
+    <p class="small muted">${TEST?'Six taps':'A few taps'} and a few words. When you\u2019re done, tap Email my answers and they come straight to us.</p></section>
   ${FB_Q.map(x=>`<div class="card"><h3>${esc(x.q)}</h3><div class="choices" role="group" aria-label="${esc(x.q)}">
     ${x.opts.map(o=>`<button data-fbq="${x.id}" data-fba="${esc(o)}" aria-pressed="${f[x.id]===o}">${esc(o)}</button>`).join('')}</div></div>`).join('')}
   ${FB_T.map(x=>`<div class="card"><label class="field" style="color:var(--fg);font-size:15px;font-weight:600">${esc(x.q)}
@@ -1202,7 +1204,7 @@ function viewFeedback(){
     <div class="row"><h2>Send it</h2><span class="small muted">${answered} of ${FB_Q.length} answered</span></div>
     <a class="btn-like" id="fbMail" style="background:var(--accent);color:var(--accent-fg);border-color:var(--accent)" href="${esc(`mailto:info@coastlinecode.com?subject=${encodeURIComponent('StormFile feedback')}&body=${encodeURIComponent(fbText())}`)}">Email my answers to StormFile</a>
     <button data-act="fbCopy">Copy my answers</button>
-    <p class="small muted">The email goes to info@coastlinecode.com. If your email app doesn\u2019t open, copy your answers and send them to that address, or text them to the person who shared StormFile with you.</p>
+    <p class="small muted">The email goes to info@coastlinecode.com. If your email app doesn\u2019t open, copy your answers and send them to that address${TEST?', or text them to the person who shared StormFile with you':''}.</p>
     <textarea id="fbOut" readonly style="min-height:140px;font-size:13px">${esc(fbText())}</textarea>
   </div>`;
 }
@@ -1862,6 +1864,7 @@ function viewResources(){
     ${RES_NATIONAL.map(m=>resItem(m[0], m[1], m[2], m[3])).join('')}
   </div>
   ${wordsToKnow()}
+  <p class="small muted" style="padding:0 4px">StormFile isn\u2019t a government app and isn\u2019t connected to or approved by any government agency. Each contact above comes from that agency\u2019s own official website, linked with it.</p>
   <p class="small muted" style="padding:0 4px">Checked against official websites in ${RES_CHECKED}. Phone numbers and programs can change. If a number doesn’t work, use the website, and please <a href="mailto:info@coastlinecode.com?subject=${encodeURIComponent('StormFile: wrong contact for ' + (STATE_NAME[st]||'a state'))}">tell us</a>. StormFile isn’t connected to any of these agencies.</p>`;
 }
 
@@ -2060,6 +2063,22 @@ function viewSettings(){
 /* ---------- Render + events ---------- */
 const VIEWS = {home:viewHome, policy:viewPolicy, inventory:viewInventory, storm:viewStorm, claim:viewClaim, feedback:viewFeedback, policyForm:viewPolicyForm, settings:viewSettings, resources:viewResources};
 let LIVE = null;
+/* Age check (phone app only): where the law requires it, Apple or Google confirms the person is 18 or older. */
+let AGE_GATE = null;
+function runAgeCheck(){ if(!(NAT && NAT.ageCheck)) return; NAT.ageCheck().then(v=>{ const was = AGE_GATE; AGE_GATE = v==='ok' ? null : v; if(was !== AGE_GATE) render(); }).catch(()=>{}); }
+function viewAgeGate(){
+  const ios = NAT && NAT.platform === 'ios', store = ios ? 'your Apple Account' : 'Google Play';
+  if(AGE_GATE === 'minor') return `<section class="stack" style="padding-top:24px"><h1>StormFile is for adults</h1>
+    <p>StormFile is made for adults 18 and older who manage a home, rental or business. ${ios?'Your Apple Account':'Your Google account'} shows an age under 18, so StormFile can't be used on this phone.</p>
+    <p class="small muted">If that age isn't right, update it in ${ios?'Settings on your iPhone (tap your name at the top)':'your Google account or the Play Store'}, then tap Check again.</p>
+    <button class="primary" data-act="ageCheck">Check again</button></section>`;
+  return `<section class="stack" style="padding-top:24px"><h1>Confirm you're 18 or older</h1>
+    <p>Where you live, the law requires apps to confirm through ${store} that you're old enough to use them. StormFile is made for adults 18 and older.</p>
+    ${AGE_GATE === 'verify' ? `<p>Open the Play Store and follow its steps to confirm your age, then come back and tap Check again.</p>`
+      : `<p>Tap the button below and choose to share your age range.</p>`}
+    <button class="primary" data-act="ageCheck">${AGE_GATE === 'verify' ? 'Check again' : 'Share my age range'}</button>
+    <p class="small muted">StormFile only learns whether you're over 18, never your birthday. That answer stays on this phone and is never sent to us. Your records stay saved on this phone.</p></section>`;
+}
 const INSTALLED = !!NAT || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
 const IS_IOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
 let INSTALL_EVT = null;
@@ -2080,6 +2099,7 @@ function render(){
     </div>`;}).join('') + `<button class="primary" data-madd="1">+ Add a property</button>`;
   const first = !S.agreed;
   document.querySelector('nav.tabs').hidden = first; menuBtn.hidden = first; document.getElementById('fbBtn').parentElement.hidden = first;
+  if(AGE_GATE){ document.querySelector('nav.tabs').hidden = true; menuBtn.hidden = true; document.getElementById('fbBtn').parentElement.hidden = true; view.innerHTML = viewAgeGate(); return; }
   if(first){ view.innerHTML = viewWelcome(); return; }
   view.innerHTML = VIEWS[S.tab]();
   document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-current', b.dataset.tab===S.tab?'page':'false'));
@@ -2345,6 +2365,7 @@ view.addEventListener('click', e=>{
   if(t.dataset.lang){ const l = t.dataset.lang === 'es' ? 'es' : 'en'; if(l === S.lang) return; S.lang = l; save();
     if(l === 'en') I18N.set('en'); render(); if(l === 'es') I18N.set('es'); return; }
   if(t.dataset.term){ termFrom = t; showTerm(t.dataset.term); return; }
+  if(t.dataset.act==='ageCheck'){ runAgeCheck(); return; }
   if(t.dataset.act==='startClaim'){ const P = cur(); P.claim.started = true; logEvt(P, 'Claim started in StormFile'); S.open = S.open || {}; save(); render(); window.scrollTo(0,0); const f = document.getElementById('clNum'); if(f) f.focus({preventScroll:true}); return; }
   if(t.dataset.act==='shareMake'){
     const boxes = [...document.querySelectorAll('[data-shareprop]')], ids = boxes.length ? boxes.filter(b=>b.checked).map(b=>b.dataset.shareprop) : S.properties.map(x=>x.id);
@@ -2540,7 +2561,7 @@ view.addEventListener('submit', e=>{
 
 load(); if(!VIEWS[S.tab]) S.tab='home';
 if(!S.lang) S.lang = /^es\b/i.test(navigator.language || '') ? 'es' : 'en'; // Spanish phones start in Spanish
-render(); if(S.lang === 'es') I18N.set('es'); showLock();
+render(); if(S.lang === 'es') I18N.set('es'); showLock(); runAgeCheck();
 bioSupported().then(ok=>{ BIO_OK = ok; if(S.tab==='settings') render(); });
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
 if(!NAT && 'serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }

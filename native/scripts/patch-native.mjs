@@ -23,6 +23,11 @@ function patchIOS() {
   // StormFile is in English and Spanish; this lets the App Store list both languages.
   add("CFBundleLocalizations", "<array><string>en</string><string>es</string></array>");
   fs.writeFileSync(f, s); console.log("iOS Info.plist patched");
+  // Age check (Declared Age Range): required by Texas law now and other states in 2027. Needs this entitlement.
+  const ent = path.join(root, "ios/App/App/App.entitlements");
+  let e = fs.existsSync(ent) ? fs.readFileSync(ent, "utf8") : `<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n<plist version="1.0">\n<dict>\n</dict>\n</plist>\n`;
+  if (!e.includes("com.apple.developer.declared-age-range")) e = e.replace(/<dict>/, "<dict>\n\t<key>com.apple.developer.declared-age-range</key>\n\t<true/>");
+  fs.writeFileSync(ent, e);
   // iPhone only (it still runs on iPad in iPhone mode). Avoids needing iPad screenshots and iPad review.
   const pbx = path.join(root, "ios/App/App.xcodeproj/project.pbxproj"); let p = fs.readFileSync(pbx, "utf8");
   p = p.replace(/TARGETED_DEVICE_FAMILY = "1,2";/g, "TARGETED_DEVICE_FAMILY = 1;"); fs.writeFileSync(pbx, p);

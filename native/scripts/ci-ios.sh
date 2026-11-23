@@ -24,7 +24,10 @@ ruby -e '
     t.resources_build_phase.add_file_reference(ref)
     p.save
     puts "Privacy manifest added to the app"
-  end'
+  end
+  t.build_configurations.each { |c| c.build_settings["CODE_SIGN_ENTITLEMENTS"] = "App/App.entitlements" }
+  p.save
+  puts "Entitlements file set (age check)"'
 npx capacitor-assets generate --ios --iconBackgroundColor '#0d2350' --splashBackgroundColor '#0d2350' --splashBackgroundColorDark '#091630' || echo "ICON STEP FAILED (using defaults)"
 npx cap sync ios
 cd ios/App
