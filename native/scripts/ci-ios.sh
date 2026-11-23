@@ -8,6 +8,8 @@ XV=$(xcodebuild -version 2>/dev/null | awk 'NR==1{print $2}' | cut -d. -f1)
 if [ "$XV" -lt 26 ]; then echo "Xcode $XV is too old for the App Store (needs 26 or later)"; exit 1; fi
 npm install --no-audit --no-fund --legacy-peer-deps $(cat plugins.txt)
 npm ls --depth=0 || true
+# Fail early if the app's code is too new for older phones (Google rejected KidArmor build 147 for this)
+A=${RUNNER_TEMP:-/tmp}/syntax-check; npm install --prefix "$A" --no-audit --no-fund acorn@8.14.0 >/dev/null && node scripts/check-old-syntax.cjs "$A/node_modules/acorn"
 node scripts/prepare-www.mjs
 [ -d ios ] || npx cap add ios
 node scripts/patch-native.mjs ios

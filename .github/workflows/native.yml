@@ -2,7 +2,7 @@ name: Build phone apps
 on:
   push:
     branches: [main]
-    paths: ["native/**", "!native/**/*.md", "app.js", "index.html", "vendor/**", ".github/workflows/native.yml"]
+    paths: ["native/**", "!native/**/*.md", "app.js", "es.js", "compat.js", "index.html", "privacy.html", "terms.html", "support.html", "vendor/**", ".github/workflows/native.yml"]
   workflow_dispatch:
 permissions:
   contents: write
@@ -40,6 +40,13 @@ jobs:
           name: StormFile-store-bundle
           path: native/out/StormFile-store.aab
           retention-days: 30
+      - name: Keep store version signed with a test key (for the store test only; never upload it)
+        if: hashFiles('native/out/StormFile-store-TESTKEY.aab') != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: StormFile-store-bundle-TESTKEY
+          path: native/out/StormFile-store-TESTKEY.aab
+          retention-days: 14
       - name: Keep test APK (private download from the run page; not published, since StormFile is a paid app)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

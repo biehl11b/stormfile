@@ -22,7 +22,7 @@ Marketing URL (optional): https://coastlinecode.com
 - **App name (30 characters max):** StormFile
 - **Subtitle (Apple, 30 max):** Claim-ready before the storm
 - **Short description (Google, 80 max):** Your policy in plain English, a dated home inventory, and your claim organized.
-- **Promotional text (Apple, 170 max):** Hurricane season is coming. Photograph every room, save your receipts, and know your deductible in dollars, all kept private on your phone.
+- **Promotional text (Apple, 170 max):** Hurricane season is coming. Photograph every room, save your receipts, and know your deductible in dollars, all kept private on your iPhone.
 
 ## Keywords (Apple, 100 characters, comma separated, no spaces)
 
@@ -33,7 +33,69 @@ hurricane,insurance,home inventory,claim,flood,deductible,storm,homeowners,adjus
 - Apple: Primary **Productivity**, Secondary **Lifestyle**
 - Google: **Productivity** (tags: House & Home)
 
-## Full description (both stores, 4,000 max)
+## Full description: Apple App Store version (4,000 max)
+
+Mentions only iPhone features. Apple rejects listings that mention other phones or stores (guideline 2.3.10).
+
+StormFile gets your home, rental or business ready for an insurance claim before the storm, and keeps the claim organized after it.
+
+Everything stays on your iPhone. No account, no sign-up, no ads and no tracking.
+
+KNOW WHAT YOU'RE COVERED FOR
+• Enter your declarations page once and see each coverage explained in plain English
+• Your hurricane or wind deductible worked out in dollars, not just a percentage
+• A building-cost check that adds recent inflation, so you can spot a gap before a storm does
+• Flood and storm surge gaps called out (most homeowners policies don't cover flood)
+• Renewal reminders in your calendar 45 days ahead, so there's time to shop or adjust
+
+DOCUMENT EVERYTHING BEFORE THE STORM
+• Room-by-room photos with the date taken, and where taken if you allow location
+• Items with what you paid and the year you bought them
+• Receipts and home upgrades (roof, windows, HVAC) attached to each item
+• Vehicles, campers and outbuildings
+• Lock your before-storm record when you file, so anything added later is clearly marked
+
+STORM AND FIRE SEASONS FOR YOUR STATE
+• Hurricane, wildfire, grass fire, tornado and winter storm seasons for all 50 states and DC
+• A get-ready checklist for each season
+• Yearly reminders added to your iPhone's Calendar 3 weeks before each season starts
+
+ORGANIZE THE CLAIM
+• Claim number, adjuster, and a dated log of every call and email
+• Claim deadlines worked out for you: the time limits Texas, Florida, Louisiana and Alabama set for insurers, plus the flood insurance proof-of-loss deadline, added to your calendar
+• Evacuation and living-expense receipts (ALE) with running totals
+• Ready-to-send letters: follow-up, request for the estimate, status, living expenses, supplement, policy request, and a complaint to your state insurance department built from your call log
+• One claim packet PDF with your policy summary, photos, contents list, receipts and call log, made on your phone
+
+HELP IN YOUR STATE
+• Your state insurance department with tap-to-call and its complaint page, for when a claim stalls
+• Your state emergency management agency, FEMA, SBA disaster loans and flood insurance (NFIP) contacts
+• Gulf Coast wind pools and fortified-roof grant programs where they exist
+
+MORE THAN ONE PLACE
+• Homes, rentals and businesses in one app, each with its own policy or sharing one
+
+SHARE WITH YOUR HOUSEHOLD
+• Give a spouse or co-owner their own copy, phone to phone, unlocked with a QR code. No account and nothing uploaded
+
+PRIVATE BY DESIGN
+• Lock with a PIN and Face ID or Touch ID
+• Locked backups you control (encrypted with your passphrase): save one to iCloud Drive, or use it to move to a new iPhone
+
+EN ESPAÑOL Y ACCESIBLE
+• The whole app in English or Spanish (letters and the claim packet stay in English for your insurer)
+• Works with VoiceOver, follows your iPhone's text size (Larger Text), and respects Reduce Motion
+
+NOT A GOVERNMENT APP
+StormFile isn't made by, connected to or approved by any government agency. Government contacts and rules in the app come from official sources, each linked in the app: state insurance departments and emergency management agencies (their official .gov websites), FEMA (fema.gov, disasterassistance.gov, ready.gov), SBA disaster loans (sba.gov), the National Flood Insurance Program (floodsmart.gov), the National Hurricane Center (hurricanes.gov), and state laws on claim deadlines (official state legislature websites).
+
+StormFile organizes your records and explains your policy in plain English. It doesn't sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company. Always follow official weather alerts and evacuation orders.
+
+Made in Pass Christian, Mississippi, by Coastline Code LLC, a veteran-owned company.
+
+## Full description: Google Play version (4,000 max)
+
+Mentions only Android features.
 
 StormFile gets your home, rental or business ready for an insurance claim before the storm, and keeps the claim organized after it.
 
@@ -77,12 +139,12 @@ SHARE WITH YOUR HOUSEHOLD
 • Give a spouse or co-owner their own copy, phone to phone, unlocked with a QR code. No account and nothing uploaded
 
 PRIVATE BY DESIGN
-• Lock with a PIN and Face ID or fingerprint
-• Locked backups you control (encrypted with your passphrase) to keep off your phone or move to a new one
+• Lock with a PIN and your fingerprint or face unlock
+• Locked backups you control (encrypted with your passphrase): save one to Google Drive, or use it to move to a new phone
 
 EN ESPAÑOL Y ACCESIBLE
 • The whole app in English or Spanish (letters and the claim packet stay in English for your insurer)
-• Works with VoiceOver and TalkBack, follows your phone's text size, and respects Reduce Motion
+• Works with TalkBack, follows your phone's font size, and respects Remove animations
 
 NOT A GOVERNMENT APP
 StormFile isn't made by, connected to or approved by any government agency. Government contacts and rules in the app come from official sources, each linked in the app: state insurance departments and emergency management agencies (their official .gov websites), FEMA (fema.gov, disasterassistance.gov, ready.gov), SBA disaster loans (sba.gov), the National Flood Insurance Program (floodsmart.gov), the National Hurricane Center (hurricanes.gov), and state laws on claim deadlines (official state legislature websites).
@@ -151,7 +213,8 @@ Category: **Utility, Productivity, Communication or Other**. Answer **No** to vi
 ## Google Play: other declarations
 
 - Ads: **No**
-- App access: **All functionality is available without special access**
+- App access: choose **"All or some functionality is restricted"** and add the instructions below, even though StormFile has no account. Learned from KidArmor: Google rejected it with "Login credentials are missing" because its PIN lock and QR-code pairing counted as restricted areas and the answer said nothing was restricted. In Play Console → App content → App access → Add instructions: Name **No account needed**; leave username and password empty; Other information:
+  > StormFile has no accounts or sign-in. On first open, tap "I agree — set up my home" (or "I agree — look around with sample data first" to see a filled-in example). The PIN lock is optional and off until you turn it on in Settings → Lock; if you set one, enter the same 4 digits to open the app. Fingerprint unlock is optional. Sharing with a household member uses a QR code between two phones; it's optional and everything else works on one phone. Camera, location and calendar permissions are optional. In states whose law requires it (such as Texas), Google Play may ask the reviewer's account to share an age range; StormFile is for adults 18+.
 - Government apps: **No** (it isn't made by or for a government). Because it shares government information, Google's policy requires the store description to name the sources and say it isn't a government app: the "NOT A GOVERNMENT APP" paragraph in the description does both, and the Help and resources screen says the same.
 - Age signals: StormFile uses the Play Age Signals API only to confirm users are 18+ where the law requires it (no setup needed in Play Console).
 - Financial features: **None** (StormFile doesn't sell or arrange insurance, loans or payments)

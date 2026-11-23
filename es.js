@@ -1081,6 +1081,17 @@ window.SF_ES = {
 "Tap the button below and choose to share your age range.": "Toque el botón de abajo y elija compartir su rango de edad.",
 "Share my age range": "Compartir mi rango de edad",
 "StormFile only learns whether you're over 18, never your birthday. That answer stays on this phone and is never sent to us. Your records stay saved on this phone.": "StormFile solo sabe si usted tiene más de 18 años, nunca su fecha de nacimiento. Esa respuesta se queda en este teléfono y nunca se nos envía. Sus registros siguen guardados en este teléfono.",
+// ---- iPhone and Android versions (each mentions only its own phone)
+"No account and no sign-up. Nothing is uploaded or sold. Lock it with a PIN, Face ID or Touch ID and keep a locked backup.": "Sin cuenta y sin registrarse. No se sube ni se vende nada. Protéjalo con un PIN, Face ID o Touch ID, y guarde una copia de seguridad protegida.",
+"No account and no sign-up. Nothing is uploaded or sold. Lock it with a PIN, fingerprint or face unlock and keep a locked backup.": "Sin cuenta y sin registrarse. No se sube ni se vende nada. Protéjalo con un PIN, huella digital o desbloqueo facial, y guarde una copia de seguridad protegida.",
+"Set a PIN so nobody else can open your policy, photos and claim on this phone. Then you can add Face ID or Touch ID.": "Ponga un PIN para que nadie más pueda abrir su póliza, fotos y reclamo en este teléfono. Después puede agregar Face ID o Touch ID.",
+"Set a PIN so nobody else can open your policy, photos and claim on this phone. Then you can add fingerprint or face unlock.": "Ponga un PIN para que nadie más pueda abrir su póliza, fotos y reclamo en este teléfono. Después puede agregar huella digital o desbloqueo facial.",
+"Your records live only on this phone. If a storm takes the phone, they go with it. A backup is one locked file with everything, including full-size photos and receipts. Save it to iCloud Drive or email it to yourself.": "Sus registros están solo en este teléfono. Si una tormenta se lleva el teléfono, se van con él. Una copia de seguridad es un archivo protegido con todo, incluidas las fotos y recibos en tamaño completo. Guárdela en iCloud Drive o envíesela por correo.",
+"Your records live only on this phone. If a storm takes the phone, they go with it. A backup is one locked file with everything, including full-size photos and receipts. Save it to Google Drive or email it to yourself.": "Sus registros están solo en este teléfono. Si una tormenta se lleva el teléfono, se van con él. Una copia de seguridad es un archivo protegido con todo, incluidas las fotos y recibos en tamaño completo. Guárdela en Google Drive o envíesela por correo.",
+"Tap the button, then choose Save to Files (pick iCloud Drive) or Mail.": "Toque el botón y luego escoja Guardar en Archivos (elija iCloud Drive) o Mail.",
+"Tap the button, then choose Drive or your email app.": "Toque el botón y luego escoja Drive o su aplicación de correo.",
+"Backup saved. Keep the file somewhere safe, like iCloud Drive.": "Copia guardada. Guarde el archivo en un lugar seguro, como iCloud Drive.",
+"Backup saved. Keep the file somewhere safe, like Google Drive.": "Copia guardada. Guarde el archivo en un lugar seguro, como Google Drive.",
 // ---- Months
 "January": "enero", "February": "febrero", "March": "marzo", "April": "abril", "May": "mayo", "June": "junio",
 "July": "julio", "August": "agosto", "September": "septiembre", "October": "octubre", "November": "noviembre", "December": "diciembre"

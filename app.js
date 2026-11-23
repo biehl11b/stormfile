@@ -1,11 +1,16 @@
 (function(){
 /* In the App Store / Google Play app, native/src/native.js sets SF_NATIVE so StormFile can use the phone's own share sheet, Face ID and calendar. */
 const NAT = window.SF_NATIVE || null;
-const TEST = !(NAT && NAT.store); // the shared test version shows tester notes; the App Store / Google Play version doesn't
+const TEST = !(NAT && NAT.store);
+/* Two store versions: the iPhone app talks only about iPhone things and the Android app only about Android things
+   (Apple rejects apps that mention other phones, guideline 2.3.10). The web version mentions both. */
+const PLAT = NAT ? (NAT.platform === 'ios' ? 'ios' : 'android') : 'web';
+const BIOS = () => ({ios:'Face ID or Touch ID', android:'fingerprint or face unlock', web:'Face ID or fingerprint'})[PLAT];
+const CLOUD = () => ({ios:'iCloud Drive', android:'Google Drive', web:'iCloud Drive, Google Drive'})[PLAT]; // the shared test version shows tester notes; the App Store / Google Play version doesn't
 const YEAR = 2026;
 const CPI = 0.031;
 const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const uid = () => Math.random().toString(36).slice(2,9);
 
 /* ---------- Sample policies, as the AI reader would return them ---------- */
@@ -937,7 +942,7 @@ function packetBody(P, cfg, inv){ return `
 `; }
 /* A section that opens with a tap; remembers whether it was left open. */
 function sec(id, title, status, body, opts){ opts = opts || {}; S.open = S.open || {};
-  const open = S.open[id] ?? !!opts.open;
+  const open = (S.open[id] != null ? S.open[id] : !!opts.open);
   return `<details class="card sec" data-sec="${id}" id="sec-${id}" ${open?'open':''}${opts.style?` style="${opts.style}"`:''}>
     <summary><span class="sec-t"><span class="sec-h">${title}</span>${status?`<span class="sec-s">${status}</span>`:''}</span><span class="sec-c" aria-hidden="true"></span></summary>
     <div class="stack sec-b">${body}</div></details>`; }
@@ -1086,7 +1091,7 @@ function pfSelect(id, label, opts, val, help){
 }
 function viewPolicyForm(){
   const P = cur(), cfg = TYPES[P.type], old = polOf(P), a = (old && old.manual && old.answers) || {};
-  const v = k => esc(a[k] ?? '');
+  const v = k => esc(a[k] == null ? '' : a[k]);
   return `
   <section class="stack"><p class="label">${esc(P.name)}</p><h1>Enter your policy</h1>
     <p class="small muted">Start with the 5 numbers below. Everything else is optional.</p></section>
@@ -1324,7 +1329,7 @@ function loadPdfLib(){ if(window.PDFLib) return Promise.resolve(window.PDFLib);
   if(!pdfLibP) pdfLibP = new Promise((res, rej)=>{ const sc = document.createElement('script'); sc.src = 'vendor/pdf-lib.min.js'; sc.onload = () => res(window.PDFLib); sc.onerror = () => { pdfLibP = null; rej(new Error('pdf')); }; document.head.appendChild(sc); });
   return pdfLibP; }
 /* PDF standard fonts only know basic Latin characters. */
-function pdfText(x){ return String(x ?? '').replace(/[‘’ʼ]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,'-').replace(/[·•]/g,'-')
+function pdfText(x){ return String(x == null ? '' : x).replace(/[‘’ʼ]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,'-').replace(/[·•]/g,'-')
   .replace(/…/g,'...').replace(/✓/g,'yes').replace(/ /g,' ').replace(/[\u0000-\u0008\u000B-\u001F]/g,'').replace(/[^\n\x20-\x7E\xA0-\xFF]/g,'?'); }
 async function jpegForPdf(id, thumb, max){
   try{ const rec = await getFile(id); if(rec && rec.blob && /^image\//.test(rec.type||'')){ const img = await loadImg(rec.blob); const d = drawTo(img, max||1400);
@@ -1614,7 +1619,7 @@ const I18N = (()=>{
     if(out === null) for(const t of tpl){ const m = key.match(t.re); if(!m) continue;
       const vals = {N:[], D:[], S:[], X:[], M:[]}; t.kinds.forEach((k, i)=>vals[k].push(m[i+1]));
       const pos = {N:0, D:0, S:0, X:0, M:0};
-      out = t.v.replace(/\{([NDSXM])\}/g, (z, k)=>{ const v = vals[k][pos[k]++] ?? ''; return k==='D' ? esDate(v) : (k==='N' ? v : (exact.get(v) ?? v)); });
+      out = t.v.replace(/\{([NDSXM])\}/g, (z, k)=>{ let v = vals[k][pos[k]++]; if(v == null) v = ''; return k==='D' ? esDate(v) : (k==='N' ? v : (exact.get(v) != null ? exact.get(v) : v)); });
       break; }
     if(out === null){ out = key; missing.add(key); } else done.add(out);
     cache.set(key, out); return out;
@@ -1664,7 +1669,7 @@ function viewWelcome(){
     <p>StormFile explains your insurance in plain English, keeps a dated record of your home and belongings, and organizes your claim if a storm hits.</p>
   </section>
   <div class="card">
-    <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Your information stays on this phone</strong><span class="small muted">No account and no sign-up. Nothing is uploaded or sold. Lock it with a PIN, Face ID or fingerprint and keep a locked backup.</span></div></div>
+    <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Your information stays on this phone</strong><span class="small muted">No account and no sign-up. Nothing is uploaded or sold. Lock it with a PIN, ${BIOS()} and keep a locked backup.</span></div></div>
     <div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Explains, doesn’t decide</strong><span class="small muted">StormFile helps you understand and organize. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</span></div></div>
     ${!TEST?'':`<div class="task" style="border:0;padding:0"><span class="check done" aria-hidden="true">✓</span><div class="stack" style="gap:2px"><strong>Test version</strong><span class="small muted">This is an early version shared for feedback, so things may change. StormFile, including its name, design and code, belongs to Coastline Code LLC. Please use it for testing and feedback only.</span></div></div>`}
   </div>
@@ -2007,7 +2012,7 @@ function viewSettings(){
   </div>
 
   ${sec('set-lock', 'Lock', `<span class="chip ${on?'ok':'warn'}">${on?(bio?'PIN + '+BIONAME():'PIN on'):'Off'}</span>`, `<div class="stack" id="lockCard">
-    <p class="small">${on ? (bio ? `StormFile opens with ${BIONAME()}. If that doesn’t work, it asks for your PIN.` : 'StormFile asks for your PIN each time it opens, and after a minute away.') : 'Set a PIN so nobody else can open your policy, photos and claim on this phone. Then you can add Face ID or fingerprint.'}</p>
+    <p class="small">${on ? (bio ? `StormFile opens with ${BIONAME()}. If that doesn’t work, it asks for your PIN.` : 'StormFile asks for your PIN each time it opens, and after a minute away.') : 'Set a PIN so nobody else can open your policy, photos and claim on this phone. Then you can add ' + BIOS() + '.'}</p>
     <div class="grid2">
       <label class="field">${on?'New PIN':'PIN'} (4–8 digits)<input id="pin1" type="password" inputmode="numeric" autocomplete="new-password"></label>
       <label class="field">Type it again<input id="pin2" type="password" inputmode="numeric" autocomplete="new-password"></label>
@@ -2021,12 +2026,12 @@ function viewSettings(){
   ${shareCard()}
 
   ${sec('set-backup', 'Backup', `<span class="chip ${due?'warn':'ok'}">${S.lastBackupAt?'Last: '+fmtDay(S.lastBackupAt):'None yet'}</span>`, `
-    <p class="small">Your records live only on this phone. If a storm takes the phone, they go with it. A backup is one locked file with everything, including full-size photos and receipts. Save it to iCloud Drive, Google Drive or email it to yourself.</p>
+    <p class="small">Your records live only on this phone. If a storm takes the phone, they go with it. A backup is one locked file with everything, including full-size photos and receipts. Save it to ${CLOUD()} or email it to yourself.</p>
     ${due?`<div class="alert warn" style="background:var(--bg)"><p class="small">${esc(due)}</p></div>`:''}
     <label class="field"><span><strong>Step 1.</strong> Make up a passphrase you\u2019ll remember (8 or more characters)</span><input id="bk1" type="password" autocomplete="new-password"></label>
     <label class="field"><span><strong>Step 2.</strong> Type it again</span><input id="bk2" type="password" autocomplete="new-password"></label>
     <p class="small muted">Write the passphrase down somewhere safe. Without it, nobody can open the backup, including us.</p>
-    <p class="small"><strong>Step 3.</strong> Tap the button, then choose iCloud Drive, Google Drive or email.</p>
+    <p class="small"><strong>Step 3.</strong> Tap the button, then choose ${PLAT==='ios'?'Save to Files (pick iCloud Drive) or Mail':PLAT==='android'?'Drive or your email app':'iCloud Drive, Google Drive or email'}.</p>
     <button class="primary" data-act="bkMake">Save a locked backup</button>
     <details><summary class="src" style="display:inline">Restore from a backup</summary>
       <div class="stack" style="margin-top:8px">
@@ -2360,7 +2365,7 @@ view.addEventListener('click', e=>{
     if(!hasRealData()) return toast('There’s nothing of yours to back up yet. Sample data isn’t included.');
     if(a.length < 8) return toast('Use a passphrase of at least 8 characters.'); if(a!==b) return toast('The two passphrases don’t match.');
     t.disabled = true; t.textContent = 'Locking your backup…';
-    makeBackup(a).then(blob=>saveFile(`StormFile-backup-${today()}.json`, blob)).then(ok=>{ if(ok){ S.lastBackupAt = nowISO(); save(); render(); toast('Backup saved. Keep the file somewhere safe, like iCloud Drive or Google Drive.'); } else { t.disabled=false; t.textContent='Save a locked backup'; } })
+    makeBackup(a).then(blob=>saveFile(`StormFile-backup-${today()}.json`, blob)).then(ok=>{ if(ok){ S.lastBackupAt = nowISO(); save(); render(); toast('Backup saved. Keep the file somewhere safe, like ' + ({ios:'iCloud Drive', android:'Google Drive', web:'iCloud Drive or Google Drive'})[PLAT] + '.'); } else { t.disabled=false; t.textContent='Save a locked backup'; } })
       .catch(()=>{ t.disabled=false; t.textContent='Save a locked backup'; toast('The backup didn’t finish. Please try again.'); }); return; }
   if(t.dataset.lang){ const l = t.dataset.lang === 'es' ? 'es' : 'en'; if(l === S.lang) return; S.lang = l; save();
     if(l === 'en') I18N.set('en'); render(); if(l === 'es') I18N.set('es'); return; }

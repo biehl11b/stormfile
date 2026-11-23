@@ -3,7 +3,8 @@
   "appName": "StormFile",
   "webDir": "www",
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "errorPath": "webview-update.html"
   },
   "ios": {
     "contentInset": "never",
@@ -11,7 +12,8 @@
     "preferredContentMode": "mobile"
   },
   "android": {
-    "allowMixedContent": false
+    "allowMixedContent": false,
+    "minWebViewVersion": 69
   },
   "plugins": {
     "SplashScreen": {

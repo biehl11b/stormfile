@@ -20,5 +20,5 @@ window.__calls = [];
     },
     TextZoom: {getPreferred: rec('TextZoom','getPreferred', {value:1.6}), set: rec('TextZoom','set', {})}
   };
-  window.Capacitor = {isNativePlatform: function(){ return true; }, getPlatform: function(){ return 'ios'; }, Plugins: plugins, registerPlugin: function(n){ return plugins[n]; }};
+  window.Capacitor = {isNativePlatform: function(){ return true; }, getPlatform: function(){ return window.__plat || 'ios'; }, Plugins: plugins, registerPlugin: function(n){ return plugins[n]; }};
 })();

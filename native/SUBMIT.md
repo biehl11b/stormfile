@@ -30,6 +30,22 @@ Until the signing key is set up, each build still makes a **StormFile-test-apk**
 5. In TestFlight, install it and try: photos, Face ID, a calendar reminder, the claim packet and a backup.
 6. Set the price to $1.99 (the Paid Apps agreement and Small Business Program carry over from KidArmor). Fill in the App Store page from `STORE_LISTING.md`, upload `store/screenshots/iphone`, answer App Privacy (**Data Not Collected**), age rating and export compliance, pick the TestFlight build and **Submit for Review**.
 
+## Two versions: Apple and Google
+
+The same StormFile is built twice, once per store, and each version talks only about its own phone:
+- **iPhone (App Store):** Face ID or Touch ID, iCloud Drive and Files, VoiceOver, your Apple Account. Never mentions Android or Google Play (Apple guideline 2.3.10). Listing text: "Full description: Apple App Store version" in `STORE_LISTING.md`.
+- **Android (Google Play):** fingerprint or face unlock, Google Drive, TalkBack, Google Play. Listing text: "Full description: Google Play version".
+- The web test version mentions both.
+
+## Lessons from KidArmor, already applied to StormFile
+
+1. **Google "does not open or load" (KidArmor build 147):** older Android phones that haven't updated Android System WebView couldn't run newer code and showed an "update" page or a blank screen. StormFile now only uses code WebView 69 understands (the build fails if newer code sneaks in), adds the few missing pieces itself (`compat.js`), adds older-style CSS so screens aren't drawn off the bottom, and shows a friendly "update Android System WebView" page on very old phones instead of a blank screen.
+2. **Blank first open on Android 10:** the web viewer is now loaded before the first screen, and the screen no longer restarts when a setting changes during start-up.
+3. **Google "Login credentials are missing":** answer App access with the instructions in `STORE_LISTING.md` (no account, optional PIN, optional QR sharing) before the first review.
+4. **Don't publish a batch that includes an older build.** In Play Console, check that the release under "Changes ready to publish" is the newest build before clicking Publish.
+5. **Test the store version, not just the test version.** After every phone build, the "Android store version test" installs the store bundle the way Google Play does on Android 7, 8, 10, 13 and 16 and a tablet: it must open every time (5 more cold starts, 3 fresh installs), within 20 seconds, with no crashes, no script errors and no Play-restricted permissions. The "iPhone App Store build check" (run by hand from the Actions tab) checks the App Store build for common rejections (permission texts, privacy manifests, icon) and opens it on an iPhone, an iPad and an older iOS.
+6. **A real Android phone before review:** put the build on Internal testing for Lucas's Pixel while Google reviews.
+
 ## What's already done in the code
 
 - Same web app as the test version, with the tester notes and the storm-alert demo turned off in the store version.

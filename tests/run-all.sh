@@ -10,7 +10,7 @@ sleep 1
 export STORMFILE_URL="http://localhost:$PORT/"
 cd tests || exit 1
 FAIL=0
-for t in test_core.py test_seasons.py test_lock_backup.py test_packet.py test_security.py test_layout.py test_resources.py test_pages.py test_native.py test_a11y.py test_deadlines.py test_share.py test_spanish.py test_friendly.py; do
+for t in test_core.py test_seasons.py test_lock_backup.py test_packet.py test_security.py test_layout.py test_resources.py test_pages.py test_native.py test_a11y.py test_deadlines.py test_share.py test_spanish.py test_friendly.py test_oldphone.py; do
   printf '%-22s ' "$t"
   if python3 "$t" > "/tmp/stormfile-$t.log" 2>&1; then echo PASS; else echo FAIL; FAIL=1; tail -40 "/tmp/stormfile-$t.log"; fi
 done

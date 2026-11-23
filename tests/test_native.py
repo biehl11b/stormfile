@@ -28,6 +28,12 @@ with sync_playwright() as p:
     out['follows_phone_text_size'] = any(c[2] == {'value': 1.6} for c in calls(pg, 'TextZoom', 'set'))
     out['no_service_worker'] = pg.evaluate('async()=>!(navigator.serviceWorker && (await navigator.serviceWorker.getRegistrations()).length)')
     out['store_no_test_notes'] = 'Test version' not in pg.text_content('#view')
+    # iPhone version talks only about iPhone things (App Store 2.3.10)
+    t = pg.text_content('#view')
+    out['ios_words'] = 'Face ID or Touch ID' in t and 'fingerprint' not in t and 'Android' not in t
+    # older-phone safety nets are in the phone build
+    www_html = open(os.path.join(WWW, 'index.html')).read()
+    out['older_phone_css'] = 'top:0;right:0;bottom:0;left:0;inset:0' in www_html and 'compat.js' in www_html and os.path.exists(os.path.join(WWW, 'webview-update.html'))
     pg.click('[data-act=agreeOwn]'); pg.wait_for_timeout(300)
     pg.fill('#rnName', 'Coast house'); pg.select_option('#rnState', 'MS'); pg.click('[data-act=saveName]'); pg.wait_for_timeout(300)
     pg.click('nav.tabs button[data-tab=home]'); pg.wait_for_timeout(200)
@@ -85,6 +91,14 @@ with sync_playwright() as p:
     c2, q = age({'required': True, 'status': 'VERIFICATION_REQUIRED'}); out['age_play_verify'] = gate(q) and 'Open the Play Store' in q.text_content('#view'); c2.close()
     c2, q = age({'required': True, 'fail': 'req'}); out['age_offline_ok'] = not gate(q); c2.close()
     c2, q = age({'required': True, 'fail': 'request'}, 'localStorage.setItem("stormfile_age_ok","1");'); out['age_error_after_verified_ok'] = not gate(q); c2.close()
+    # Android version talks only about Android things
+    c3 = b.new_context(viewport={'width': 390, 'height': 844}); c3.add_init_script('window.__plat = "android";')
+    q = c3.new_page(); q.goto(URL, wait_until='networkidle'); q.wait_for_timeout(600); t = q.text_content('#view')
+    ok_start = 'fingerprint or face unlock' in t and 'Face ID' not in t
+    q.click('[data-act=agreeOwn]'); q.wait_for_timeout(300); q.fill('#rnName', 'Coast house'); q.select_option('#rnState', 'MS'); q.click('[data-act=saveName]'); q.wait_for_timeout(300)
+    open_settings(q); q.evaluate('()=>document.querySelectorAll("details.sec").forEach(d=>d.open=true)'); t = q.text_content('#view')
+    out['android_words'] = ok_start and 'Google Drive' in t and 'iCloud' not in t and 'Face ID' not in t and 'Touch ID' not in t and 'iPhone' not in t
+    c3.close()
     b.close()
 srv.shutdown(); shutil.rmtree(WWW, ignore_errors=True)
 ok = all(v for k, v in out.items() if k != 'errors') and not out['errors']
