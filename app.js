@@ -942,6 +942,10 @@ function packetBody(P, cfg, inv){ return `
     </fieldset>
     ${(S.me||{}).name?'':'<p class="small muted">Tip: add your name and phone in Settings so they print on the packet.</p>'}
     <button class="primary" data-act="packet">Make the claim packet (PDF)</button>
+    <button class="ghost" data-act="packetSend">Send it to my adjuster</button>
+    <p class="small muted">Makes the PDF and opens your email or messages with it attached and a note ready to send. You choose who gets it and tap Send.</p>
+    ${(P.claim||{}).adjEmail ? `<p class="small muted"><span>Your adjuster’s email is copied when you tap, so you can paste it into “To”:</span> <span class="num">${esc(P.claim.adjEmail)}</span></p>`
+      : `<p class="small muted">Tip: add your adjuster’s email in Claim details so it’s ready to paste.</p>`}
 `; }
 /* A section that opens with a tap; remembers whether it was left open. */
 function sec(id, title, status, body, opts){ opts = opts || {}; S.open = S.open || {};
@@ -1291,12 +1295,17 @@ function fileIdsInState(st){ const ids = new Set(); const add = x => { if(x && x
   (st.properties||[]).forEach(P=>{ (P.exterior||[]).forEach(add); (P.rooms||[]).forEach(r=>{ (r.photoData||[]).forEach(x=>add(photoObj(x))); r.items.forEach(it=>{ if(it.rid) ids.add(it.rid); }); });
     (P.upgrades||[]).forEach(u=>{ if(u.rid) ids.add(u.rid); }); ((P.claim||{}).receipts||[]).forEach(r=>{ if(r.rid) ids.add(r.rid); }); });
   return [...ids]; }
-async function saveFile(filename, blob){
-  if(NAT) return NAT.saveFile(filename, blob);
-  // Phones: the share sheet lets people save straight to Files, iCloud Drive or Google Drive.
+async function saveFile(filename, blob, msg){
+  if(NAT) return NAT.saveFile(filename, blob, msg);
+  // Phones: the share sheet lets people save straight to Files, iCloud Drive or Google Drive (or send it, with msg as the note).
   try{ const f = new File([blob], filename, {type: blob.type || 'application/octet-stream'});
-    if(navigator.canShare && navigator.canShare({files:[f]}) && /iphone|ipad|android/i.test(navigator.userAgent)){ await navigator.share({files:[f], title:filename}); return true; } }
+    if(navigator.canShare && navigator.canShare({files:[f]}) && /iphone|ipad|android/i.test(navigator.userAgent)){ await navigator.share(msg ? {files:[f], title:msg.subject, text:msg.text} : {files:[f], title:filename}); return true; } }
   catch(e){ if(e && e.name==='AbortError') return false; }
+  if(msg){ // a computer: download the PDF, then open an email with the note; the person attaches the file
+    try{ const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u), 15000);
+      const m = document.createElement('a'); m.href = `mailto:${encodeURIComponent(msg.to||'')}?subject=${encodeURIComponent(msg.subject)}&body=${encodeURIComponent(msg.text + '\n\n[Attach ' + filename + ' from your Downloads folder]')}`;
+      document.body.appendChild(m); m.click(); m.remove(); return true; }
+    catch(e){ toast('Saving files isn’t available here.'); return false; } }
   try{ const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u), 15000); return true; }
   catch(e){ toast('Saving files isn’t available here.'); return false; }
 }
@@ -1575,6 +1584,18 @@ const LETTERS = {
 function ltMailto(P){ const cl = P.claim, k = LETTERS[S.ltKind] && (!LETTERS[S.ltKind].only || LETTERS[S.ltKind].only===P.type) ? S.ltKind : 'followup';
   let body = letterText(P, k, S.ltExtra||''); if(body.length > 6500) body = body.slice(0,6500);
   return `mailto:${encodeURIComponent(LETTERS[k].toDept ? '' : (cl.adjEmail||''))}?subject=${encodeURIComponent(LETTERS[k].subject(P, cl).replace(/\s+-/,' -'))}&body=${encodeURIComponent(body)}`; }
+/* The note that goes with the claim packet when the owner sends it (letters and the packet stay in English for the insurer). */
+function packetMessage(P, opt){
+  const cl = P.claim || {}, pol = polOf(P), me = S.me || {};
+  const ref = [pol && pol.carrier && !/^Your insurer/.test(pol.carrier) ? `Insurance company: ${pol.carrier}` : '', pol && pol.number && pol.number!=='Not entered' ? `Policy number: ${pol.number}` : '',
+    cl.number ? `Claim number: ${cl.number}` : '', cl.dateOfLoss ? `Date of loss: ${fmtDay(cl.dateOfLoss+'T12:00:00')}` : '', /\d/.test(P.address||'') ? `Property: ${P.address}` : ''].filter(Boolean).join('\n');
+  const parts = [opt.policy && 'a policy summary', 'a room-by-room contents list', opt.photos && 'dated photos', opt.receipts && 'receipt images', opt.history && 'the record history'].filter(Boolean);
+  const list = parts.length > 1 ? parts.slice(0,-1).join(', ') + ' and ' + parts[parts.length-1] : parts[0];
+  const sig = ['Thank you,', me.name || '', me.phone || '', me.email || ''].filter(Boolean).join('\n');
+  const subject = cl.number ? `Claim ${cl.number} - claim packet` : `${P.name} - claim packet`;
+  const text = `${cl.adjuster ? 'Hello '+cl.adjuster+',' : 'Hello,'}\n\nAttached is my claim packet (PDF). It includes ${list}.\n\n${ref ? ref+'\n\n' : ''}Please confirm you received it and let me know if you need anything else.\n\n${sig}`;
+  return {subject, text, to: cl.adjEmail || ''};
+}
 function letterText(P, kind, extra){
   const cl = P.claim, pol = polOf(P), me = S.me || {}, dt = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
   const to = kind==='complaint' ? 'Dear Consumer Services,' : cl.adjuster ? `Dear ${cl.adjuster},` : 'Dear Claims Department,';
@@ -2405,6 +2426,14 @@ view.addEventListener('click', e=>{
       .catch(e=>{ t.disabled=false; t.textContent='Unlock and restore'; toast(e.message || 'Couldn’t restore that backup.'); }); return; }
   if(t.dataset.act==='wipe'){ if(!t.dataset.armed){ t.dataset.armed='1'; t.textContent='Tap again to erase everything'; setTimeout(()=>{ if(t.isConnected){ delete t.dataset.armed; t.textContent='Erase everything on this phone'; } }, 4000); return; }
     clearFiles().catch(()=>{}).then(()=>{ if(NAT && NAT.wipe) NAT.wipe(); Object.keys(localStorage).filter(k=>/^stormfile/.test(k)).forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); S = DEFAULT_STATE(); S.agreed = false; save(); render(); window.scrollTo(0,0); toast('Everything was erased from this phone.'); }); return; }
+  if(t.dataset.act==='packetSend'){ const o = id => { const el = document.getElementById(id); return !el || el.checked; };
+    const opt = {policy:o('pk-policy'), photos:o('pk-photos'), receipts:o('pk-receipts'), history:o('pk-history')};
+    const em = (P.claim||{}).adjEmail; if(em){ try{ navigator.clipboard.writeText(em).catch(()=>{}); }catch(e){} } // copy while the tap still counts
+    const label = t.textContent; t.disabled = true; t.textContent = 'Making your PDF\u2026';
+    makeClaimPacket(P, opt).then(blob=>saveFile(`StormFile-claim-${P.name.replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'')||'record'}-${today()}.pdf`, blob, packetMessage(P, opt)))
+      .then(ok=>{ if(ok){ logEvt(P, 'Claim packet PDF made and opened to send'); save(); } })
+      .catch(e=>{ console.warn(e); toast('The PDF didn\u2019t finish. Try again, or turn off photos to make it smaller.'); })
+      .finally(()=>{ if(t.isConnected){ t.disabled = false; t.textContent = label; } render(); }); return; }
   if(t.dataset.act==='packet'){ const o = id => { const el = document.getElementById(id); return !el || el.checked; };
     const opt = {policy:o('pk-policy'), photos:o('pk-photos'), receipts:o('pk-receipts'), history:o('pk-history')};
     t.disabled = true; t.textContent = 'Making your PDF\u2026';

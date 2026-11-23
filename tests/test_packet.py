@@ -38,7 +38,24 @@ with sync_playwright() as p:
     out['pages'] = info['pages']; out['title'] = info['title']
     out['enough_pages'] = info['pages'] >= 6
     out['history_logged'] = 'Claim packet PDF made' in pg.text_content('#view')
+    # "Send it to my adjuster" on a computer: the PDF downloads and an email opens with the adjuster, subject and a note
+    open_claim(pg)
+    pg.fill('#clAdj', 'Dana Reyes'); pg.press('#clAdj', 'Tab'); pg.fill('#clAdjEmail', 'dana.reyes@example-insurer.com'); pg.press('#clAdjEmail', 'Tab'); pg.wait_for_timeout(200)
+    open_claim(pg)
+    out['send_note_shows_email'] = 'dana.reyes@example-insurer.com' in pg.text_content('#view') and 'Send it to my adjuster' in pg.text_content('#view')
+    pg.evaluate("""()=>{ window.__mail=[]; window.__clip=null; const c=HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click=function(){ if(/^mailto:/.test(this.href)){ window.__mail.push(this.href); return; } return c.call(this); };
+      try{ Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async t=>{ window.__clip=t; }}}); }catch(e){} }""")
+    with pg.expect_download(timeout=60000) as dl2:
+        pg.click('[data-act=packetSend]')
+    out['send_pdf_downloaded'] = dl2.value.suggested_filename.endswith('.pdf')
+    pg.wait_for_timeout(500)
+    from urllib.parse import unquote
+    m = pg.evaluate('()=>window.__mail'); href = unquote(m[0]) if m else ''
+    out['send_email_opened'] = len(m) == 1 and href.startswith('mailto:dana.reyes@example-insurer.com?') and 'subject=Claim CLM-77 - claim packet' in href \
+        and 'Hello Dana Reyes,' in href and 'Attached is my claim packet (PDF)' in href and 'Policy number: HO-123' in href and 'Claim number: CLM-77' in href and '[Attach StormFile-claim-' in href
+    out['send_email_copied'] = pg.evaluate('()=>window.__clip') == 'dana.reyes@example-insurer.com'
+    out['send_logged'] = 'Claim packet PDF made and opened to send' in pg.text_content('#view')
     out['errors'] = errs
     b.close()
-ok = out['is_pdf'] and out['enough_pages'] and out['history_logged'] and not out['errors']
+ok = out['is_pdf'] and out['enough_pages'] and out['history_logged'] and all(v for k, v in out.items() if k.startswith('send_')) and not out['errors']
 print(json.dumps(out, indent=1)); print('PASS' if ok else 'FAIL'); sys.exit(0 if ok else 1)

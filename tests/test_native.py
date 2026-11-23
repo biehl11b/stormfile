@@ -51,10 +51,18 @@ with sync_playwright() as p:
     open_claim(pg); pg.fill('#fuDate', '2027-01-15'); pg.fill('#fuNote', 'Estimate due'); pg.click('[data-act=calFollow]'); pg.wait_for_timeout(400)
     pr = calls(pg, 'CapacitorCalendar', 'createEventWithPrompt')
     out['followup_prompt'] = len(pr) == 1 and pr[0][2]['alerts'] == [-1440, 0] and 'Estimate due' in pr[0][2]['title']
+    # "Send it to my adjuster": the share sheet gets the PDF plus a subject and note, so email apps open ready to send
+    open_claim(pg); pg.fill('#clAdj', 'Dana Reyes'); pg.press('#clAdj', 'Tab'); pg.fill('#clAdjEmail', 'dana@example-insurer.com'); pg.press('#clAdjEmail', 'Tab'); pg.wait_for_timeout(200)
+    open_claim(pg); n0 = len(calls(pg, 'Share', 'share'))
+    pg.click('[data-act=packetSend]'); pg.wait_for_function(f'()=>window.__calls.filter(c=>c[0]==="Share"&&c[1]==="share").length>{n0}', timeout=60000)
+    sh = calls(pg, 'Share', 'share')[-1][2]
+    out['packet_send_share'] = sh['files'][0].endswith('.pdf') and sh['title'].endswith('claim packet') and 'Hello Dana Reyes,' in sh['text'] \
+        and 'Attached is my claim packet (PDF)' in sh['text'] and 'Property: MS' not in sh['text'] and sh.get('dialogTitle') == 'Send the claim packet'
     # backup goes to the share sheet
     open_settings(pg)
+    s0, w0 = len(calls(pg, 'Share', 'share')), len(calls(pg, 'Filesystem', 'writeFile'))
     pg.fill('#bk1', 'correct horse 1'); pg.fill('#bk2', 'correct horse 1'); pg.click('[data-act=bkMake]'); pg.wait_for_timeout(1500)
-    sh = calls(pg, 'Share', 'share'); wf = calls(pg, 'Filesystem', 'writeFile')
+    sh = calls(pg, 'Share', 'share')[s0:]; wf = calls(pg, 'Filesystem', 'writeFile')[w0:]
     out['backup_shared'] = len(sh) == 1 and sh[0][2]['files'][0].startswith('file:///cache/stormfile-out/') and len(wf) == 1
     # Face ID uses the phone's own check
     pg.fill('#pin1', '2468'); pg.fill('#pin2', '2468'); pg.click('[data-act=pinSave]'); pg.wait_for_timeout(600)

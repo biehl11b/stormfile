@@ -65,7 +65,7 @@ ORGANIZE THE CLAIM
 • Claim deadlines worked out for you: the time limits Texas, Florida, Louisiana and Alabama set for insurers, plus the flood insurance proof-of-loss deadline, added to your calendar
 • Evacuation and living-expense receipts (ALE) with running totals
 • Ready-to-send letters: follow-up, request for the estimate, status, living expenses, supplement, policy request, and a complaint to your state insurance department built from your call log
-• One claim packet PDF with your policy summary, photos, contents list, receipts and call log, made on your phone
+• One claim packet PDF with your policy summary, photos, contents list, receipts and call log, made on your phone and ready to send to your adjuster with a note already written
 
 HELP IN YOUR STATE
 • Your state insurance department with tap-to-call and its complaint page, for when a claim stalls
@@ -125,7 +125,7 @@ ORGANIZE THE CLAIM
 • Claim deadlines worked out for you: the time limits Texas, Florida, Louisiana and Alabama set for insurers, plus the flood insurance proof-of-loss deadline, added to your calendar
 • Evacuation and living-expense receipts (ALE) with running totals
 • Ready-to-send letters: follow-up, request for the estimate, status, living expenses, supplement, policy request, and a complaint to your state insurance department built from your call log
-• One claim packet PDF with your policy summary, photos, contents list, receipts and call log, made on your phone
+• One claim packet PDF with your policy summary, photos, contents list, receipts and call log, made on your phone and ready to send to your adjuster with a note already written
 
 HELP IN YOUR STATE
 • Your state insurance department with tap-to-call and its complaint page, for when a claim stalls

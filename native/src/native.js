@@ -9,12 +9,13 @@
   document.documentElement.classList.add('native');
   function b64(blob){ return new Promise(function(ok, no){ var r = new FileReader(); r.onload = function(){ ok(String(r.result).split(',')[1]); }; r.onerror = no; r.readAsDataURL(blob); }); }
   function cancelled(e){ return /cancel/i.test((e && e.message) || String(e || '')); }
-  async function saveFile(filename, blob){
+  async function saveFile(filename, blob, msg){
     var name = String(filename).replace(/[\\/:*?"<>|]+/g, '-');
     try{
       try{ await FS.rmdir({path:OUT, directory:'CACHE', recursive:true}); }catch(e){} /* keep only the file being shared now */
       var w = await FS.writeFile({path:OUT + '/' + name, data:await b64(blob), directory:'CACHE', recursive:true});
-      await SH.share({title:name, files:[w.uri]}); return true;
+      // msg (sending the claim packet): the subject and note go with the file, so email apps open with both filled in
+      await SH.share(msg ? {title:msg.subject, text:msg.text, files:[w.uri], dialogTitle:'Send the claim packet'} : {title:name, files:[w.uri]}); return true;
     }catch(e){ return false; }
   }
   window.SF_NATIVE = {
