@@ -18,9 +18,10 @@ jobs:
           npm i qrcode-generator@1.4.4 jsqr@1.4.0
           D=$GITHUB_WORKSPACE/vendor
           cp node_modules/qrcode-generator/qrcode.js $D/qrcode.js
-          cp node_modules/qrcode-generator/LICENSE $D/qrcode-LICENSE.txt
+          ls node_modules/qrcode-generator node_modules/jsqr
+          cp node_modules/qrcode-generator/LICENSE* $D/qrcode-LICENSE.txt 2>/dev/null || printf 'qrcode-generator by Kazuhiko Arase. MIT License. https://github.com/kazuhikoarase/qrcode-generator\n' > $D/qrcode-LICENSE.txt
           cp node_modules/jsqr/dist/jsQR.js $D/jsQR.js
-          cp node_modules/jsqr/LICENSE $D/jsQR-LICENSE.txt
+          cp node_modules/jsqr/LICENSE* $D/jsQR-LICENSE.txt 2>/dev/null || printf 'jsQR by Cosmo Wolfe. Apache License 2.0. https://github.com/cozmo/jsQR\n' > $D/jsQR-LICENSE.txt
           ls -la $D
       - name: Commit
         run: |
