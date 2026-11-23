@@ -20,6 +20,7 @@ with sync_playwright() as p:
             if t == 'policyForm' and not pg.is_visible('#policyForm'):
                 pg.evaluate("()=>{document.querySelector('nav.tabs button[data-tab=policy]').click()}"); pg.wait_for_timeout(200)
                 pg.evaluate("()=>{const x=document.querySelector('[data-go=policyForm]'); x&&x.click()}"); pg.wait_for_timeout(200)
+            pg.evaluate("()=>{const s=document.querySelector('[data-act=startClaim]'); s&&s.click(); document.querySelectorAll('#view details').forEach(d=>d.open=true)}"); pg.wait_for_timeout(150)
             r = pg.evaluate(JS)
             if r['sw'] > r['W'] or r['bad']: out['problems'].append({'w': width, 'screen': t, **r})
         ctx.close()

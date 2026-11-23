@@ -182,6 +182,23 @@ header.top > .row > .row{flex-wrap:wrap!important;justify-content:flex-end;min-w
 .dl.past .dl-when{color:var(--muted);text-decoration:line-through}
 .qr{background:#fff;padding:10px;border-radius:12px;width:min(240px,70vw);line-height:0}
 .qr svg{width:100%;height:auto}
+details.sec{padding:0;gap:0}
+details.sec>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;min-height:56px;padding:14px 16px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec .sec-t{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 10px}
+details.sec .sec-h{font-family:var(--display, inherit);font-weight:700;font-size:20px;text-transform:uppercase;letter-spacing:.3px}
+details.sec .sec-n{font-size:13px;color:var(--muted)}
+details.sec .sec-c{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:-4px 4px 0 0;flex:none}
+details.sec[open] .sec-c{transform:rotate(225deg);margin-top:4px}
+details.sec>.sec-b{padding:0 16px 16px}
+.nextstep{display:flex;flex-direction:column;gap:8px}
+ol.steps{margin:0;padding-left:20px}ol.steps li{margin:3px 0}
+button.whats{all:unset;cursor:pointer;color:var(--accent);font-size:14px;font-weight:600;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;align-self:flex-start;padding:6px 0;min-height:32px;display:inline-flex;align-items:center}
+button.whats:focus-visible,button.term:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+button.term{all:unset;cursor:pointer;color:inherit;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+.whatsrow{display:flex;flex-wrap:wrap;gap:0 18px}
+.termsheet{align-items:flex-end}
+.termsheet .viewer-box{padding:18px;gap:12px;width:100%;max-width:520px}
 .linkcard{flex-direction:row;align-items:center;justify-content:space-between;text-align:left;font-weight:400;width:100%;background:var(--surface)}
 .linkcard>span[aria-hidden]{font-size:24px;color:var(--muted)}
 .res{display:flex;flex-direction:column;gap:4px;padding:10px 0;border-top:1px solid var(--line)}

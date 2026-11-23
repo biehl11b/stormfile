@@ -1,7 +1,7 @@
 """Security: booby-trapped text in every saved field must never run, on every screen; the page must not reach other sites."""
 import json, sys
 from playwright.sync_api import sync_playwright
-from helpers import URL, new_page, start_own, fixtures
+from helpers import URL, new_page, start_own, fixtures, open_claim
 
 PAY = 'x"\'><img src=x onerror="window.__xss=(window.__xss||[]).concat(\'HIT\')"><svg onload="window.__xss=(window.__xss||[]).concat(\'SVG\')">'
 SKIP = ['id', 'policyId', 'current', 'type', 'tab', 'threat', 'key', 'cov', 'sev', 'windType', 'source', 'at', 'addedAt', 'lockedAt', 'taken', 'receiptAt', 'rid', 'agreedAt', 'lastBackupAt']
@@ -26,14 +26,14 @@ with sync_playwright() as p:
     import os
     if not os.environ.get('SEC_SAMPLE'):
         start_own(pg)
-        pg.click('nav.tabs button[data-tab=policy]'); pg.click('text=Enter it by hand'); pg.fill('#pf-lim-A', '300000'); pg.fill('#pf-carrier', 'Co'); pg.fill('#pf-renewal', '2027-05-01'); pg.click('#policyForm button[type=submit]'); pg.wait_for_timeout(300)
+        pg.click('nav.tabs button[data-tab=policy]'); pg.click('text=Enter it by hand'); pg.evaluate("()=>document.querySelectorAll('#policyForm details').forEach(d=>d.open=true)"); pg.fill('#pf-lim-A', '300000'); pg.fill('#pf-carrier', 'Co'); pg.fill('#pf-renewal', '2027-05-01'); pg.click('#policyForm button[type=submit]'); pg.wait_for_timeout(300)
     out['strings_injected'] = pg.evaluate(INJECT, [PAY, SKIP])
     pg.reload(wait_until='networkidle'); pg.wait_for_timeout(700)
     for t in ['home', 'policy', 'inventory', 'storm', 'claim', 'feedback', 'policyForm', 'settings']:
         pg.evaluate("t=>{ const b=document.querySelector('nav.tabs button[data-tab='+t+']'); if(b) b.click(); else { const x=document.querySelector('[data-go='+t+']'); if(x) x.click(); else { document.getElementById('fbBtn').click(); const y=document.querySelector('[data-go='+t+']'); y&&y.click(); } } }", t)
         pg.wait_for_timeout(300)
     pg.evaluate("()=>document.getElementById('fbBtn').click()"); pg.wait_for_timeout(200)
-    pg.evaluate("()=>document.querySelector('nav.tabs button[data-tab=claim]').click()"); pg.wait_for_timeout(200)
+    open_claim(pg)
     for kind in ['followup', 'estimate', 'status', 'ale', 'supplement', 'policy']:
         try: pg.select_option('#ltKind', kind); pg.wait_for_timeout(150)
         except Exception: pass

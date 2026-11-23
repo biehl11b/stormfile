@@ -611,6 +611,7 @@ function viewPolicy(){
 
   <div class="card">
     <h2>Out of pocket in a hurricane</h2>
+    ${whatsLink('hurDed')}
     <div class="kv"><span class="k">${esc(hurDedLabel(p, cfg))}</span><span class="v">${fmt(c.hurDed)}</span></div>
     <div class="kv"><span class="k">Other claims deductible</span><span class="v">${fmt((p.deductibles||{}).allPerils||0)}</span></div>
     ${P.type==='business' && p.waitHours?`<div class="kv"><span class="k">Lost income during the first ${p.waitHours} hours</span><span class="v">${fmt(i.monthlyNeed*12/365*p.waitHours/24)}</span></div>`:''}
@@ -921,42 +922,7 @@ function viewStorm(){
   </div>`}`;
 }
 
-function viewClaim(){
-  const P = cur(), cfg = TYPES[P.type], cl = P.claim, p = polOf(P), c = calc(P);
-  const spent = cl.receipts.reduce((s,r)=>s+r.amt,0);
-  const limit = c ? c.loss : 0;
-  const inv = invTotals(P);
-  return `
-  <section class="stack"><p class="label">${esc(P.name)} · claim mode</p><h1>The claim</h1></section>
-  <div class="card">
-    <div class="grid2">
-      <label class="field">Claim number<input id="clNum" value="${esc(cl.number)}" placeholder="From the insurer"></label>
-      <label class="field">Date of loss<input id="clDate" type="date" value="${esc(cl.dateOfLoss)}"></label>
-      <label class="field">Adjuster name<input id="clAdj" value="${esc(cl.adjuster)}"></label>
-      <label class="field">Adjuster phone<input id="clAdjPh" type="tel" value="${esc(cl.adjPhone)}"></label>
-      <label class="field">Adjuster email<input id="clAdjEmail" type="email" value="${esc(cl.adjEmail||'')}"></label>
-    </div>
-    ${p?`<div class="row small"><span class="muted">Policy</span><span class="num">${esc(p.number)}</span></div>`:''}
-    ${cl.number?`<span class="chip ok" style="align-self:flex-start"><span class="dot"></span>Claim saved</span>`:`<p class="small muted">Call ${p?esc(p.claimPhone):'the insurer'} to open a claim, then enter the number here.</p>`}
-  </div>
-
-  ${cl.dateOfLoss || cl.number ? deadlinesCard(P) : ''}
-  <button class="card linkcard" data-go="resources"><div class="stack" style="gap:2px;min-width:0"><strong>Claim stuck? Get help${stateOf(P)?' in '+esc(STATE_NAME[stateOf(P)]):''}</strong><span class="small muted">Your state insurance department, FEMA, SBA and flood insurance contacts</span></div><span aria-hidden="true">›</span></button>
-  <div class="card" style="border-color:${lockedAt(P)?'var(--green)':'var(--amber)'}">
-    <div class="row"><h2>Before-storm record</h2><span class="chip ${lockedAt(P)?'ok':'warn'}">${lockedAt(P)?'Locked':'Not locked'}</span></div>
-    ${lockedAt(P) ? (()=>{
-      const items = P.rooms.flatMap(r=>r.items), photos = P.exterior.concat(P.rooms.flatMap(r=>(r.photoData||[]).map(photoObj)));
-      const iAfter = items.filter(x=>isAfterLock(P,x)).length, pAfter = photos.filter(x=>isAfterLock(P,x)).length;
-      return `<p class="small">Locked ${fmtWhen(lockedAt(P))}. Everything logged before then is your before-storm record and can\u2019t be removed.</p>
-      <div class="kv"><span class="k">Before the storm</span><span class="v">${plural(items.length-iAfter,'item')} \u00B7 ${plural(photos.length-pAfter + P.rooms.reduce((s,r)=>s+r.photos,0),'photo')}</span></div>
-      <div class="kv"><span class="k">Added after the claim started</span><span class="v">${plural(iAfter,'item')} \u00B7 ${plural(pAfter,'photo')}</span></div>`; })()
-    : `<p class="small">When you file a claim, lock your record. Everything you logged before the storm is frozen, and anything added later is clearly marked. It shows the adjuster your list wasn\u2019t built after the damage.</p>
-      <button class="primary" data-act="lockRecord">Lock my before-storm record</button>
-      <p class="small muted">Enter the date of loss above first. This can\u2019t be undone.</p>`}
-  </div>
-
-  <div class="card" style="border-color:var(--accent)">
-    <h2>Claim packet</h2>
+function packetBody(P, cfg, inv){ return `
     <p class="small">One PDF with everything the adjuster needs: your policy summary, dated photos, ${esc(cfg.contentsName.toLowerCase())} list with receipts, ${esc(cfg.lossName.toLowerCase())}, call log and record history. It\u2019s made on this phone; nothing is uploaded.</p>
     <div class="kv"><span class="k">${esc(cfg.contentsName)}<br><span class="small muted">${plural(inv.count,'item')} at today\u2019s prices</span></span><span class="v">${fmt(inv.today)}</span></div>
     <div class="kv"><span class="k">Photos<br><span class="small muted">${P.exterior.length + P.rooms.reduce((s,r)=>s+roomPhotos(r),0)} dated photos</span></span><span class="v">${lockedAt(P)?'Locked':'Not locked'}</span></div>
@@ -968,12 +934,70 @@ function viewClaim(){
     </fieldset>
     ${(S.me||{}).name?'':'<p class="small muted">Tip: add your name and phone in Settings so they print on the packet.</p>'}
     <button class="primary" data-act="packet">Make the claim packet (PDF)</button>
+`; }
+/* A section that opens with a tap; remembers whether it was left open. */
+function sec(id, title, status, body, opts){ opts = opts || {}; S.open = S.open || {};
+  const open = S.open[id] ?? !!opts.open;
+  return `<details class="card sec" data-sec="${id}" id="sec-${id}" ${open?'open':''}${opts.style?` style="${opts.style}"`:''}>
+    <summary><span class="sec-t"><span class="sec-h">${title}</span>${status?`<span class="sec-s">${status}</span>`:''}</span><span class="sec-c" aria-hidden="true"></span></summary>
+    <div class="stack sec-b">${body}</div></details>`; }
+const claimStarted = P => !!(P.claim.started || P.claim.number || P.claim.dateOfLoss || lockedAt(P) || P.claim.receipts.length || P.claim.log.length);
+function claimNextStep(P){ const cl = P.claim, p = polOf(P);
+  if(!cl.number) return {t:`Report the damage to your insurance company${p&&p.claimPhone?` at ${p.claimPhone}`:''}. Write the claim number they give you below.`, tel:p&&p.claimPhone};
+  if(!cl.dateOfLoss) return {t:'Enter the date of loss (the day the storm hit).'};
+  if(!lockedAt(P)) return {t:'Lock your before-storm record, so the adjuster can see your list was made before the damage.', act:'lockRecord', btn:'Lock my before-storm record'};
+  if(!cl.adjuster) return {t:'When an adjuster is assigned, add their name, phone and email below.'};
+  return {t:'Write down every call, keep every receipt, and make the claim packet when the adjuster asks for your list.'};
+}
+function viewClaim(){
+  const P = cur(), cfg = TYPES[P.type], cl = P.claim, p = polOf(P), c = calc(P);
+  const spent = cl.receipts.reduce((s,r)=>s+r.amt,0);
+  const limit = c ? c.loss : 0;
+  const inv = invTotals(P);
+  if(!claimStarted(P)) return `
+  <section class="stack"><p class="label">${esc(P.name)} · claim mode</p><h1>The claim</h1></section>
+  <div class="card" style="border-color:var(--accent)">
+    <h2>Had storm damage?</h2>
+    <p class="small">Start here. StormFile walks you through it one step at a time:</p>
+    <ol class="small steps"><li>Report it and save the claim number</li><li>Lock your before-storm record</li><li>Write down every call and keep every receipt</li><li>Send the adjuster one PDF with everything</li></ol>
+    <button class="primary" data-act="startClaim">Start a claim</button>
+    ${p&&p.claimPhone?`<p class="small muted">Your insurance company’s claims line: ${telLink(p.claimPhone)}</p>`:''}
   </div>
+  ${sec('packet', 'Claim packet', '', packetBody(P, cfg, inv))}
+  <button class="card linkcard" data-go="resources"><div class="stack" style="gap:2px;min-width:0"><strong>Claim stuck? Get help${stateOf(P)?' in '+esc(STATE_NAME[stateOf(P)]):''}</strong><span class="small muted">Your state insurance department, FEMA, SBA and flood insurance contacts</span></div><span aria-hidden="true">›</span></button>`;
+  const nx = claimNextStep(P);
+  return `
+  <section class="stack"><p class="label">${esc(P.name)} · claim mode</p><h1>The claim</h1></section>
+  <div class="alert info nextstep"><p class="label">Your next step</p><p>${esc(nx.t)}</p>${nx.tel?`<a class="btn-like" href="${esc(telHref(nx.tel))}">Call ${esc(nx.tel)}</a>`:''}${nx.act?`<button class="primary" data-act="${nx.act}">${esc(nx.btn)}</button>`:''}</div>
+  <div class="card">
+    <h2>Claim details</h2>
+    <div class="grid2">
+      <label class="field">Claim number<input id="clNum" value="${esc(cl.number)}" placeholder="From the insurer"></label>
+      <label class="field">Date of loss<input id="clDate" type="date" value="${esc(cl.dateOfLoss)}"></label>
+      <label class="field">Adjuster name<input id="clAdj" value="${esc(cl.adjuster)}"></label>
+      <label class="field">Adjuster phone<input id="clAdjPh" type="tel" value="${esc(cl.adjPhone)}"></label>
+      <label class="field">Adjuster email<input id="clAdjEmail" type="email" value="${esc(cl.adjEmail||'')}"></label>
+    </div>
+    ${p?`<div class="row small"><span class="muted">Policy</span><span class="num">${esc(p.number)}</span></div>`:''}
+    ${cl.number?`<span class="chip ok" style="align-self:flex-start"><span class="dot"></span>Claim saved</span>`:`<p class="small muted">Call ${p?esc(p.claimPhone):'the insurer'} to open a claim, then enter the number here.</p>`}
+    <div class="whatsrow">${whatsLink('lossDate')}${whatsLink('adjuster')}</div>
+  </div>
+
+  ${deadlinesCard(P)}
+  ${sec('lock', 'Before-storm record', `<span class="chip ${lockedAt(P)?'ok':'warn'}">${lockedAt(P)?'Locked':'Not locked'}</span>`, `${lockedAt(P) ? (()=>{
+      const items = P.rooms.flatMap(r=>r.items), photos = P.exterior.concat(P.rooms.flatMap(r=>(r.photoData||[]).map(photoObj)));
+      const iAfter = items.filter(x=>isAfterLock(P,x)).length, pAfter = photos.filter(x=>isAfterLock(P,x)).length;
+      return `<p class="small">Locked ${fmtWhen(lockedAt(P))}. Everything logged before then is your before-storm record and can\u2019t be removed.</p>
+      <div class="kv"><span class="k">Before the storm</span><span class="v">${plural(items.length-iAfter,'item')} \u00B7 ${plural(photos.length-pAfter + P.rooms.reduce((s,r)=>s+r.photos,0),'photo')}</span></div>
+      <div class="kv"><span class="k">Added after the claim started</span><span class="v">${plural(iAfter,'item')} \u00B7 ${plural(pAfter,'photo')}</span></div>`; })()
+    : `<p class="small">When you file a claim, lock your record. Everything you logged before the storm is frozen, and anything added later is clearly marked. It shows the adjuster your list wasn\u2019t built after the damage.</p>
+      <button class="primary" data-act="lockRecord">Lock my before-storm record</button>
+      <p class="small muted">Enter the date of loss above first. This can\u2019t be undone.</p>`}`)}
+  ${sec('packet', 'Claim packet', `<span class="sec-n">${plural(inv.count,'item')}</span>`, packetBody(P, cfg, inv))}
 
   ${P.type==='home' ? (()=>{ const ale = p && p.ale, st = cl.status;
     const days = cl.orderDate ? Math.max(0, Math.floor((Date.now() - new Date(cl.orderDate+'T00:00').getTime())/86400000)) + 1 : 0;
-    return `<div class="card">
-    <div class="row"><h2>Out of your home?</h2>${st==='home'?'<span class="chip ok">At home</span>':st==='evac'?'<span class="chip warn">Evacuated</span>':'<span class="chip bad">Not livable</span>'}</div>
+    return sec('away', 'Out of your home?', st==='home'?'<span class="chip ok">At home</span>':st==='evac'?'<span class="chip warn">Evacuated</span>':'<span class="chip bad">Not livable</span>', `
     <label class="field">Your situation
       <select id="clStatus">
         <option value="home" ${st==='home'?'selected':''}>Living at home</option>
@@ -981,6 +1005,7 @@ function viewClaim(){
         <option value="unlivable" ${st==='unlivable'?'selected':''}>Home is not livable</option>
       </select></label>
     ${st==='home'?`<p class="small muted">If you\u2019re ordered to evacuate or the house can\u2019t be lived in, change this and start saving every receipt. This is called additional living expense.</p>`:''}
+    ${whatsLink('ale')}
     ${st==='evac'?`<label class="field">Date of the evacuation order<input id="clOrder" type="date" value="${esc(cl.orderDate)}"></label>
       ${ale?`<div class="alert warn" style="background:var(--bg)"><strong>What this policy says</strong><p class="small">${esc(ale.civilRule)}</p>
         <p class="small">An order issued before the storm, with no damage nearby yet, is often not covered. Some insurers pay anyway, so keep every receipt.</p>
@@ -989,11 +1014,9 @@ function viewClaim(){
       <div class="meter"><i style="width:${Math.min(100,days/(ale.civilWeeks*7)*100).toFixed(0)}%;background:var(--amber)"></i></div>`:''}
       <p class="small muted">If the house is damaged and can\u2019t be lived in when the order lifts, switch to "Home is not livable." Coverage continues past 2 weeks.</p>`:'<p class="small muted">Upload the policy to see what it says about evacuations.</p>'}`:''}
     ${st==='unlivable'?`<div class="alert ok" style="background:var(--bg)"><p class="small">Pays reasonable extra costs while the home is repaired, up to ${fmt(limit)}${ale?` or ${ale.months} months`:''}. That includes a hotel or rental house, extra meal costs, mileage, laundry, pet boarding and storage.</p>${ale?`<button class="src" style="align-self:flex-start" data-src="${esc(ale.src)}">${esc(ale.src)}</button>`:''}</div>`:''}
-    <p class="small muted"><strong>Only the extra cost counts.</strong> If you normally spend $600 a month on groceries and spend $1,100 eating out, the extra $500 is what you claim.</p>
-  </div>`; })() : ''}
+    <p class="small muted"><strong>Only the extra cost counts.</strong> If you normally spend $600 a month on groceries and spend $1,100 eating out, the extra $500 is what you claim.</p>`, {open: st!=='home'}); })() : ''}
 
-  <div class="card">
-    <div class="row"><h2>${esc(cfg.lossName)}</h2><span class="num">${fmt(spent)} / ${fmt(limit)}</span></div>
+  ${sec('costs', esc(cfg.lossName), `<span class="sec-n num">${limit?`${fmt(spent)} / ${fmt(limit)}`:fmt(spent)}</span>`, `
     <div class="meter"><i style="width:${limit?Math.min(100,spent/limit*100).toFixed(1):0}%;background:var(--accent)"></i></div>
     ${cl.receipts.length ? `<div class="tblwrap"><table>
       ${Object.entries(cl.receipts.reduce((a,r)=>{ a[r.cat||'Other']=(a[r.cat||'Other']||0)+r.amt; return a; },{})).map(([k,v])=>`<tr><td><strong>${esc(k)}</strong></td><td>${fmt(v)}</td></tr>`).join('')}
@@ -1010,11 +1033,16 @@ function viewClaim(){
       <span class="small muted" id="rcFileName"></span>
       <button class="primary" type="submit">Add expense</button>
       ${P.type==='home'?`<label class="field">Mileage rate per mile<input id="clRate" type="number" step="0.01" value="${cl.mileRate}"></label>`:''}
-    </form>
-  </div>
+    </form>`)}
 
-  <div class="card">
-    <h2>Letters</h2>
+  ${sec('log', 'Call & email log', `<span class="sec-n">${plural(cl.log.length,'entry').replace('entrys','entries')}</span>`, `
+    ${cl.log.length?`<div>${cl.log.slice().reverse().map(l=>`<div class="kv"><span class="k">${esc(l.note)}</span><span class="small muted">${esc(l.date)}</span></div>`).join('')}</div>`:'<p class="small muted">Write down every call: who you spoke with and what they promised.</p>'}
+    <form class="stack" id="addLog">
+      <label class="field">Note<input id="logNote" placeholder="Spoke with adjuster, inspection Tuesday" required></label>
+      <button type="submit">Add to log</button>
+    </form>`)}
+
+  ${sec('letters', 'Letters', '', `
     <p class="small">Put it in writing. Pick a letter, check the wording, then copy it or open it in your email.</p>
     <label class="field">Letter<select id="ltKind">${Object.entries(LETTERS).filter(([k,v])=>!v.only||v.only===P.type).map(([k,v])=>`<option value="${k}" ${S.ltKind===k?'selected':''}>${esc(v.label)}</option>`).join('')}</select></label>
     <label class="field">${({followup:'What was discussed (leave blank to use your last log entry)', supplement:'What you found', complaint:'What\u2019s gone wrong with your claim'})[S.ltKind||'followup']||'Anything to add (optional)'}<textarea id="ltExtra">${esc(S.ltExtra||'')}</textarea></label>
@@ -1025,41 +1053,25 @@ function viewClaim(){
     </div>
     ${S.ltKind==='complaint' ? (()=>{ const st = stateOf(P), ins = RES_INS[st]; return ins ? `<p class="small">Send this to the ${esc(ins[0])}: paste it into their online complaint form${ins[3]?` (${extLink(ins[3],'open the form')})`:''}, or call ${telLink(ins[2])}. Attach your claim packet if the form allows it.</p>` : '<p class="small">Pick the property\u2019s state on the Help screen to see where to send this.</p>'; })() : (cl.adjEmail?'':'<p class="small muted">Add the adjuster\u2019s email above to address it automatically.</p>')}
     <p class="small muted">These are templates to help you write clearly. They aren\u2019t legal advice. Read and edit before you send.</p>
-    ${S.lang==='es' ? '<p class="small">Letters go to your insurance company, so they\u2019re written in English.</p>' : ''}
-  </div>
+    ${S.lang==='es' ? '<p class="small">Letters go to your insurance company, so they\u2019re written in English.</p>' : ''}`)}
 
-  <div class="card">
-    <h2>Follow-up reminder</h2>
+  ${sec('follow', 'Follow-up reminder', '', `
     <p class="small">Insurance companies give dates: when to expect a call, a check or an inspection. Put the date on your calendar so it doesn\u2019t slip.</p>
     <div class="grid2">
       <label class="field">Date<input id="fuDate" type="date" value="${esc(S.fuDate||'')}"></label>
       <label class="field">What to check<input id="fuNote" value="${esc(S.fuNote||'')}" placeholder="Adjuster said estimate by this date"></label>
     </div>
-    <button class="primary" data-act="calFollow">Add to my calendar</button>
-  </div>
+    <button class="primary" data-act="calFollow">Add to my calendar</button>`)}
 
-  <div class="card">
-    <h2>Call & email log</h2>
-    ${cl.log.length?`<div>${cl.log.slice().reverse().map(l=>`<div class="kv"><span class="k">${esc(l.note)}</span><span class="small muted">${esc(l.date)}</span></div>`).join('')}</div>`:'<p class="small muted">Write down every call: who you spoke with and what they promised.</p>'}
-    <form class="stack" id="addLog">
-      <label class="field">Note<input id="logNote" placeholder="Spoke with adjuster, inspection Tuesday" required></label>
-      <button type="submit">Add to log</button>
-    </form>
-  </div>
-
-  <div class="card">
-    <div class="row"><h2>Record history</h2><span class="small muted">${(P.history||[]).length} changes</span></div>
+  ${sec('history', 'Record history', `<span class="sec-n">${plural((P.history||[]).length,'change')}</span>`, `
     <p class="small muted">Every addition, removal and receipt is saved with the date and time. It can\u2019t be edited.</p>
     ${(P.history||[]).length ? `<div class="hist">${(P.history||[]).slice().reverse().slice(0, S.histAll?400:12).map(h=>`<div><span>${esc(h.what)}</span><span>${fmtWhen(h.at)}</span></div>`).join('')}</div>
       ${(P.history||[]).length>12?`<button class="src" data-act="showAllHist" style="align-self:flex-start">${S.histAll?'Show fewer':'Show all'}</button>`:''}`
-      : '<p class="small muted">Nothing yet. Changes appear here as you add items, photos and receipts.</p>'}
-  </div>
+      : '<p class="small muted">Nothing yet. Changes appear here as you add items, photos and receipts.</p>'}`)}
 
-  <div class="card">
-    <h3>Claim stalled or underpaid?</h3>
-    <p class="small">A licensed public adjuster works for you, not the insurer. They usually charge a share of the claim. Your state insurance department can tell you whether one is licensed, and can step in if your insurer stops answering.${P.type==='business'?' Business claims, especially lost income, are where they help most.':''}</p>
-    <button data-go="resources">Get help in your state</button>
-  </div>`;
+  ${sec('stalled', 'Claim stalled or underpaid?', '', `    <p class="small">A licensed public adjuster works for you, not the insurer. They usually charge a share of the claim. Your state insurance department can tell you whether one is licensed, and can step in if your insurer stops answering.${P.type==='business'?' Business claims, especially lost income, are where they help most.':''}</p>
+    ${whatsLink('pa')}
+    <button data-go="resources">Get help in your state</button>`)}`;
 }
 
 /* ---------- Enter a policy by hand ---------- */
@@ -1077,49 +1089,51 @@ function viewPolicyForm(){
   const v = k => esc(a[k] ?? '');
   return `
   <section class="stack"><p class="label">${esc(P.name)}</p><h1>Enter your policy</h1>
-    <p class="small muted">Copy the numbers from your declarations page. Leave anything blank you can’t find.</p></section>
+    <p class="small muted">Start with the 5 numbers below. Everything else is optional.</p></section>
   <form class="stack" id="policyForm" style="gap:16px">
   <div class="card">
-    <h2>The basics</h2>
-    <label class="field">Insurance company<input id="pf-carrier" value="${v('carrier')}" placeholder="Name at the top of the page"></label>
+    <h2>The 5 numbers that matter</h2>
+    <p class="small muted">All five are usually on page 1 of your ${whats('dec','declarations page')}.</p>
+    <label class="field"><span>1. Insurance company</span><input id="pf-carrier" value="${v('carrier')}" placeholder="Name at the top of the page"></label>
+    <label class="field"><span>2. Policy number</span><input id="pf-number" value="${v('number')}"></label>
+    <label class="field"><span>3. ${esc(cfg.buildingName)} (${esc((PF_LIMITS[P.type].find(x=>x[0]===cfg.building)||[])[1]||'')})</span><input id="pf-lim-${cfg.building}" type="number" inputmode="numeric" placeholder="$" value="${v('lim'+cfg.building)}"></label>
+    ${pfSelect('windType','4. Hurricane or wind deductible',[['pct','A percentage (like 2% or 5%)'],['flat','A dollar amount'],['same','Same as the regular deductible'],['excluded','Wind is excluded from this policy'],['unsure','Not sure']], a.windType||'pct','Look for “Windstorm or Hail” or “Hurricane” near the deductibles. “Exclude Wind: Not Applicable” means wind IS covered.')}
+    <label class="field" id="pf-windAmtWrap" ${['pct','flat'].includes(a.windType||'pct')?'':'hidden'}>Percentage or dollar amount<input id="pf-windAmt" type="number" inputmode="decimal" placeholder="5 for 5%, or 2500" value="${v('windAmt')}"></label>
+    ${whatsLink('hurDed')}
+    <label class="field"><span>5. Renewal date</span><input id="pf-renewal" type="date" value="${v('renewal')}"></label>
+    <p class="small muted">Leave anything blank you can\u2019t find. You can fill it in later.</p>
+  </div>
+  <details class="card sec" data-sec="pf-more" id="sec-pf-more" ${(S.open||{})['pf-more'] || ['claimPhone','agent','form','allPerils','roofYear'].some(k=>a[k]) ? 'open' : ''}>
+    <summary><span class="sec-t"><span class="sec-h">More details (optional)</span><span class="sec-s sec-n">Makes the coverage check more complete</span></span><span class="sec-c" aria-hidden="true"></span></summary>
+    <div class="stack sec-b">
     <div class="grid2">
-      <label class="field">Policy type<input id="pf-form" value="${v('form')}" placeholder="${P.type==='business'?'e.g. BOP':P.type==='rental'?'e.g. DP-3':'e.g. HO-3 or HO-5'}"></label>
-      <label class="field">Policy number<input id="pf-number" value="${v('number')}"></label>
-      <label class="field">Expires<input id="pf-renewal" type="date" value="${v('renewal')}"></label>
       <label class="field">Claims phone<input id="pf-claimPhone" type="tel" value="${v('claimPhone')}"></label>
+      <label class="field">Policy type<input id="pf-form" value="${v('form')}" placeholder="${P.type==='business'?'e.g. BOP':P.type==='rental'?'e.g. DP-3':'e.g. HO-3 or HO-5'}"></label>
     </div>
     <label class="field">Agent name and phone<input id="pf-agent" value="${v('agent')}"></label>
-  </div>
-  <div class="card">
-    <h2>Coverage amounts</h2>
-    <p class="small muted">Usually in a box called “Coverage Information” or “Limits of Liability.”</p>
-    <div class="grid2">${PF_LIMITS[P.type].map(([k,lab])=>`<label class="field">${esc(lab)}<input id="pf-lim-${k}" type="number" inputmode="numeric" placeholder="$" value="${v('lim'+k)}"></label>`).join('')}</div>
-  </div>
-  <div class="card">
-    <h2>Deductibles</h2>
-    <label class="field">Regular deductible (“All other perils”)<input id="pf-allPerils" type="number" inputmode="numeric" placeholder="$" value="${v('allPerils')}"></label>
-    ${pfSelect('windType','Wind, hail or hurricane deductible',[['pct','A percentage (like 2% or 5%)'],['flat','A dollar amount'],['same','Same as the regular deductible'],['excluded','Wind is excluded from this policy'],['unsure','Not sure']], a.windType||'pct','Look for “Windstorm or Hail” or “Hurricane” near the deductibles. “Exclude Wind: Not Applicable” means wind IS covered.')}
-    <label class="field">Percentage or dollar amount<input id="pf-windAmt" type="number" inputmode="decimal" placeholder="5 for 5%, or 2500" value="${v('windAmt')}"></label>
-  </div>
-  <div class="card">
-    <h2>Other coverage</h2>
+    <h3>Other coverage amounts</h3>
+    <p class="small muted">Usually in a box called \u201cCoverage Information\u201d or \u201cLimits of Liability.\u201d</p>
+    <div class="grid2">${PF_LIMITS[P.type].filter(([k])=>k!==cfg.building).map(([k,lab])=>`<label class="field">${esc(lab)}<input id="pf-lim-${k}" type="number" inputmode="numeric" placeholder="$" value="${v('lim'+k)}"></label>`).join('')}</div>
+    <label class="field">Regular deductible (\u201cAll other perils\u201d)<input id="pf-allPerils" type="number" inputmode="numeric" placeholder="$" value="${v('allPerils')}"></label>
+    <h3>Other coverage</h3>
     ${pfSelect('flood','Do you have a separate flood policy?',[['nfip','Yes, NFIP (FEMA) flood'],['private','Yes, private flood'],['no','No'],['unsure','Not sure']], a.flood||'unsure','Homeowners and business policies almost never cover flood or storm surge.')}
     ${P.type!=='business'?pfSelect('ordinance','Ordinance or law coverage?',YNU,a.ordinance||'unsure','Pays extra to rebuild to current code. “No Coverage” on the page means no.'):''}
+    ${P.type!=='business'?whatsLink('ordinance'):''}
     ${P.type==='home'?pfSelect('contentsRC','How is your stuff paid?',[['rc','Replacement cost (price of new)'],['acv','Actual cash value (used value)'],['unsure','Not sure']],a.contentsRC||'unsure','“Personal Property Replacement Cost: Not Applicable” usually means used value.'):''}
+    ${P.type==='home'?whatsLink('rcacv'):''}
     ${pfSelect('waterBackup','Water or sewer backup coverage?',YNU,a.waterBackup||'unsure')}
     ${P.type!=='business'?pfSelect('mold','Mold coverage?',YNU,a.mold||'unsure'):''}
     ${P.type==='business'?`<div class="grid2">
       <label class="field">Coinsurance %<input id="pf-coins" type="number" inputmode="numeric" placeholder="80" value="${v('coins')}"></label>
-      <label class="field">Business income waiting period (hours)<input id="pf-wait" type="number" inputmode="numeric" placeholder="72" value="${v('wait')}"></label></div>`:''}
-  </div>
-  <div class="card">
-    <h2>About the property</h2>
+      <label class="field">Business income waiting period (hours)<input id="pf-wait" type="number" inputmode="numeric" placeholder="72" value="${v('wait')}"></label></div>${whatsLink('coins')}`:''}
+      <h3>About the property</h3>
     <p class="small muted">Some declarations pages list these. Used for the “enough to rebuild?” check.</p>
     <div class="grid2">
       <label class="field">Square feet<input id="pf-sqft" type="number" inputmode="numeric" value="${esc(P.info.sqft||'')}"></label>
       <label class="field">Year the roof was replaced<input id="pf-roofYear" type="number" inputmode="numeric" value="${v('roofYear')}"></label>
     </div>
-  </div>
+      </div>
+  </details>
   <button class="primary" type="submit">Show what I’m covered for</button>
   <button class="ghost" type="button" data-go="policy">Cancel</button>
   </form>`;
@@ -1659,6 +1673,37 @@ function viewWelcome(){
   <p class="foot">StormFile is made by Coastline Code LLC, a veteran-owned company in Pass Christian, Mississippi.</p>`;
 }
 
+/* ---------- "What's this?" plain-English meanings of insurance words ---------- */
+const GLOSS = {
+  dec:['Declarations page','The 1–3 page summary at the front of your policy. It lists your coverage amounts, deductibles, policy number and dates. Your insurance company sends a new one every time the policy renews.'],
+  deductible:['Deductible','The part of a claim you pay before insurance pays. It’s taken out of the claim payment.'],
+  hurDed:['Hurricane or wind deductible','A separate deductible for wind or hurricane damage. It’s often a percentage of your house coverage, so 2% of $300,000 means you pay the first $6,000 of the damage.'],
+  covA:['House coverage','The most the policy pays to repair or rebuild the house itself. On many policies it’s called Coverage A – Dwelling.'],
+  rcacv:['Replacement cost or actual cash value','Replacement cost pays what it costs to buy a new item like the old one today. Actual cash value pays what the item was worth after wear and age, which is usually much less.'],
+  ordinance:['Ordinance or law coverage','Pays the extra cost to rebuild to today’s building codes, like raising the house or new wiring, when the county requires it.'],
+  ale:['Additional living expense','Extra costs while you can’t live at home because of covered damage, like a hotel and the extra cost of eating out. Only the amount above your normal spending counts, so keep every receipt.'],
+  proof:['Proof of loss','A signed statement of what you’re claiming and how much. Some insurance companies ask for one, and flood (NFIP) policies require it by a deadline.'],
+  lossDate:['Date of loss','The day the damage happened. For a hurricane, it’s usually the day the storm hit your area.'],
+  claimNo:['Claim number','The number your insurance company gives you when you report the damage. Put it on every call, email and letter.'],
+  adjuster:['Adjuster','The person the insurance company assigns to look at the damage and decide what it will pay. They work for the insurance company.'],
+  pa:['Public adjuster','A licensed adjuster you hire to handle your claim. They work for you, not the insurance company, and usually charge a percentage of what the claim pays.'],
+  nfip:['NFIP','The National Flood Insurance Program, run by FEMA. Most flood policies in the U.S. are NFIP policies, sold through regular insurance agents.'],
+  endorsement:['Endorsement','A change or add-on to your policy that adds, removes or limits coverage.'],
+  coins:['Coinsurance (the 80% rule)','A rule in many business policies: if the building is insured for less than 80% of what it would cost to rebuild, every claim is cut by the same share.'],
+  bi:['Business income','Pays lost profit and the bills you keep paying while your business is closed for repairs from covered damage.'],
+  lock:['Before-storm record','Everything you logged before the storm. Locking it freezes it, so the adjuster can see your list wasn’t made after the damage.']
+};
+const whats = (k, text) => `<button type="button" class="term" data-term="${k}">${esc(text)}</button>`;
+const WHATS_Q = {hurDed:'How does a hurricane deductible work?', rcacv:'Replacement cost or used value: what\u2019s the difference?', ordinance:'What\u2019s ordinance or law coverage?', ale:'What counts as additional living expense?', proof:'What\u2019s a proof of loss?', lossDate:'What\u2019s the date of loss?', adjuster:'What does the adjuster do?', pa:'What\u2019s a public adjuster?', coins:'What\u2019s the 80% rule?'};
+const whatsLink = k => `<button type="button" class="whats" data-term="${k}">${esc(WHATS_Q[k] || 'What\u2019s this?')}</button>`;
+function showTerm(k){ const g = GLOSS[k]; if(!g) return; closeTerm();
+  const ov = document.createElement('div'); ov.className = 'overlay viewer termsheet'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-labelledby','termT');
+  ov.innerHTML = `<div class="viewer-box"><h2 id="termT">${esc(g[0])}</h2><p>${esc(g[1])}</p><button class="primary" data-closeterm="1">Got it</button></div>`;
+  ov.addEventListener('click', e=>{ if(e.target===ov || e.target.closest('[data-closeterm]')) closeTerm(); });
+  document.body.appendChild(ov); const b = ov.querySelector('[data-closeterm]'); b.focus(); }
+let termFrom = null;
+function closeTerm(){ const o = document.querySelector('.termsheet'); if(o){ o.remove(); if(termFrom && termFrom.isConnected) termFrom.focus(); } }
+function wordsToKnow(){ return sec('words', 'Words to know', '', Object.entries(GLOSS).map(([k,[t,d]])=>`<div class="res"><strong>${esc(t)}</strong><span class="small">${esc(d)}</span></div>`).join('')); }
 /* ---------- State and national help (checked against official sites, Nov 2026) ----------
    Insurance departments: NAIC insurance department directory (content.naic.org), with Gulf states, FL, TX, VA, WA, WV, WI, WY
    confirmed on the department's own site. Emergency agencies: each agency's official .gov site. Keep RES_CHECKED current. */
@@ -1816,6 +1861,7 @@ function viewResources(){
     <h2>National help</h2>
     ${RES_NATIONAL.map(m=>resItem(m[0], m[1], m[2], m[3])).join('')}
   </div>
+  ${wordsToKnow()}
   <p class="small muted" style="padding:0 4px">Checked against official websites in ${RES_CHECKED}. Phone numbers and programs can change. If a number doesn’t work, use the website, and please <a href="mailto:info@coastlinecode.com?subject=${encodeURIComponent('StormFile: wrong contact for ' + (STATE_NAME[st]||'a state'))}">tell us</a>. StormFile isn’t connected to any of these agencies.</p>`;
 }
 
@@ -1862,13 +1908,14 @@ function claimDeadlines(P){
 function deadlinesCard(P){
   const st = stateOf(P), R = CLAIM_RULES[st], cl = P.claim, list = claimDeadlines(P), today = new Date().toISOString().slice(0,10);
   const dated = list.filter(x=>x.due);
-  return `<div class="card" id="deadlines">
-    <div class="row"><h2>Deadlines${st?' in '+esc(STATE_NAME[st]):''}</h2></div>
+  const next = dated.filter(x=>x.due >= today).sort((a,b)=>a.due<b.due?-1:1)[0];
+  return sec('deadlines', `Deadlines${st?' in '+esc(STATE_NAME[st]):''}`, next ? `<span class="sec-n">Next: ${esc(fmtDay(next.due+'T12:00:00'))}</span>` : '', `<div class="stack" id="deadlines">
     <p class="small">Time limits the law sets for your insurance company, and a few for you. Enter your dates and StormFile works out each due date.</p>
     <div class="grid2">
       <label class="field">Day you reported the claim<input id="clReported" type="date" value="${esc(cl.reportedOn||'')}"></label>
       <label class="field">Day they got your proof of loss<input id="clProof" type="date" value="${esc(cl.proofOn||'')}"></label>
     </div>
+    ${whatsLink('proof')}
     ${R && R.none ? `<p class="small">${esc(R.none)}</p>` : ''}
     ${!R && st ? `<p class="small">StormFile doesn’t list ${esc(STATE_NAME[st])}’s claim deadlines yet. Ask the ${esc((RES_INS[st]||[])[0]||'state insurance department')} what applies to your claim.</p>` : ''}
     ${list.map(x=> x.note ? `<p class="small muted">${esc(x.note)}</p>` : `<div class="dl ${x.due && x.due < today ? 'past' : ''}">
@@ -1876,7 +1923,7 @@ function deadlinesCard(P){
       <span class="small"><strong>${esc(x.what)}</strong><br><span class="muted">${x.n} ${UNIT[x.unit]} ${FROM_LABEL[x.from]}${x.due?'':' (enter that date above)'}</span></span></div>`).join('')}
     ${dated.length ? `<button class="small-btn" data-act="calDeadlines">Add these dates to my calendar</button>` : ''}
     <p class="small muted">Business-day dates skip weekends but not holidays, so the real date can be a little later. Insurers can sometimes take longer if they tell you why in writing. This is general information, not legal advice. Sources: ${[...(R&&R.src||[]), ...(P.info.flood!=='no'?[NFIP_RULE.src]:[])].map(([t,u])=>extLink(u,t)).join(', ')||'none'}.</p>
-  </div>`;
+  </div>`);
 }
 
 
@@ -1921,8 +1968,7 @@ async function addShare(v){
 }
 function shareCard(){
   const mine = hasRealData(), many = S.properties.length > 1;
-  return `<div class="card" id="shareCard">
-    <h2>Share with your household</h2>
+  return sec('set-share', 'Share with your household', '', `<div class="stack" id="shareCard">
     <p class="small">Give a spouse, family member or co-owner their own copy of your records, photos and receipts. It goes from your phone to theirs. Nothing is uploaded, and there’s no account.</p>
     ${shareShown ? `<div class="stack" style="align-items:center;text-align:center">
         <p class="small"><strong>Step 2.</strong> On their phone, open StormFile → Settings → “Open a shared copy.” They choose the file you sent, then scan this code.</p>
@@ -1942,7 +1988,7 @@ function shareCard(){
         <button class="primary" data-act="shareOpen">Add to this phone</button>
         <p class="small muted">Places you already have from them are updated. Everything else on this phone stays as it is.</p>
       </div></details>
-  </div>`;
+  </div>`);
 }
 
 /* ---------- Settings screen ---------- */
@@ -1957,8 +2003,7 @@ function viewSettings(){
     <p class="small muted">${S.lang==='es'?'StormFile en inglés o en español. Las cartas y el paquete del reclamo se quedan en inglés porque van a su compañía de seguros.':'StormFile in English or Spanish. Letters and the claim packet stay in English because they go to your insurance company.'}</p>
   </div>
 
-  <div class="card" id="lockCard">
-    <div class="row"><h2>Lock</h2><span class="chip ${on?'ok':'warn'}">${on?(bio?'PIN + '+BIONAME():'PIN on'):'Off'}</span></div>
+  ${sec('set-lock', 'Lock', `<span class="chip ${on?'ok':'warn'}">${on?(bio?'PIN + '+BIONAME():'PIN on'):'Off'}</span>`, `<div class="stack" id="lockCard">
     <p class="small">${on ? (bio ? `StormFile opens with ${BIONAME()}. If that doesn’t work, it asks for your PIN.` : 'StormFile asks for your PIN each time it opens, and after a minute away.') : 'Set a PIN so nobody else can open your policy, photos and claim on this phone. Then you can add Face ID or fingerprint.'}</p>
     <div class="grid2">
       <label class="field">${on?'New PIN':'PIN'} (4–8 digits)<input id="pin1" type="password" inputmode="numeric" autocomplete="new-password"></label>
@@ -1968,61 +2013,48 @@ function viewSettings(){
     ${on?`<button class="ghost" data-act="bioToggle" ${BIO_OK?'':'hidden'}>${bio?'Turn off '+BIONAME():'Turn on '+BIONAME()}</button>
       ${BIO_OK?'':`<p class="small muted">${BIONAME()[0].toUpperCase()+BIONAME().slice(1)} works when StormFile is opened from its icon on your home screen.</p>`}
       <button class="ghost" data-act="pinClear">Turn off the lock</button>`:''}
-  </div>
+  </div>`)}
 
   ${shareCard()}
 
-  <div class="card" style="${due?'border-color:var(--amber)':''}">
-    <div class="row"><h2>Backup</h2><span class="chip ${due?'warn':'ok'}">${S.lastBackupAt?'Last: '+fmtDay(S.lastBackupAt):'None yet'}</span></div>
+  ${sec('set-backup', 'Backup', `<span class="chip ${due?'warn':'ok'}">${S.lastBackupAt?'Last: '+fmtDay(S.lastBackupAt):'None yet'}</span>`, `
     <p class="small">Your records live only on this phone. If a storm takes the phone, they go with it. A backup is one locked file with everything, including full-size photos and receipts. Save it to iCloud Drive, Google Drive or email it to yourself.</p>
     ${due?`<div class="alert warn" style="background:var(--bg)"><p class="small">${esc(due)}</p></div>`:''}
-    <div class="grid2">
-      <label class="field">Backup passphrase (8+ characters)<input id="bk1" type="password" autocomplete="new-password"></label>
-      <label class="field">Type it again<input id="bk2" type="password" autocomplete="new-password"></label>
-    </div>
+    <label class="field"><span><strong>Step 1.</strong> Make up a passphrase you\u2019ll remember (8 or more characters)</span><input id="bk1" type="password" autocomplete="new-password"></label>
+    <label class="field"><span><strong>Step 2.</strong> Type it again</span><input id="bk2" type="password" autocomplete="new-password"></label>
     <p class="small muted">Write the passphrase down somewhere safe. Without it, nobody can open the backup, including us.</p>
+    <p class="small"><strong>Step 3.</strong> Tap the button, then choose iCloud Drive, Google Drive or email.</p>
     <button class="primary" data-act="bkMake">Save a locked backup</button>
     <details><summary class="src" style="display:inline">Restore from a backup</summary>
       <div class="stack" style="margin-top:8px">
         <label class="upload">Choose the backup file<input type="file" id="rsFile" accept=".json,application/json"></label>
         <label class="field">Passphrase<input id="rsPass" type="password" autocomplete="current-password"></label>
         <button class="primary" data-act="rsGo">Unlock and restore</button>
-        <p class="small muted">Restoring replaces everything on this phone with what’s in the backup.</p>
-      </div></details>
-  </div>
+        <p class="small muted">Restoring replaces everything on this phone with what\u2019s in the backup.</p>
+      </div></details>`, {open: !!due, style: due?'border-color:var(--amber)':''})}
 
-  <div class="card">
-    <h2>About you</h2>
+  ${sec('set-me', 'About you', me.name?`<span class="sec-n">${esc(me.name)}</span>`:'', `
     <p class="small muted">Used on your letters and claim packet. Saved only on this phone.</p>
     <label class="field">Your name<input id="me-name" value="${esc(me.name||'')}" autocomplete="name"></label>
     <div class="grid2">
       <label class="field">Phone<input id="me-phone" type="tel" value="${esc(me.phone||'')}" autocomplete="tel"></label>
       <label class="field">Email<input id="me-email" type="email" value="${esc(me.email||'')}" autocomplete="email"></label>
     </div>
-    <label class="field">Mailing address (if you’re not at home)<input id="me-mail" value="${esc(me.mail||'')}" autocomplete="street-address"></label>
-  </div>
+    <label class="field">Mailing address (if you’re not at home)<input id="me-mail" value="${esc(me.mail||'')}" autocomplete="street-address"></label>`)}
 
   <button class="card linkcard" data-go="resources"><div class="stack" style="gap:2px;min-width:0"><strong>Help and resources</strong><span class="small muted">Insurance department and emergency contacts for each property’s state</span></div><span aria-hidden="true">›</span></button>
-  <div class="card">
-    <h2>Feedback</h2>
-    <p class="small">Tell us what worked, what didn’t, and what you’d add.</p>
-    <button class="primary" data-go="feedback">Give feedback</button>
-  </div>
+  <button class="card linkcard" data-go="feedback"><div class="stack" style="gap:2px;min-width:0"><strong>Feedback</strong><span class="small muted">Tell us what worked, what didn’t, and what you’d add.</span></div><span aria-hidden="true">›</span></button>
 
-  <div class="card">
-    <h2>About StormFile</h2>
+  ${sec('set-about', 'About StormFile', '', `
     <p class="small">StormFile is made by Coastline Code LLC, a veteran-owned company in Pass Christian, Mississippi.</p>
     <p class="small">StormFile helps you organize your insurance and home records. It doesn’t sell insurance, give insurance or legal advice, or decide what your policy covers. Confirm coverage with your agent or insurance company.</p>
     <p class="small muted">${TEST?'This is a test version shared for feedback. ':''}StormFile, including its name, design and code, belongs to Coastline Code LLC. © 2026 Coastline Code LLC.</p>
     <p class="small muted">Questions: info@coastlinecode.com</p>
-    <p class="small"><a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> · <a href="support.html" target="_blank" rel="noopener">Help</a></p>
-  </div>
+    <p class="small"><a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> · <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> · <a href="support.html" target="_blank" rel="noopener">Help</a></p>`)}
 
-  <div class="card" style="border-color:var(--red)">
-    <h2>Erase everything</h2>
+  ${sec('set-erase', 'Erase everything', '', `
     <p class="small">Removes every property, photo, receipt and setting from this phone. Make a backup first if you might want them back.</p>
-    <button class="ghost" data-act="wipe" style="color:var(--red)">Erase everything on this phone</button>
-  </div>`;
+    <button class="ghost" data-act="wipe" style="color:var(--red)">Erase everything on this phone</button>`)}`;
 }
 
 /* ---------- Render + events ---------- */
@@ -2312,6 +2344,8 @@ view.addEventListener('click', e=>{
       .catch(()=>{ t.disabled=false; t.textContent='Save a locked backup'; toast('The backup didn’t finish. Please try again.'); }); return; }
   if(t.dataset.lang){ const l = t.dataset.lang === 'es' ? 'es' : 'en'; if(l === S.lang) return; S.lang = l; save();
     if(l === 'en') I18N.set('en'); render(); if(l === 'es') I18N.set('es'); return; }
+  if(t.dataset.term){ termFrom = t; showTerm(t.dataset.term); return; }
+  if(t.dataset.act==='startClaim'){ const P = cur(); P.claim.started = true; logEvt(P, 'Claim started in StormFile'); S.open = S.open || {}; save(); render(); window.scrollTo(0,0); const f = document.getElementById('clNum'); if(f) f.focus({preventScroll:true}); return; }
   if(t.dataset.act==='shareMake'){
     const boxes = [...document.querySelectorAll('[data-shareprop]')], ids = boxes.length ? boxes.filter(b=>b.checked).map(b=>b.dataset.shareprop) : S.properties.map(x=>x.id);
     if(!ids.length) return toast('Pick at least one place to share.');
@@ -2321,7 +2355,7 @@ view.addEventListener('click', e=>{
       const q = qrcode(0, 'M'); q.addData('STORMFILE-SHARE:' + code); q.make();
       shareShown = {code, svg:q.createSvgTag({cellSize:6, margin:4, scalable:true})};
       S.properties.filter(x=>ids.includes(x.id)).forEach(x=>logEvt(x, 'Shared a copy with the household'));
-      save(); render(); const c = document.getElementById('shareCard'); if(c) c.scrollIntoView({block:'start'}); toast('Now show them the code on your screen.'); }))
+      S.open = S.open || {}; S.open['set-share'] = true; save(); render(); const c = document.getElementById('shareCard'); if(c) c.scrollIntoView({block:'start'}); toast('Now show them the code on your screen.'); }))
       .catch(e=>{ console.warn('share', e); t.disabled=false; t.textContent='Share my records'; toast('The copy didn\u2019t finish. Please try again.'); }); return; }
   if(t.dataset.act==='shareDone'){ shareShown = null; render(); return; }
   if(t.dataset.act==='shareOpen'){ const f = document.getElementById('shFile').files[0], code = shareCodeClean(document.getElementById('shCode').value);
@@ -2420,6 +2454,7 @@ view.addEventListener('change', e=>{
     clStatus:()=>P.claim.status=el.value, clOrder:()=>P.claim.orderDate=el.value, clRate:()=>P.claim.mileRate=num(el.value)
   };
   if(el.id==='pState'){ P.state = el.value; P.stateCleared = false; if(el.value && !/,\s*[A-Z]{2}\s*$/.test(P.address||'')) P.address = (P.address && P.address!=='Add your city' ? P.address + ', ' : '') + el.value; save(); render(); if(el.value) toast(`${P.name} is set to ${STATE_NAME[el.value]}.`); return; }
+  if(el.id==='pf-windType'){ const w = document.getElementById('pf-windAmtWrap'); if(w) w.hidden = !['pct','flat'].includes(el.value); return; }
   if(el.id==='shScan'){ const f = el.files[0]; if(!f) return; S.shareOpen = true;
     Promise.all([loadQrReader(), loadImg(f)]).then(([jsQR, img])=>{ const d = drawTo(img, 1600), data = d.canvas.getContext('2d').getImageData(0, 0, d.canvas.width, d.canvas.height);
       const r = jsQR(data.data, data.width, data.height, {inversionAttempts:'attemptBoth'}); const code = r && shareCodeClean(r.data);
@@ -2516,8 +2551,12 @@ if(!NAT && 'serviceWorker' in navigator){ window.addEventListener('load', ()=>{ 
   }catch(e){ LIVE = false; }
   if(S.tab==='home') render();
 })();
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeTerm(); });
+/* Remember which tap-to-open sections were left open, so they stay open when the screen updates. */
+document.addEventListener('toggle', e=>{ const d = e.target; if(d && d.dataset && d.dataset.sec){ S.open = S.open || {}; if(S.open[d.dataset.sec] !== d.open){ S.open[d.dataset.sec] = d.open; save(); } } }, true);
 /* Android back button in the phone app: close what's open, then go back to Home. */
 if(NAT && NAT.onBack) NAT.onBack(()=>{
+  if(document.querySelector('.termsheet')){ closeTerm(); return true; }
   const v = document.querySelector('.viewer'); if(v){ v.querySelector('[data-closeviewer]').click(); return true; }
   if(document.querySelector('.lockscreen')) return true;
   if(!menu.hidden){ setMenu(false); return true; }

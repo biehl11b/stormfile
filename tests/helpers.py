@@ -40,3 +40,17 @@ def fixtures():
     Image.new('RGB', (600, 800), (230, 230, 220)).save(os.path.join(d, 'small.jpg'))
     _FX = {'big': os.path.join(d, 'big.jpg'), 'small': os.path.join(d, 'small.jpg')}
     return _FX
+
+def open_claim(pg):
+    """Go to the Claim tab, start a claim if needed, and open every section."""
+    pg.evaluate("""()=>{ document.querySelector('nav.tabs button[data-tab=claim]').click();
+      const s = document.querySelector('[data-act=startClaim]'); if(s) s.click();
+      document.querySelectorAll('#view details').forEach(d=>d.open=true); }""")
+    pg.wait_for_timeout(250)
+
+def open_settings(pg):
+    """Go to Settings and open every section."""
+    pg.evaluate("""()=>{ const b=document.getElementById('fbBtn'); if(b && !b.hidden && b.offsetParent) b.click();
+      else { const x=document.createElement('button'); x.dataset.go='settings'; document.getElementById('view').appendChild(x); x.click(); }
+      document.querySelectorAll('#view details').forEach(d=>d.open=true); }""")
+    pg.wait_for_timeout(250)

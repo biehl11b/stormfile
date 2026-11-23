@@ -1,6 +1,7 @@
 """Phone app build: builds www/ the way the store build does, runs it with a stand-in for the phone, and checks the app uses the phone's share sheet, calendar and Face ID."""
 import json, os, subprocess, sys, shutil, threading, http.server, functools
 from playwright.sync_api import sync_playwright
+from helpers import open_claim, open_settings
 
 HERE = os.path.dirname(os.path.abspath(__file__)); NATIVE = os.path.join(HERE, '..', 'native')
 stub = os.path.join(NATIVE, 'node_modules/@capacitor/core/dist'); made_stub = not os.path.exists(stub)
@@ -37,11 +38,11 @@ with sync_playwright() as p:
     out['season_events'] = len(ev) == 9 and all(e[2]['recurrence']['frequency'] == 'yearly' for e in ev) and len(calls(pg, 'CapacitorCalendar', 'requestWriteOnlyCalendarAccess')) == 1
     out['season_toast'] = '9 reminders added to your calendar' in pg.text_content('body')
     # one follow-up opens the phone's own new-event screen with two alerts
-    pg.click('nav.tabs button[data-tab=claim]'); pg.fill('#fuDate', '2027-01-15'); pg.fill('#fuNote', 'Estimate due'); pg.click('[data-act=calFollow]'); pg.wait_for_timeout(400)
+    open_claim(pg); pg.fill('#fuDate', '2027-01-15'); pg.fill('#fuNote', 'Estimate due'); pg.click('[data-act=calFollow]'); pg.wait_for_timeout(400)
     pr = calls(pg, 'CapacitorCalendar', 'createEventWithPrompt')
     out['followup_prompt'] = len(pr) == 1 and pr[0][2]['alerts'] == [-1440, 0] and 'Estimate due' in pr[0][2]['title']
     # backup goes to the share sheet
-    pg.click('#fbBtn'); pg.wait_for_timeout(200)
+    open_settings(pg)
     pg.fill('#bk1', 'correct horse 1'); pg.fill('#bk2', 'correct horse 1'); pg.click('[data-act=bkMake]'); pg.wait_for_timeout(1500)
     sh = calls(pg, 'Share', 'share'); wf = calls(pg, 'Filesystem', 'writeFile')
     out['backup_shared'] = len(sh) == 1 and sh[0][2]['files'][0].startswith('file:///cache/stormfile-out/') and len(wf) == 1

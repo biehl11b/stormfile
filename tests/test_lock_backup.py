@@ -1,7 +1,7 @@
 """Lock and backup: full-size photos, receipts as files, PIN lock, encrypted backup and restore."""
 import json, os, sys, tempfile
 from playwright.sync_api import sync_playwright
-from helpers import URL, new_page, start_own, fixtures
+from helpers import URL, new_page, start_own, fixtures, open_settings
 
 out = {}
 with sync_playwright() as p:
@@ -29,7 +29,7 @@ with sync_playwright() as p:
     pg.set_input_files('input[data-itemreceipt] >> nth=0', [fx['small']]); pg.wait_for_timeout(1200)
     out['receipt_viewable'] = pg.is_visible('button[data-viewfile]')
     # PIN lock
-    pg.click('#fbBtn'); pg.fill('#pin1', '2468'); pg.fill('#pin2', '2468'); pg.click('[data-act=pinSave]'); pg.wait_for_timeout(1500)
+    open_settings(pg); pg.fill('#pin1', '2468'); pg.fill('#pin2', '2468'); pg.click('[data-act=pinSave]'); pg.wait_for_timeout(1500)
     pg.reload(wait_until='networkidle'); pg.wait_for_timeout(800)
     out['locked_on_open'] = pg.is_visible('.lockscreen')
     pg.fill('#lockPin', '1111'); pg.click('#lockGo'); pg.wait_for_timeout(1500)
@@ -37,7 +37,7 @@ with sync_playwright() as p:
     pg.fill('#lockPin', '2468'); pg.click('#lockGo'); pg.wait_for_timeout(1500)
     out['right_pin_unlocks'] = not pg.is_visible('.lockscreen')
     # backup, erase, restore
-    pg.click('#fbBtn') if pg.is_visible('#fbBtn') else None
+    open_settings(pg)
     pg.fill('#bk1', 'correct horse 1'); pg.fill('#bk2', 'correct horse 1')
     with pg.expect_download() as dl:
         pg.click('[data-act=bkMake]')
@@ -50,8 +50,7 @@ with sync_playwright() as p:
       return await new Promise(r=>{const g=d.transaction('files').objectStore('files').count();g.onsuccess=()=>r(g.result)})}""")
     out['erase_clears_files'] = left == 0
     pg.evaluate("()=>{const a=document.querySelector('[data-act=agree]'); a&&a.click();}")
-    pg.click('#fbBtn'); pg.wait_for_timeout(300)
-    pg.evaluate("()=>{document.getElementById('rsFile').closest('details').open=true}")
+    open_settings(pg)
     pg.set_input_files('#rsFile', path); pg.fill('#rsPass', 'wrong pass 99'); pg.click('[data-act=rsGo]'); pg.wait_for_timeout(1500)
     out['wrong_passphrase_refused'] = "match" in pg.text_content('body')
     pg.fill('#rsPass', 'correct horse 1'); pg.click('[data-act=rsGo]'); pg.wait_for_timeout(2500)

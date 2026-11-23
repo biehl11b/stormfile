@@ -1,7 +1,7 @@
 """Core flows: start screen, own property, policy by hand, photo stamps, record lock, history, letters, reminders, feedback."""
 import json, sys
 from playwright.sync_api import sync_playwright
-from helpers import URL, fixtures
+from helpers import URL, fixtures, open_claim
 
 out = {}
 with sync_playwright() as p:
@@ -21,7 +21,7 @@ with sync_playwright() as p:
     out['state_required'] = pg.is_visible('#rnName')
     pg.select_option('#rnState', 'MS'); pg.click('[data-act=saveName]'); pg.wait_for_timeout(300)
     # policy by hand, real-looking numbers
-    pg.click('text=Enter it by hand')
+    pg.click('text=Enter it by hand'); pg.evaluate("()=>document.querySelectorAll('#policyForm details').forEach(d=>d.open=true)")
     for k, v in {'#pf-carrier': 'Orchid', '#pf-number': 'X1', '#pf-renewal': '2027-07-30', '#pf-lim-A': '635000', '#pf-lim-C': '127000', '#pf-lim-D': '63500', '#pf-allPerils': '5000', '#pf-windAmt': '5'}.items():
         pg.fill(k, v)
     pg.select_option('#pf-flood', 'no'); pg.click('#policyForm button[type=submit]'); pg.wait_for_timeout(300)
@@ -41,13 +41,13 @@ with sync_playwright() as p:
     pg.fill('input[name=n] >> nth=0', 'Sectional sofa'); pg.fill('input[name=v] >> nth=0', '2400'); pg.fill('input[name=y] >> nth=0', '2022')
     pg.click('form[data-additem] button[type=submit] >> nth=0'); pg.wait_for_timeout(300)
     # claim: lock and history
-    pg.click('nav.tabs button[data-tab=claim]')
-    pg.click('[data-act=lockRecord]'); pg.wait_for_timeout(200)
+    open_claim(pg)
+    pg.click('#sec-lock [data-act=lockRecord]'); pg.wait_for_timeout(200)
     out['lock_needs_date'] = 'Enter the date of loss' in pg.text_content('body')
     pg.fill('#clDate', '2026-10-20'); pg.press('#clDate', 'Tab'); pg.wait_for_timeout(200)
     pg.fill('#clAdj', 'Pat Lee'); pg.press('#clAdj', 'Tab'); pg.wait_for_timeout(150)
     pg.fill('#clAdjEmail', 'pat@example.com'); pg.press('#clAdjEmail', 'Tab'); pg.wait_for_timeout(150)
-    pg.click('[data-act=lockRecord]'); pg.wait_for_timeout(300)
+    pg.click('#sec-lock [data-act=lockRecord]'); pg.wait_for_timeout(300)
     out['locked'] = 'Not locked' not in pg.text_content('#view')
     pg.click('nav.tabs button[data-tab=inventory]'); pg.wait_for_timeout(200)
     if not pg.is_visible('form[data-additem]'): pg.click('.room-head >> nth=0')
@@ -56,7 +56,7 @@ with sync_playwright() as p:
     pg.fill('input[name=n] >> nth=0', 'New TV'); pg.fill('input[name=v] >> nth=0', '900')
     pg.click('form[data-additem] button[type=submit] >> nth=0'); pg.wait_for_timeout(300)
     out['after_claim_marked'] = 'Added after claim' in pg.text_content('#view')
-    pg.click('nav.tabs button[data-tab=claim]'); v = pg.text_content('#view')
+    open_claim(pg); v = pg.text_content('#view')
     out['history'] = all(x in v for x in ['Record history', 'Added Sectional sofa', 'Before-storm record locked', 'Added New TV'])
     # letters
     pg.fill('#logNote', 'Pat said the estimate will be emailed by Friday'); pg.click('#addLog button[type=submit]'); pg.wait_for_timeout(300)

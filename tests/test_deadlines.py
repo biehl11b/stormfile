@@ -2,7 +2,7 @@
 that none are listed, other states point to their insurance department, the calendar gets them, and the complaint letter uses them."""
 import json, sys, datetime
 from playwright.sync_api import sync_playwright
-from helpers import URL, agree, start_own
+from helpers import URL, agree, start_own, open_claim
 
 # date of loss Fri Aug 27 2027, reported Mon Aug 30 2027, proof of loss Fri Sep 10 2027
 EXPECT = {
@@ -27,6 +27,7 @@ with sync_playwright() as p:
             pg.fill('#apName', f'Place {st}'); pg.fill('#apAddr', 'Town'); pg.select_option('#apState', st); pg.click('#addProp button[type=submit]'); pg.wait_for_timeout(300)
         pg.click('nav.tabs button[data-tab=claim]'); pg.wait_for_timeout(200)
         out[f'hidden_before_claim_{st}'] = not pg.is_visible('#deadlines')
+        open_claim(pg)
         pg.fill('#clDate', '2027-08-27'); pg.press('#clDate', 'Tab'); pg.wait_for_timeout(200)
         pg.fill('#clReported', '2027-08-30'); pg.press('#clReported', 'Tab'); pg.wait_for_timeout(150)
         pg.fill('#clProof', '2027-09-10'); pg.press('#clProof', 'Tab'); pg.wait_for_timeout(250)
@@ -36,7 +37,7 @@ with sync_playwright() as p:
         else: out['states'][st] = 'doesn’t list Oregon’s claim deadlines yet' in v and 'Oregon Division of Financial Regulation' in v
         out[f'sources_{st}'] = len(pg.query_selector_all('#deadlines a[target=_blank]')) >= 1
     # calendar and complaint letter on the last property (Oregon)
-    pg.click('nav.tabs button[data-tab=claim]'); pg.wait_for_timeout(200)
+    open_claim(pg)
     with pg.expect_download() as dl:
         pg.click('[data-act=calDeadlines]')
     ics = open(dl.value.path()).read()

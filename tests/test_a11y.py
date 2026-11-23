@@ -36,6 +36,7 @@ with sync_playwright() as p:
     for t in SCREENS:
         go(pg, t)
         if t == 'inventory': pg.evaluate("()=>{const h=document.querySelector('.room-head'); h&&h.click()}"); pg.wait_for_timeout(200)
+        if t == 'claim': pg.evaluate("()=>{const s=document.querySelector('[data-act=startClaim]'); s&&s.click(); document.querySelectorAll('#view details').forEach(d=>d.open=true)}"); pg.wait_for_timeout(200)
         r = pg.evaluate(NAMES)
         if r: out['unnamed'][t] = r
     out['lang_set'] = pg.evaluate("()=>document.documentElement.lang") in ('en', 'es')

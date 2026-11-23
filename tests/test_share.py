@@ -3,15 +3,14 @@ policy come along, sharing again updates instead of duplicating, the receiver's 
 wrong kind of file gets a clear message."""
 import json, sys, os, tempfile
 from playwright.sync_api import sync_playwright
-from helpers import URL, agree, start_own, fixtures
+from helpers import URL, agree, start_own, fixtures, open_settings
 
 TMP = tempfile.mkdtemp(); out = {}
 def phone(b):
     ctx = b.new_context(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True, accept_downloads=True)
     pg = ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     pg.goto(URL, wait_until='networkidle'); pg.wait_for_timeout(400); agree(pg); return ctx, pg, errs
-def settings(pg):
-    pg.evaluate("()=>{const x=document.createElement('button'); x.dataset.go='settings'; document.getElementById('view').appendChild(x); x.click();}"); pg.wait_for_timeout(250)
+def settings(pg): open_settings(pg)
 def share(pg, name):
     settings(pg)
     with pg.expect_download() as dl: pg.click('[data-act=shareMake]')
@@ -31,7 +30,7 @@ with sync_playwright() as p:
     ca, A, ea = phone(b); cb, B, eb = phone(b)
     # phone A: a real place with a policy, a photo and an item
     start_own(A, 'Beach house', 'MS')
-    A.click('nav.tabs button[data-tab=policy]'); A.click('text=Enter it by hand')
+    A.click('nav.tabs button[data-tab=policy]'); A.click('text=Enter it by hand'); A.evaluate("()=>document.querySelectorAll('#policyForm details').forEach(d=>d.open=true)")
     for k, v in {'#pf-carrier': 'Orchid', '#pf-number': 'POL-7', '#pf-renewal': '2027-07-30', '#pf-lim-A': '400000', '#pf-lim-C': '100000', '#pf-lim-D': '40000', '#pf-allPerils': '2500', '#pf-windAmt': '2'}.items(): A.fill(k, v)
     A.select_option('#pf-flood', 'no'); A.click('#policyForm button[type=submit]'); A.wait_for_timeout(300)
     out['sender_has_policy'] = A.evaluate("()=>JSON.parse(localStorage.getItem('stormfile_v4')).policies.length") == 1

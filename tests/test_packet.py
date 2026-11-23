@@ -1,7 +1,7 @@
 """Claim packet: builds a real PDF on the phone with photos, inventory, receipts and history."""
 import json, os, sys, tempfile
 from playwright.sync_api import sync_playwright
-from helpers import new_page, start_own, fixtures
+from helpers import new_page, start_own, fixtures, open_claim
 
 out = {}
 with sync_playwright() as p:
@@ -9,7 +9,7 @@ with sync_playwright() as p:
     start_own(pg, 'Packet house')
     fx = fixtures()
     # policy by hand
-    pg.click('nav.tabs button[data-tab=policy]'); pg.click('text=Enter it by hand')
+    pg.click('nav.tabs button[data-tab=policy]'); pg.click('text=Enter it by hand'); pg.evaluate("()=>document.querySelectorAll('#policyForm details').forEach(d=>d.open=true)")
     pg.fill('#pf-carrier', 'Test Mutual'); pg.fill('#pf-number', 'HO-123'); pg.fill('#pf-lim-A', '300000'); pg.fill('#pf-allPerils', '2500'); pg.fill('#pf-windAmt', '5')
     pg.select_option('#pf-flood', 'no'); pg.click('#policyForm button[type=submit]'); pg.wait_for_timeout(300)
     # photos, item, receipt
@@ -19,7 +19,7 @@ with sync_playwright() as p:
     pg.click('form[data-additem] button[type=submit] >> nth=0'); pg.wait_for_timeout(300)
     pg.set_input_files('input[data-itemreceipt] >> nth=0', [fx['small']]); pg.wait_for_timeout(1200)
     # claim: expense + lock
-    pg.click('nav.tabs button[data-tab=claim]')
+    open_claim(pg)
     pg.fill('#clNum', 'CLM-77'); pg.press('#clNum', 'Tab'); pg.wait_for_timeout(200)
     pg.fill('#clDate', '2026-10-20'); pg.press('#clDate', 'Tab'); pg.wait_for_timeout(200)
     pg.fill('#rcAmt', '180'); pg.fill('#rcWhat', 'Hotel 1 night'); pg.set_input_files('#rcFile', fx['small'])
