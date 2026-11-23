@@ -75,8 +75,35 @@ function patchAndroid() {
   // SF_LIFE lines show in the phone log even in the store version, so a start-up problem can be traced.
   const ma = path.join(javaDir, "MainActivity.java"); let m = fs.readFileSync(ma, "utf8");
   if (!m.includes("SF_LIFE")) {
-    m = m.replace(/(package [^;]+;)/, "$1\nimport android.os.Bundle;\nimport android.util.Log;\nimport android.content.res.Configuration;");
-    m = m.replace(/public class MainActivity extends BridgeActivity\s*\{\s*\}/, "public class MainActivity extends BridgeActivity {\n    @Override\n    public void onCreate(Bundle savedInstanceState) {\n        Log.i(\"SF_LIFE\", \"onCreate restored=\" + (savedInstanceState != null));\n        // If Android restarted the screen, start it fresh: StormFile keeps everything in its own storage, and a restored\n        // screen could stay blank (seen on Android 10). Nothing is lost.\n        super.onCreate(null);\n    }\n    @Override\n    public void onConfigurationChanged(Configuration c) {\n        Log.i(\"SF_LIFE\", \"configuration changed (handled, no restart)\");\n        super.onConfigurationChanged(c);\n    }\n    @Override\n    public void onDestroy() {\n        Log.i(\"SF_LIFE\", \"onDestroy finishing=\" + isFinishing() + \" changingConfig=\" + isChangingConfigurations());\n        super.onDestroy();\n    }\n}");
+    m = m.replace(/(package [^;]+;)/, "$1\nimport android.os.Bundle;\nimport android.os.Handler;\nimport android.os.Looper;\nimport android.util.Log;\nimport android.content.res.Configuration;");
+    m = m.replace(/public class MainActivity extends BridgeActivity\s*\{\s*\}/, `public class MainActivity extends BridgeActivity {
+    private static int retries = 0;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i("SF_LIFE", "onCreate restored=" + (savedInstanceState != null));
+        // If Android restarted the screen, start it fresh: StormFile keeps everything in its own storage. Nothing is lost.
+        super.onCreate(null);
+        // Android 10 (WebView 74) restarts the screen the very first time the web viewer is used, and the restarted
+        // screen can fail to build its web view, leaving it blank (seen in StormFile's store test). Try again shortly.
+        if (getBridge() == null && retries < 3) {
+            retries++;
+            Log.w("SF_LIFE", "screen didn't start; trying again (" + retries + ")");
+            new Handler(Looper.getMainLooper()).postDelayed(() -> { if (!isFinishing() && !isDestroyed()) recreate(); }, 800);
+        } else if (getBridge() != null) {
+            Log.i("SF_LIFE", "screen started");
+        }
+    }
+    @Override
+    public void onConfigurationChanged(Configuration c) {
+        Log.i("SF_LIFE", "configuration changed (handled, no restart)");
+        super.onConfigurationChanged(c);
+    }
+    @Override
+    public void onDestroy() {
+        Log.i("SF_LIFE", "onDestroy finishing=" + isFinishing() + " changingConfig=" + isChangingConfigurations());
+        super.onDestroy();
+    }
+}`);
     if (!m.includes("SF_LIFE")) throw new Error("Couldn't add start-up logging to MainActivity:\n" + m);
     fs.writeFileSync(ma, m);
   }

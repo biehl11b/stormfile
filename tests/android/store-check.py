@@ -59,6 +59,15 @@ def wait_for(pat, secs, name=None):
     if name: dump(name)
     return root, None
 
+def clear_anr(root):
+    """The virtual phone's own home screen sometimes freezes ("Pixel Launcher isn't responding"); that's the test phone,
+    not StormFile. Tap Wait so the check can go on."""
+    if find(root, r"isn't responding") is None: return root
+    w = find(root, r"^\s*Wait\s*$") or find(root, r"Wait")
+    if w is not None: adb("shell", "input", "tap", *map(str, center(w)))
+    else: adb("shell", "input", "keyevent", "KEYCODE_BACK")
+    time.sleep(2); return dump()
+
 def screen_text(root):
     return " | ".join(t for t in (label(n).strip() for n in nodes(root)) if t)[:600]
 
@@ -132,14 +141,15 @@ log("info", "screen start-ups during first open", " / ".join(x.split("SF_LIFE")[
 
 if n is not None:
     adb("shell", "input", "tap", *map(str, center(n))); time.sleep(3)
-    root, nxt = wait_for(r"About this property|Edit name and city", 30, "after-agree")
+    root, nxt = wait_for(r"About this property|Edit name and city|isn't responding", 30, "after-agree")
+    if nxt is not None and re.search(r"isn't responding", label(nxt)): root = clear_anr(root); root, nxt = wait_for(r"About this property|Edit name and city", 30, "after-agree")
     log("ok" if nxt is not None else "FAIL", "I agree opens the first setup screen", screen_text(root)[:200])
     snap("4-after-agree")
     # the bottom tabs are there and work: open Policy, then Claim
     for tab, want in (("Policy", r"policy|Póliza"), ("Claim", r"claim|reclamo")):
         t = next((nd for nd in nodes(root) if re.fullmatch(r"\s*" + tab + r"\s*", label(nd), re.I)), None)
         if t is None: log("FAIL", f"{tab} tab found", screen_text(root)[:200]); continue
-        adb("shell", "input", "tap", *map(str, center(t))); time.sleep(2); root = dump(f"tab-{tab.lower()}")
+        adb("shell", "input", "tap", *map(str, center(t))); time.sleep(2); root = clear_anr(dump()); dump(f"tab-{tab.lower()}")
         log("ok" if find(root, want) is not None else "FAIL", f"{tab} tab opens", screen_text(root)[:160]); snap(f"5-{tab.lower()}")
 time.sleep(2)
 still = adb("shell", "pidof", PKG).strip()
@@ -156,13 +166,16 @@ for i in range(COLD):
         # the open command didn't reach the test phone (it happens when the virtual phone is busy): send it again
         log("info", f"cold start {i+1}: open command didn't start the app; sending it again", st.strip().replace("\n", " ")[:160])
         adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1"); time.sleep(2)
-    shown = None
+    shown = None; resent = False
     while time.time() < t1 + 45:
         r = dump()
         if find(r, r"About this property|Edit name and city|I agree|StormFile is locked|Policy") is not None: shown = time.time() - t1; break
         if find(r, r"isn't responding") is not None:
             w = find(r, r"^\s*Wait\s*$") or find(r, r"Wait")
             if w is not None: adb("shell", "input", "tap", *map(str, center(w)))
+        if not adb("shell", "pidof", PKG).strip() and find(r, r"Predicted app|Google Lens|Voice search") is not None and time.time() > t1 + 8 and not resent:
+            resent = True; log("info", f"cold start {i+1}: phone's home screen in front and StormFile not started; sending the open again")
+            adb("shell", "monkey", "-p", PKG, "-c", "android.intent.category.LAUNCHER", "1")
         time.sleep(0.5)
     times.append(shown)
     if shown is None:
