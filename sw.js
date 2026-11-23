@@ -1,5 +1,5 @@
 // StormFile offline support: keep the app on the phone so it opens without signal.
-const CACHE = 'stormfile-v13';
+const CACHE = 'stormfile-v14';
 const SHELL = ['./', 'index.html', 'compat.js', 'app.js', 'es.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'vendor/pdf-lib.min.js', 'vendor/qrcode.js', 'vendor/jsQR.js', 'vendor/fonts/barlow-condensed-latin-500-normal.woff2', 'vendor/fonts/barlow-condensed-latin-600-normal.woff2', 'vendor/fonts/barlow-condensed-latin-700-normal.woff2', 'vendor/fonts/ibm-plex-sans-latin-400-normal.woff2', 'vendor/fonts/ibm-plex-sans-latin-500-normal.woff2', 'vendor/fonts/ibm-plex-sans-latin-600-normal.woff2', 'vendor/fonts/ibm-plex-mono-latin-500-normal.woff2'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

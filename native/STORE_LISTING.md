@@ -194,13 +194,13 @@ The app uses only standard encryption (AES, built into the system) to protect th
 - Does your app collect or share any of the required user data types? **No**
 - Is all user data encrypted in transit? **Not applicable, no data is transmitted** (answer Yes if the form requires an answer)
 - Do you provide a way for users to request that their data be deleted? **Yes**. Users delete everything in the app (Settings → Erase everything) or by uninstalling.
-- Data deletion URL (if asked): https://stormfile.coastlinecode.com/privacy.html (section 8)
+- Data deletion URL (if asked): https://biehl11b.github.io/stormfile/privacy.html (section 8). Switch to https://stormfile.coastlinecode.com/privacy.html only after that address is set up and opens.
 - Location: used only on the device to tag photos; not collected (never leaves the device).
 - Age range (Play Age Signals): read on the device only to confirm 18+, never sent off the phone, so it isn't "collected" for the form.
 
 ## Google Play: Permissions
 
-Camera (room, item and receipt photos), location (optional, to note where a photo was taken), biometrics (Face ID / fingerprint lock), calendar (add the renewal, follow-up and season reminders the user chooses). No contacts, microphone, notifications or storage permissions.
+Camera (room, item and receipt photos), location (optional, to note where a photo was taken; saved only with the photo on the phone), fingerprint or face unlock (optional lock), calendar (add the renewal, follow-up and season reminders the user chooses; Android's calendar access also covers seeing the calendar list, which StormFile uses only to find the main calendar). No contacts, microphone, notifications, photo library or storage permissions (photos are chosen through Android's own camera and file chooser, which need no permission). Precise location: Google requires a Play Console declaration for ACCESS_FINE_LOCATION from January 27, 2027. Answer: StormFile records where each room photo was taken so the owner can show it was taken at the insured property; approximate location (about 1-2 miles) can't show that. It's asked only when the user adds a photo, is optional, and stays on the phone.
 
 ## Google Play: Content rating questionnaire
 

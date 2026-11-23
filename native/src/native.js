@@ -30,11 +30,22 @@
         if(e.yearly) o.recurrence = {frequency:'yearly', interval:1}; return o; };
       try{
         if(events.length === 1){ var r = await CAL.createEventWithPrompt(ev(events[0])); return !!(r && r.id) || window.SF_NATIVE.platform === 'android'; }
-        var a = await CAL.requestWriteOnlyCalendarAccess();
-        if(!a || a.result !== 'granted') return 'fallback';
+        // iPhone can allow "add events only". Android has no add-only choice: the phone must list your calendars to find the
+        // main one, so StormFile asks for calendar access there. It only adds the reminders you chose; it never reads your events.
+        var a = window.SF_NATIVE.platform === 'android' ? await CAL.requestFullCalendarAccess() : await CAL.requestWriteOnlyCalendarAccess();
+        if(!a || a.result !== 'granted') return window.SF_NATIVE.platform === 'android' ? 'oneByOne' : 'fallback'; // Android's calendar can't open a calendar file
         for(var i = 0; i < events.length; i++) await CAL.createEvent(ev(events[i]));
         return true;
       }catch(e){ return cancelled(e) ? false : 'fallback'; }
+    },
+    /* Android without calendar access: open the calendar's own new-event screen for each reminder in turn (no access needed). */
+    addEventsOneByOne: async function(events){
+      for(var i = 0; i < events.length; i++){
+        var e = events[i], o = {title:e.title, description:e.description, startDate:e.startDate, endDate:e.endDate};
+        if(e.yearly) o.recurrence = {frequency:'yearly', interval:1};
+        try{ await CAL.createEventWithPrompt(o); }catch(err){ if(cancelled(err)) return false; }
+      }
+      return true;
     },
     /* Age check required by some states (Texas now; Utah, Louisiana and California in 2027). StormFile asks Apple or Google
        only where the law applies. Returns 'ok', 'minor' (under 18), 'unverified' (age not shared) or 'verify' (confirm age in Google Play).

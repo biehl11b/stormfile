@@ -714,8 +714,10 @@ function viewPolicy(){
 
   <div class="card">
     <h3>Update the policy</h3>
-    <p class="small muted">Got a renewal? Upload the new declarations page and StormFile rereads it. Policy reads on this account: <span class="num">${S.policyReads}</span>.</p>
-    <label class="upload">Upload new declarations page (photo or PDF)<input type="file" id="polUpload" accept="image/*,application/pdf"></label>
+    ${LIVE ? `<p class="small muted">Got a renewal? Upload the new declarations page and StormFile rereads it. Policy reads on this account: <span class="num">${S.policyReads}</span>.</p>
+    <label class="upload">Upload new declarations page (photo or PDF)<input type="file" id="polUpload" accept="image/*,application/pdf"></label>`
+    : `<p class="small muted">Got a renewal? Change the amounts to match your new declarations page.</p>
+    <button class="small-btn" data-go="policyForm" style="align-self:flex-start">Edit policy details</button>`}
   </div>
   <p class="foot">StormFile explains policies in plain words. It is not insurance advice. Confirm coverage with your licensed agent.</p>`;
 }
@@ -1476,7 +1478,11 @@ function makeIcs(events){
 }
 async function addToCalendar(events, name){
   if(NAT && NAT.addEvents){
-    const r = await NAT.addEvents(events.map(e=>{ const st = at9(e.date); return {title:e.title, description:e.desc||'', startDate:st.getTime(), endDate:st.getTime()+30*60000, yearly:!!e.yearly, alerts:e.dayBefore?[-1440,0]:[0]}; }));
+    const evs = events.map(e=>{ const st = at9(e.date); return {title:e.title, description:e.desc||'', startDate:st.getTime(), endDate:st.getTime()+30*60000, yearly:!!e.yearly, alerts:e.dayBefore?[-1440,0]:[0]}; });
+    const r = await NAT.addEvents(evs);
+    if(r === 'oneByOne' && NAT.addEventsOneByOne){ // Android, calendar access not allowed: the calendar opens once per reminder
+      toast(`Your calendar will open ${events.length} times, once for each reminder. Tap Save each time.`);
+      await new Promise(ok=>setTimeout(ok, 2500)); return NAT.addEventsOneByOne(evs); }
     if(r === true){ toast(events.length>1 ? `${events.length} reminders added to your calendar.` : 'Added to your calendar.'); return true; }
     if(r === false) return false;
     return saveFile(name.replace(/[^\w .-]/g,'') + '.ics', new Blob([makeIcs(events)], {type:'text/calendar'})); // calendar access not given: share the file instead
@@ -2131,8 +2137,9 @@ function loadScript(src){
 }
 async function loadPdfJs(){
   if(window.pdfjsLib && window.pdfjsWorker) return;
-  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
-  await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js');
+  // pdf.js 2.16.105 (older-browser build), bundled so reading works offline and nothing loads from another website
+  await loadScript('vendor/pdf.min.js');
+  await loadScript('vendor/pdf.worker.min.js');
 }
 async function pdfToInput(file, maxImages){
   await loadPdfJs();

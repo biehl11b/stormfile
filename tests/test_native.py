@@ -45,7 +45,7 @@ with sync_playwright() as p:
     # season reminders: calendar access once, then all events added, repeating yearly
     pg.click('nav.tabs button[data-tab=storm]'); pg.click('[data-act=calSeason]'); pg.wait_for_timeout(500)
     ev = calls(pg, 'CapacitorCalendar', 'createEvent')
-    out['season_events'] = len(ev) == 9 and all(e[2]['recurrence']['frequency'] == 'yearly' for e in ev) and len(calls(pg, 'CapacitorCalendar', 'requestWriteOnlyCalendarAccess')) == 1
+    out['season_events'] = len(ev) == 9 and all(e[2]['recurrence']['frequency'] == 'yearly' for e in ev) and len(calls(pg, 'CapacitorCalendar', 'requestWriteOnlyCalendarAccess')) == 1 and not calls(pg, 'CapacitorCalendar', 'requestFullCalendarAccess')
     out['season_toast'] = '9 reminders added to your calendar' in pg.text_content('body')
     # one follow-up opens the phone's own new-event screen with two alerts
     open_claim(pg); pg.fill('#fuDate', '2027-01-15'); pg.fill('#fuNote', 'Estimate due'); pg.click('[data-act=calFollow]'); pg.wait_for_timeout(400)
@@ -98,6 +98,17 @@ with sync_playwright() as p:
     q.click('[data-act=agreeOwn]'); q.wait_for_timeout(300); q.fill('#rnName', 'Coast house'); q.select_option('#rnState', 'MS'); q.click('[data-act=saveName]'); q.wait_for_timeout(300)
     open_settings(q); q.evaluate('()=>document.querySelectorAll("details.sec").forEach(d=>d.open=true)'); t = q.text_content('#view')
     out['android_words'] = ok_start and 'Google Drive' in t and 'iCloud' not in t and 'Face ID' not in t and 'Touch ID' not in t and 'iPhone' not in t
+    # Android: the phone can't give "add only" calendar access (the calendar list must be read to find the main calendar),
+    # so StormFile asks for calendar access once and all 9 season reminders are added (not a calendar file Android can't import)
+    q.click('nav.tabs button[data-tab=storm]'); q.click('[data-act=calSeason]'); q.wait_for_timeout(500)
+    out['android_calendar'] = len(calls(q, 'CapacitorCalendar', 'createEvent')) == 9 and len(calls(q, 'CapacitorCalendar', 'requestFullCalendarAccess')) == 1 \
+        and not calls(q, 'CapacitorCalendar', 'requestWriteOnlyCalendarAccess') and '9 reminders added to your calendar' in q.text_content('body')
+    # Android, calendar access not allowed: the calendar's own new-event screen opens once per reminder (no calendar file)
+    q.evaluate("()=>{ window.Capacitor.Plugins.CapacitorCalendar.requestFullCalendarAccess = async()=>({result:'denied'}); window.__t=[]; new MutationObserver(m=>m.forEach(r=>r.addedNodes.forEach(n=>{ if(n.classList&&n.classList.contains('toast')) window.__t.push(n.textContent); }))).observe(document.body,{childList:true}); }")
+    q.click('[data-act=calSeason]'); q.wait_for_timeout(3500)
+    pr = calls(q, 'CapacitorCalendar', 'createEventWithPrompt')
+    out['android_calendar_denied'] = len(pr) == 9 and all(e[2]['recurrence']['frequency'] == 'yearly' for e in pr) and not calls(q, 'Share', 'share') \
+        and any('open 9 times' in x for x in q.evaluate('()=>window.__t'))
     c3.close()
     b.close()
 srv.shutdown(); shutil.rmtree(WWW, ignore_errors=True)

@@ -7,7 +7,7 @@ window.__calls = [];
     Share: {share: rec('Share','share', {})},
     App: {addListener: function(ev, fn){ window.__calls.push(['App','addListener',ev]); if(ev === 'backButton') window.__back = fn; return Promise.resolve({remove:function(){}}); }, minimizeApp: rec('App','minimizeApp', {})},
     NativeBiometric: {isAvailable: rec('NativeBiometric','isAvailable', {isAvailable:true}), verifyIdentity: rec('NativeBiometric','verifyIdentity', {})},
-    CapacitorCalendar: {createEventWithPrompt: rec('CapacitorCalendar','createEventWithPrompt', {id:'e1'}), requestWriteOnlyCalendarAccess: rec('CapacitorCalendar','requestWriteOnlyCalendarAccess', {result:'granted'}), createEvent: rec('CapacitorCalendar','createEvent', {id:'e2'})},
+    CapacitorCalendar: {createEventWithPrompt: rec('CapacitorCalendar','createEventWithPrompt', {id:'e1'}), requestWriteOnlyCalendarAccess: rec('CapacitorCalendar','requestWriteOnlyCalendarAccess', {result:'granted'}), requestFullCalendarAccess: rec('CapacitorCalendar','requestFullCalendarAccess', {result:'granted'}), createEvent: rec('CapacitorCalendar','createEvent', {id:'e2'})},
     SplashScreen: {hide: rec('SplashScreen','hide', {})},
     /* Age check: tests set window.__age = {required, status, lower, upper, fail:'req'|'request'} before the app loads */
     AgeSignals: {

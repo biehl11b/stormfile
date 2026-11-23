@@ -4,7 +4,7 @@
 // Android phones couldn't run newer code and showed a blank screen. Copyright (c) 2026 Coastline Code LLC.
 const fs = require("fs"), path = require("path"); const acorn = require(process.argv[2] || "acorn");
 const site = path.resolve(__dirname, "../..");
-const files = ["compat.js", "es.js", "app.js", "native/src/native.js", "vendor/qrcode.js", "vendor/jsQR.js", "vendor/pdf-lib.min.js"];
+const files = ["compat.js", "es.js", "app.js", "native/src/native.js", "vendor/qrcode.js", "vendor/jsQR.js", "vendor/pdf-lib.min.js", "vendor/pdf.min.js", "vendor/pdf.worker.min.js"];
 let bad = 0;
 for (const f of files) {
   const c = fs.readFileSync(path.join(site, f), "utf8");
