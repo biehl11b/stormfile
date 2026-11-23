@@ -1,0 +1,45 @@
+name: Fetch a bundled library
+# Downloads a library from the npm registry (checked against npm's published checksum) and saves the files StormFile
+# bundles to the ci-vendor branch, so they ship inside the app instead of loading from the internet.
+# Used for pdf.js (reading insurance policy PDFs): bundling it keeps policy reading working offline and keeps StormFile
+# from contacting any outside website.
+on:
+  workflow_dispatch:
+    inputs:
+      pkg: { description: "npm package@version", required: true, default: "pdfjs-dist@3.11.174" }
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with: { persist-credentials: false }
+      - name: Download and check
+        env: { PKG: "${{ github.event.inputs.pkg }}" }
+        run: |
+          set -e
+          mkdir -p out dl && cd dl
+          npm pack "$PKG" --json > pack.json
+          cat pack.json | head -30
+          tar xzf *.tgz
+          cd ..
+          case "$PKG" in
+            pdfjs-dist@*)
+              cp dl/package/legacy/build/pdf.min.js out/pdf.min.js
+              cp dl/package/legacy/build/pdf.worker.min.js out/pdf.worker.min.js
+              cp dl/package/LICENSE out/pdfjs-LICENSE.txt ;;
+            *) echo "unknown package"; exit 1 ;;
+          esac
+          sha256sum out/* | tee out/SHA256SUMS.txt
+          cp dl/pack.json out/npm-pack.json
+          # will it run on older phones (Android WebView 69)?
+          npm install --prefix "$RUNNER_TEMP/a" --no-audit --no-fund acorn@8.14.0 >/dev/null
+          for f in out/pdf.min.js out/pdf.worker.min.js; do
+            for v in 2017 2018 2019 2020 2021 2022; do
+              if node -e "require('$RUNNER_TEMP/a/node_modules/acorn').parse(require('fs').readFileSync('$f','utf8'),{ecmaVersion:$v,sourceType:'script'})" 2>/dev/null; then echo "$f parses as ES$v" | tee -a out/syntax.txt; break; fi
+            done
+          done
+      - name: Save to the ci-vendor branch
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: bash native/scripts/push-dir.sh vendor out
