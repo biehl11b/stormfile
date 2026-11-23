@@ -467,8 +467,9 @@ function viewHome(){
     <ol class="steps small">
       <li>Open <strong>Policy</strong> to see a sample policy explained in plain English.</li>
       <li>Tap the property name at the top to switch to the rental or the restaurant.</li>
-      <li>On <strong>Storm</strong>, tap Forecast, Watch and Warning to see the alerts change.</li>
-      <li>On <strong>Claim</strong>, set the situation to "Under a mandatory evacuation order."</li>
+      ${TEST ? `<li>On <strong>Storm</strong>, tap Forecast, Watch and Warning to see the alerts change.</li>
+      <li>On <strong>Claim</strong>, set the situation to "Under a mandatory evacuation order."</li>` : `<li>On <strong>Storm</strong>, tap “Storm on the way” to see that checklist.</li>
+      <li>On <strong>Claim</strong>, tap “Start a claim” to see the next step, deadlines, letters and the claim packet.</li>`}
     </ol>
     <button class="primary" data-go="feedback">Give feedback (2 minutes)</button>
   </div>`}

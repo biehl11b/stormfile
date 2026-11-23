@@ -1092,6 +1092,8 @@ window.SF_ES = {
 "Tap the button, then choose Drive or your email app.": "Toque el botón y luego escoja Drive o su aplicación de correo.",
 "Backup saved. Keep the file somewhere safe, like iCloud Drive.": "Copia guardada. Guarde el archivo en un lugar seguro, como iCloud Drive.",
 "Backup saved. Keep the file somewhere safe, like Google Drive.": "Copia guardada. Guarde el archivo en un lugar seguro, como Google Drive.",
+", tap “Storm on the way” to see that checklist.": ", toque “Tormenta en camino” para ver esa lista.",
+", tap “Start a claim” to see the next step, deadlines, letters and the claim packet.": ", toque “Iniciar un reclamo” para ver el siguiente paso, los plazos, las cartas y el paquete del reclamo.",
 // ---- Months
 "January": "enero", "February": "febrero", "March": "marzo", "April": "abril", "May": "mayo", "June": "junio",
 "July": "julio", "August": "agosto", "September": "septiembre", "October": "octubre", "November": "noviembre", "December": "diciembre"
