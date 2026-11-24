@@ -21,7 +21,8 @@ async function main() {
   d = await remote({ hostname: "127.0.0.1", port: 4723, logLevel: "error", connectionRetryTimeout: 1800000, connectionRetryCount: 0,
     capabilities: { platformName: "iOS", "appium:automationName": "XCUITest", "appium:udid": UDID, "appium:bundleId": BUNDLE, "appium:deviceName": DEVICE,
       ...(process.env.WDA_DD ? { "appium:derivedDataPath": process.env.WDA_DD, "appium:usePrebuiltWDA": true } : {}), ...(process.env.IOSVER ? { "appium:platformVersion": process.env.IOSVER } : {}),
-      "appium:noReset": true, "appium:autoLaunch": false, "appium:newCommandTimeout": 900, "appium:wdaLaunchTimeout": 600000, "appium:wdaConnectionTimeout": 600000, "appium:autoAcceptAlerts": false } });
+      "appium:noReset": true, "appium:autoLaunch": false, "appium:newCommandTimeout": 900, "appium:wdaLaunchTimeout": 600000, "appium:simulatorStartupTimeout": 600000, // slow test Macs: the test tool's own "finished starting" check gave up at 2 minutes while StormFile was already on screen
+      "appium:wdaConnectionTimeout": 600000, "appium:autoAcceptAlerts": false } });
   const size = await d.getWindowSize(); log("info", "device", `${DEVICE} iOS ${process.env.IOSVER || "?"}, window ${size.width}x${size.height}`);
   await d.execute("mobile: activateApp", { bundleId: BUNDLE });
   const agree = await find(`label BEGINSWITH "I agree" AND label CONTAINS "set up my home"`, 90000);
