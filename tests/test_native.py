@@ -1,7 +1,7 @@
 """Phone app build: builds www/ the way the store build does, runs it with a stand-in for the phone, and checks the app uses the phone's share sheet, calendar and Face ID."""
 import json, os, subprocess, sys, shutil, threading, http.server, functools
 from playwright.sync_api import sync_playwright
-from helpers import open_claim, open_settings
+from helpers import open_claim, open_settings, wait_js
 
 HERE = os.path.dirname(os.path.abspath(__file__)); NATIVE = os.path.join(HERE, '..', 'native')
 stub = os.path.join(NATIVE, 'node_modules/@capacitor/core/dist'); made_stub = not os.path.exists(stub)
@@ -54,7 +54,7 @@ with sync_playwright() as p:
     # "Send it to my adjuster": the share sheet gets the PDF plus a subject and note, so email apps open ready to send
     open_claim(pg); pg.fill('#clAdj', 'Dana Reyes'); pg.press('#clAdj', 'Tab'); pg.fill('#clAdjEmail', 'dana@example-insurer.com'); pg.press('#clAdjEmail', 'Tab'); pg.wait_for_timeout(200)
     open_claim(pg); n0 = len(calls(pg, 'Share', 'share'))
-    pg.click('[data-act=packetSend]'); pg.wait_for_function(f'()=>window.__calls.filter(c=>c[0]==="Share"&&c[1]==="share").length>{n0}', timeout=60000)
+    pg.click('[data-act=packetSend]'); wait_js(pg, f'()=>window.__calls.filter(c=>c[0]==="Share"&&c[1]==="share").length>{n0}', 60000)
     sh = calls(pg, 'Share', 'share')[-1][2]
     out['packet_send_share'] = sh['files'][0].endswith('.pdf') and sh['title'].endswith('claim packet') and 'Hello Dana Reyes,' in sh['text'] \
         and 'Attached is my claim packet (PDF)' in sh['text'] and 'Property: MS' not in sh['text'] and sh.get('dialogTitle') == 'Send the claim packet'

@@ -54,3 +54,13 @@ def open_settings(pg):
       else { const x=document.createElement('button'); x.dataset.go='settings'; document.getElementById('view').appendChild(x); x.click(); }
       document.querySelectorAll('#view details').forEach(d=>d.open=true); }""")
     pg.wait_for_timeout(250)
+
+def wait_js(pg, expr, timeout=30000):
+    """Wait until a page expression is true. Polls with evaluate, which works under the site's strict
+    Content-Security-Policy (wait_for_function runs its check with eval, which that policy blocks)."""
+    import time
+    end = time.time() + timeout / 1000
+    while time.time() < end:
+        if pg.evaluate(expr): return True
+        pg.wait_for_timeout(250)
+    raise TimeoutError('timed out waiting for ' + expr[:80])

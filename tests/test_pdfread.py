@@ -2,7 +2,7 @@
 nothing is loaded from another website, its text reaches the reader, and the store app (no Claude) never shows the upload."""
 import json, sys, base64
 from playwright.sync_api import sync_playwright
-from helpers import URL
+from helpers import URL, wait_js
 
 CLAUDE = """
 window.__sent = null;
@@ -35,7 +35,7 @@ with sync_playwright() as p:
     out['upload_shown_with_claude'] = pg.is_visible('label.upload:has(#polUpload)')
     pdf = base64.b64decode(pg.evaluate(MAKE_PDF))
     pg.set_input_files('#polUpload', [{'name': 'declarations.pdf', 'mimeType': 'application/pdf', 'buffer': pdf}])
-    pg.wait_for_function('()=>window.__sent || /Couldn.t read it/.test(document.body.textContent)', timeout=30000)
+    wait_js(pg, '()=>!!(window.__sent || /Couldn.t read it/.test(document.body.textContent))', 30000)
     sent = pg.evaluate('()=>window.__sent') or {}
     out['pdf_text_read'] = 'Coverage A Dwelling $312,000' in sent.get('prompt', '') and 'Hurricane deductible 2%' in sent.get('prompt', '')
     out['text_pdf_needs_no_images'] = sent.get('images') == 0
