@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AppiumAUT>
+  <XCUIElementTypeApplication type="XCUIElementTypeApplication" name="StormFile" label="StormFile" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="" processId="40301" bundleId="com.coastlinecode.stormfile">
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+          <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+            <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+              <XCUIElementTypeWebView type="XCUIElementTypeWebView" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+                  <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+                    <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+                      <XCUIElementTypeOther type="XCUIElementTypeOther" name="StormFile" label="StormFile" enabled="true" visible="true" accessible="false" x="0" y="0" width="393" height="915" index="0" traits="">
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" name="banner" label="banner" enabled="true" visible="true" accessible="false" x="0" y="59" width="393" height="123" index="0" traits="">
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="16" y="70" width="106" height="32" index="0" traits="">
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="STORM" name="STORM" label="STORM" enabled="true" visible="true" accessible="true" x="16" y="70" width="65" height="32" index="0" traits="StaticText"/>
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="FILE" name="FILE" label="FILE" enabled="true" visible="true" accessible="true" x="80" y="70" width="42" height="32" index="1" traits="StaticText"/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Settings" label="Settings" enabled="true" visible="true" accessible="true" x="224" y="69" width="73" height="34" index="1" traits="Button"/>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="← Home" label="← Home" enabled="true" visible="true" accessible="true" x="304" y="69" width="74" height="34" index="2" traits="Button"/>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="PROPERTY My home · Home" label="PROPERTY My home · Home" enabled="true" visible="true" accessible="true" x="16" y="111" width="361" height="60" index="3" traits="Button"/>
+                        </XCUIElementTypeOther>
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" name="main" label="main" enabled="true" visible="true" accessible="false" x="0" y="182" width="393" height="581" index="1" traits="">
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="16" y="198" width="361" height="16" index="0" traits="">
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="MY HOME · CLAIM MODE" name="MY HOME · CLAIM MODE" label="MY HOME · CLAIM MODE" enabled="true" visible="true" accessible="true" x="16" y="198" width="149" height="16" index="0" traits="StaticText"/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" value="1" name="THE CLAIM" label="THE CLAIM" enabled="true" visible="true" accessible="false" x="16" y="220" width="361" height="36" index="1" traits="Header">
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="THE CLAIM" name="THE CLAIM" label="THE CLAIM" enabled="true" visible="true" accessible="true" x="16" y="220" width="113" height="36" index="0" traits="Header, StaticText"/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" value="2" name="HAD STORM DAMAGE?" label="HAD STORM DAMAGE?" enabled="true" visible="true" accessible="false" x="33" y="286" width="327" height="27" index="2" traits="Header">
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="HAD STORM DAMAGE?" name="HAD STORM DAMAGE?" label="HAD STORM DAMAGE?" enabled="true" visible="true" accessible="true" x="33" y="286" width="169" height="27" index="0" traits="Header, StaticText"/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="33" y="324" width="327" height="38" index="3" traits="">
+                            <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Start here. StormFile walks you through it one step at a time:" name="Start here. StormFile walks you through it one step at a time:" label="Start here. StormFile walks you through it one step at a time:" enabled="true" visible="true" accessible="true" x="33" y="324" width="319" height="37" index="0" traits="StaticText"/>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="33" y="374" width="327" height="112" index="4" traits="">
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" name="Report it and save the claim number" label="Report it and save the claim number" enabled="true" visible="true" accessible="false" x="53" y="377" width="307" height="19" index="0" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="1" label="1" enabled="true" visible="false" accessible="true" x="34" y="377" width="15" height="18" index="0" traits=""/>
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="1. Report it and save the claim number" name="Report it and save the claim number" label="Report it and save the claim number" enabled="true" visible="true" accessible="true" x="53" y="377" width="211" height="18" index="1" traits="StaticText"/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" name="Lock your before-storm record" label="Lock your before-storm record" enabled="true" visible="true" accessible="false" x="53" y="406" width="307" height="19" index="1" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="2" label="2" enabled="true" visible="false" accessible="true" x="34" y="406" width="15" height="18" index="0" traits=""/>
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="2. Lock your before-storm record" name="Lock your before-storm record" label="Lock your before-storm record" enabled="true" visible="true" accessible="true" x="53" y="406" width="178" height="18" index="1" traits="StaticText"/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" name="Write down every call and keep every receipt" label="Write down every call and keep every receipt" enabled="true" visible="true" accessible="false" x="53" y="435" width="307" height="19" index="2" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="3" label="3" enabled="true" visible="false" accessible="true" x="34" y="435" width="15" height="18" index="0" traits=""/>
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="3. Write down every call and keep every receipt" name="Write down every call and keep every receipt" label="Write down every call and keep every receipt" enabled="true" visible="true" accessible="true" x="53" y="435" width="260" height="18" index="1" traits="StaticText"/>
+                            </XCUIElementTypeOther>
+                            <XCUIElementTypeOther type="XCUIElementTypeOther" name="Send the adjuster one PDF with everything" label="Send the adjuster one PDF with everything" enabled="true" visible="true" accessible="false" x="53" y="464" width="307" height="19" index="3" traits="">
+                              <XCUIElementTypeOther type="XCUIElementTypeOther" name="4" label="4" enabled="true" visible="false" accessible="true" x="34" y="464" width="15" height="18" index="0" traits=""/>
+                              <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="4. Send the adjuster one PDF with everything" name="Send the adjuster one PDF with everything" label="Send the adjuster one PDF with everything" enabled="true" visible="true" accessible="true" x="53" y="464" width="248" height="18" index="1" traits="StaticText"/>
+                            </XCUIElementTypeOther>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Start a claim" label="Start a claim" enabled="true" visible="true" accessible="true" x="33" y="498" width="327" height="44" index="5" traits="Button"/>
+                          <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="16" y="575" width="361" height="60" index="6" traits="">
+                            <XCUIElementTypeButton type="XCUIElementTypeButton" name="CLAIM PACKET" label="CLAIM PACKET" enabled="true" visible="true" accessible="false" x="17" y="576" width="359" height="58" index="0" traits="Button">
+                              <XCUIElementTypeButton type="XCUIElementTypeButton" value="CLAIM PACKET" name="CLAIM PACKET" label="CLAIM PACKET" enabled="true" visible="true" accessible="true" x="33" y="593" width="107" height="24" index="0" traits="StaticText, Button"/>
+                            </XCUIElementTypeButton>
+                          </XCUIElementTypeOther>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Claim stuck? Get help Your state insurance department, FEMA, SBA and flood insurance contacts" label="Claim stuck? Get help Your state insurance department, FEMA, SBA and flood insurance contacts" enabled="true" visible="true" accessible="true" x="16" y="651" width="361" height="96" index="7" traits="Button"/>
+                        </XCUIElementTypeOther>
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" name="Main, navigation" label="Main, navigation" enabled="true" visible="true" accessible="false" x="0" y="757" width="393" height="95" index="2" traits="">
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Home" label="Home" enabled="true" visible="true" accessible="true" x="0" y="758" width="79" height="60" index="0" traits="Button"/>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Policy" label="Policy" enabled="true" visible="true" accessible="true" x="78" y="758" width="80" height="60" index="1" traits="Button"/>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Rooms" label="Rooms" enabled="true" visible="true" accessible="true" x="157" y="758" width="79" height="60" index="2" traits="Button"/>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Storm" label="Storm" enabled="true" visible="true" accessible="true" x="235" y="758" width="80" height="60" index="3" traits="Button"/>
+                          <XCUIElementTypeButton type="XCUIElementTypeButton" name="Claim" label="Claim" enabled="true" visible="true" accessible="true" x="314" y="758" width="80" height="60" index="4" traits="Button"/>
+                        </XCUIElementTypeOther>
+                        <XCUIElementTypeOther type="XCUIElementTypeOther" name="application status" label="application status" enabled="true" visible="false" accessible="false" x="0" y="880" width="1" height="1" index="3" traits="">
+                          <XCUIElementTypeStaticText type="XCUIElementTypeStaticText" value="Sample data removed. Name your property below." name="Sample data removed. Name your property below." label="Sample data removed. Name your property below." enabled="true" visible="false" accessible="true" x="0" y="880" width="338" height="21" index="0" traits="StaticText"/>
+                        </XCUIElementTypeOther>
+                      </XCUIElementTypeOther>
+                    </XCUIElementTypeOther>
+                  </XCUIElementTypeOther>
+                </XCUIElementTypeOther>
+              </XCUIElementTypeWebView>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Vertical scroll bar, 2 pages" label="Vertical scroll bar, 2 pages" enabled="true" visible="true" accessible="false" x="360" y="55" width="30" height="742" index="1" traits="Adjustable">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="387" y="58" width="3" height="613" index="0" traits=""/>
+              </XCUIElementTypeOther>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="55" y="819" width="283" height="30" index="2" traits="Adjustable">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="58" y="846" width="277" height="3" index="0" traits=""/>
+              </XCUIElementTypeOther>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Vertical scroll bar, 2 pages" label="Vertical scroll bar, 2 pages" enabled="true" visible="true" accessible="false" x="360" y="55" width="30" height="742" index="3" traits="Adjustable">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="387" y="58" width="3" height="613" index="0" traits=""/>
+              </XCUIElementTypeOther>
+              <XCUIElementTypeOther type="XCUIElementTypeOther" value="0%" name="Horizontal scroll bar, 1 page" label="Horizontal scroll bar, 1 page" enabled="true" visible="true" accessible="false" x="55" y="819" width="283" height="30" index="4" traits="Adjustable">
+                <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="true" accessible="false" x="58" y="846" width="277" height="3" index="0" traits=""/>
+              </XCUIElementTypeOther>
+            </XCUIElementTypeWebView>
+          </XCUIElementTypeWebView>
+        </XCUIElementTypeOther>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+    <XCUIElementTypeWindow type="XCUIElementTypeWindow" enabled="true" visible="false" accessible="false" x="0" y="0" width="393" height="852" index="1" traits="">
+      <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="393" height="852" index="0" traits="">
+        <XCUIElementTypeOther type="XCUIElementTypeOther" enabled="true" visible="false" accessible="false" x="0" y="0" width="393" height="852" index="0" traits=""/>
+      </XCUIElementTypeOther>
+    </XCUIElementTypeWindow>
+  </XCUIElementTypeApplication>
+</AppiumAUT>

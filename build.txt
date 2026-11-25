@@ -1,0 +1,178 @@
++ cd native
++ bash scripts/ci-ios.sh
+++ ls -d /Applications/Xcode_26.0.1.app /Applications/Xcode_26.0.app /Applications/Xcode_26.1.1.app /Applications/Xcode_26.1.app /Applications/Xcode_26.2.0.app /Applications/Xcode_26.2.app /Applications/Xcode_26.3.0.app /Applications/Xcode_26.3.app /Applications/Xcode_26.4.1.app /Applications/Xcode_26.4.app /Applications/Xcode_26.5.0.app /Applications/Xcode_26.5.app /Applications/Xcode_26.6.0.app /Applications/Xcode_26.6.app
+++ sort -V
+++ tail -1
++ XC=/Applications/Xcode_26.6.0.app
++ '[' -n /Applications/Xcode_26.6.0.app ']'
++ sudo xcode-select -s /Applications/Xcode_26.6.0.app
++ node -v
+v22.23.5
++ xcodebuild -version
+Xcode 26.6
+Build version 17F113
+++ xcodebuild -version
+++ awk 'NR==1{print $2}'
+++ cut -d. -f1
++ XV=26
++ '[' 26 -lt 26 ']'
+++ cat plugins.txt
++ npm install --no-audit --no-fund --legacy-peer-deps @capacitor/core@8.6.0 @capacitor/cli@8.6.0 @capacitor/ios@8.6.0 @capacitor/android@8.6.0 @capacitor/app@8.1.2 @capacitor/filesystem@8.1.5 @capacitor/share@8.0.3 @capacitor/splash-screen@8.0.2 @capacitor/status-bar@8.0.4 @capacitor/text-zoom@8 @capgo/capacitor-native-biometric@8.9.1 @ebarooni/capacitor-calendar@8.10.0 @capacitor/assets@4.0.0 @capawesome/capacitor-age-signals@0.5.1
+
+added 162 packages in 10s
++ npm ls --depth=0
+stormfile-native@1.0.0 /Users/runner/work/stormfile/stormfile/native
+├── @capacitor/android@8.6.0
+├── @capacitor/app@8.1.2
+├── @capacitor/assets@4.0.0
+├── @capacitor/cli@8.6.0
+├── @capacitor/core@8.6.0
+├── @capacitor/filesystem@8.1.5
+├── @capacitor/ios@8.6.0
+├── @capacitor/share@8.0.3
+├── @capacitor/splash-screen@8.0.2
+├── @capacitor/status-bar@8.0.4
+├── @capacitor/text-zoom@8.0.1
+├── @capawesome/capacitor-age-signals@0.5.1
+├── @capgo/capacitor-native-biometric@8.9.1
+├── @ebarooni/capacitor-calendar@8.10.0
+├── @emnapi/runtime@1.11.3 extraneous
+└── @img/sharp-wasm32@0.35.5 extraneous
+
++ A=/Users/runner/work/_temp/syntax-check
++ npm install --prefix /Users/runner/work/_temp/syntax-check --no-audit --no-fund acorn@8.14.0
++ node scripts/check-old-syntax.cjs /Users/runner/work/_temp/syntax-check/node_modules/acorn
+StormFile's scripts work on older phones (Android WebView 69+, iOS 15+)
++ node scripts/prepare-www.mjs
+older-phone CSS fallbacks added: 8
+www ready: [
+  'app.js',
+  'apple-touch-icon.png',
+  'compat.js',
+  'es.js',
+  'icon-192.png',
+  'icon-512.png',
+  'index.html',
+  'native.js',
+  'privacy.html',
+  'support.html',
+  'terms.html',
+  'vendor',
+  'webview-update.html'
+] [
+  'capacitor.js',
+  'fonts',
+  'jsQR-LICENSE.txt',
+  'jsQR.js',
+  'pdf-lib-LICENSE.md',
+  'pdf-lib.min.js',
+  'pdf.min.js',
+  'pdf.worker.min.js',
+  'pdfjs-LICENSE.txt',
+  'qrcode-LICENSE.txt',
+  'qrcode.js'
+]
++ '[' -d ios ']'
++ npx cap add ios
+✔ Adding native Xcode project in ios in 28.92ms
+✔ add in 30.22ms
+✔ Copying web assets from www to ios/App/App/public in 23.24ms
+✔ Creating capacitor.config.json in ios/App/App in 911.50μs
+✔ copy ios in 63.36ms
+✔ Updating iOS plugins in 864.38μs
+[info] All Capacitor plugins have a Package.swift file and will be included in Package.swift
+[info] Writing Package.swift
+[info] Found 9 Capacitor plugins for ios:
+       @capacitor/app@8.1.2
+       @capacitor/filesystem@8.1.5
+       @capacitor/share@8.0.3
+       @capacitor/splash-screen@8.0.2
+       @capacitor/status-bar@8.0.4
+       @capacitor/text-zoom@8.0.1
+       @capawesome/capacitor-age-signals@0.5.1
+       @capgo/capacitor-native-biometric@8.9.1
+       @ebarooni/capacitor-calendar@8.10.0
+✔ update ios in 23.66ms
+[success] ios platform added!
+Follow the Developer Workflow guide to get building:
+https://capacitorjs.com/docs/basics/workflow
++ node scripts/patch-native.mjs ios
+iOS Info.plist patched
++ gem install --user-install xcodeproj --no-document
+++ ruby -e 'print Gem.user_dir'
++ export PATH=/Users/runner/.local/share/gem/ruby/3.4.0/bin:/Users/runner/hostedtoolcache/node/22.23.5/arm64/bin:/opt/homebrew/opt/rustup/bin:/opt/homebrew/lib/ruby/gems/3.4.0/bin:/opt/homebrew/opt/ruby@3.4/bin:/Users/runner/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Users/runner/.yarn/bin:/Users/runner/Library/Android/sdk/tools:/Users/runner/Library/Android/sdk/platform-tools:/Library/Frameworks/Python.framework/Versions/Current/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/bin:/bin:/usr/sbin:/sbin:/Users/runner/.dotnet/tools
++ PATH=/Users/runner/.local/share/gem/ruby/3.4.0/bin:/Users/runner/hostedtoolcache/node/22.23.5/arm64/bin:/opt/homebrew/opt/rustup/bin:/opt/homebrew/lib/ruby/gems/3.4.0/bin:/opt/homebrew/opt/ruby@3.4/bin:/Users/runner/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/runner/.cargo/bin:/usr/local/opt/curl/bin:/usr/local/bin:/usr/local/sbin:/Users/runner/bin:/Users/runner/.yarn/bin:/Users/runner/Library/Android/sdk/tools:/Users/runner/Library/Android/sdk/platform-tools:/Library/Frameworks/Python.framework/Versions/Current/bin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/bin:/bin:/usr/sbin:/sbin:/Users/runner/.dotnet/tools
++ ruby -e '
+  require "xcodeproj"
+  p = Xcodeproj::Project.open("ios/App/App.xcodeproj")
+  t = p.targets.find { |x| x.name == "App" }
+  g = p.main_group["App"]
+  unless g.files.any? { |f| f.path == "PrivacyInfo.xcprivacy" }
+    ref = g.new_reference("PrivacyInfo.xcprivacy")
+    t.resources_build_phase.add_file_reference(ref)
+    p.save
+    puts "Privacy manifest added to the app"
+  end
+  t.build_configurations.each { |c| c.build_settings["CODE_SIGN_ENTITLEMENTS"] = "App/App.entitlements" }
+  p.save
+  puts "Entitlements file set (age check)"'
+Privacy manifest added to the app
+Entitlements file set (age check)
++ npx capacitor-assets generate --ios --iconBackgroundColor '#0d2350' --splashBackgroundColor '#0d2350' --splashBackgroundColorDark '#091630'
+Generating assets for ios
+CREATE ios icon /Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png (416.95 KB)
+CREATE ios splash /Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets/Splash.imageset/Default@1x~universal~anyany.png (291.49 KB)
+CREATE ios splash /Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets/Splash.imageset/Default@2x~universal~anyany.png (291.49 KB)
+CREATE ios splash /Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets/Splash.imageset/Default@3x~universal~anyany.png (291.49 KB)
+CREATE ios splash-dark /Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets/Splash.imageset/Default@1x~universal~anyany-dark.png (279.59 KB)
+CREATE ios splash-dark /Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets/Splash.imageset/Default@2x~universal~anyany-dark.png (279.59 KB)
+CREATE ios splash-dark /Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets/Splash.imageset/Default@3x~universal~anyany-dark.png (279.59 KB)
+
+
+Totals:
+ios: 7 generated, 2.08 MB total
++ npx cap sync ios
+✔ Copying web assets from www to ios/App/App/public in 12.75ms
+✔ Creating capacitor.config.json in ios/App/App in 548.17μs
+✔ copy ios in 31.66ms
+✔ Updating iOS plugins in 823.38μs
+[info] All Capacitor plugins have a Package.swift file and will be included in Package.swift
+[info] Writing Package.swift
+[info] Found 9 Capacitor plugins for ios:
+       @capacitor/app@8.1.2
+       @capacitor/filesystem@8.1.5
+       @capacitor/share@8.0.3
+       @capacitor/splash-screen@8.0.2
+       @capacitor/status-bar@8.0.4
+       @capacitor/text-zoom@8.0.1
+       @capawesome/capacitor-age-signals@0.5.1
+       @capgo/capacitor-native-biometric@8.9.1
+       @ebarooni/capacitor-calendar@8.10.0
+✔ update ios in 21.00ms
+[info] Sync finished in 0.072s
++ cd ios/App
++ '[' -d App.xcworkspace ']'
++ T=(-project App.xcodeproj)
++ echo -project App.xcodeproj
++ xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO -quiet build
+2026-11-25 13:22:29.844 xcodebuild[1586:7964] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+/* com.apple.actool.document.warnings */
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/* com.apple.actool.compilation-results */
+/Users/runner/Library/Developer/Xcode/DerivedData/App-aruzcybipbludjcdwzevcshtjemy/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/runner/Library/Developer/Xcode/DerivedData/App-aruzcybipbludjcdwzevcshtjemy/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/runner/Library/Developer/Xcode/DerivedData/App-aruzcybipbludjcdwzevcshtjemy/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/DerivedSources/GeneratedAssetSymbols.swift
+
+/* com.apple.actool.document.warnings */
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/* com.apple.actool.compilation-results */
+/Users/runner/Library/Developer/Xcode/DerivedData/App-aruzcybipbludjcdwzevcshtjemy/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/assetcatalog_generated_info.plist_thinned
+/Users/runner/Library/Developer/Xcode/DerivedData/App-aruzcybipbludjcdwzevcshtjemy/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/assetcatalog_output/thinned/AppIcon60x60@2x.png
+/Users/runner/Library/Developer/Xcode/DerivedData/App-aruzcybipbludjcdwzevcshtjemy/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png
+/Users/runner/Library/Developer/Xcode/DerivedData/App-aruzcybipbludjcdwzevcshtjemy/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/assetcatalog_output/thinned/Assets.car
+
++ echo 'IOS SIMULATOR BUILD OK'
+IOS SIMULATOR BUILD OK

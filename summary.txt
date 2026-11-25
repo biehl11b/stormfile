@@ -1,0 +1,60 @@
+== App Store build checks
+info version  → 1.0 (1), min iOS 15.0, devices Array{1}
+info NSCameraUsageDescription present (app code doesn't seem to use it)
+info NSPhotoLibraryUsageDescription present (app code doesn't seem to use it)
+ok   purpose text for Face ID (NSFaceIDUsageDescription)
+ok   purpose text for calendar (older iOS) (NSCalendarsUsageDescription)
+ok   purpose text for calendar full access (NSCalendarsFullAccessUsageDescription)
+ok   purpose text for calendar add-only (NSCalendarsWriteOnlyAccessUsageDescription)
+ok   purpose text for reminders (older iOS) (NSRemindersUsageDescription)
+ok   purpose text for reminders (NSRemindersFullAccessUsageDescription)
+info NSLocationWhenInUseUsageDescription present (app code doesn't seem to use it)
+ok   no background modes (none are used)
+info export compliance key ITSAppUsesNonExemptEncryption  → false
+info UIRequiresFullScreen not set (iPad multitasking sizes must work)
+info orientations iPhone  → Array { UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight}
+info orientations iPad  → Array { UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight}
+ok   launch screen  → LaunchScreen
+info privacy manifests in the app  → 3
+ok   app's own privacy manifest is inside the app
+ok   required-reason API declared: NSPrivacyAccessedAPICategoryFileTimestamp
+ok   app icon 1024px has no transparency
+ok   compiled icons/images (Assets.car)
+ok   no test stand-in in the store build
+ok   store version hides tester notes (store: true)
+info WebView update page present (Android only, harmless here)
+ok   no unsafe-eval in the store build
+ok   web inspector off in the store build
+info app size  →  12M
+== store/iPad/summary.txt
+iPad Pro (12.9-inch) (3rd generation) (store build): 2 passed, 0 failed
+info device  → iPad Pro (12.9-inch) (3rd generation) iOS 26.5, window 1024x1366
+info iPad window: the test tool can't read StormFile's screen here; check the screenshots (3-start.png)  → app is running and drawn
+ok   app opens and keeps running on iPad  → state 4
+ok   no crash reports
+== store/iPhone/summary.txt
+iPhone 16 (store build): 10 passed, 0 failed
+info device  → iPhone 16 iOS 26.5, window 393x852
+ok   start screen with the I agree button shows  → about 476 s after opening (includes starting the test tool)
+ok   Terms of Use opens in Safari and StormFile keeps running  → Safari state 4, StormFile state 3
+ok   back in StormFile, still on the start screen
+ok   I agree opens the first setup screen
+ok   Policy tab opens
+ok   Claim tab opens
+ok   Settings opens
+ok   no mention of Android or Google Play on the screens checked
+ok   app still running at the end  → state 4
+ok   no crash reports
+== store/Older-iOS/summary.txt
+iPhone 14 (store build): 10 passed, 0 failed
+info device  → iPhone 14 iOS 26.2, window 390x844
+ok   start screen with the I agree button shows  → about 277 s after opening (includes starting the test tool)
+ok   Terms of Use opens in Safari and StormFile keeps running  → Safari state 4, StormFile state 3
+ok   back in StormFile, still on the start screen
+ok   I agree opens the first setup screen
+ok   Policy tab opens
+ok   Claim tab opens
+ok   Settings opens
+ok   no mention of Android or Google Play on the screens checked
+ok   app still running at the end  → state 4
+ok   no crash reports

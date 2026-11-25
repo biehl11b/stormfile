@@ -1,0 +1,12 @@
+iPhone 14 (store build): 10 passed, 0 failed
+info device  → iPhone 14 iOS 26.2, window 390x844
+ok   start screen with the I agree button shows  → about 277 s after opening (includes starting the test tool)
+ok   Terms of Use opens in Safari and StormFile keeps running  → Safari state 4, StormFile state 3
+ok   back in StormFile, still on the start screen
+ok   I agree opens the first setup screen
+ok   Policy tab opens
+ok   Claim tab opens
+ok   Settings opens
+ok   no mention of Android or Google Play on the screens checked
+ok   app still running at the end  → state 4
+ok   no crash reports

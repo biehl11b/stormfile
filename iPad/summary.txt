@@ -1,0 +1,5 @@
+iPad Pro (12.9-inch) (3rd generation) (store build): 2 passed, 0 failed
+info device  → iPad Pro (12.9-inch) (3rd generation) iOS 26.5, window 1024x1366
+info iPad window: the test tool can't read StormFile's screen here; check the screenshots (3-start.png)  → app is running and drawn
+ok   app opens and keeps running on iPad  → state 4
+ok   no crash reports

@@ -1,0 +1,6 @@
+Timestamp               Ty Process[PID:TID]
+2026-11-25 13:53:12.687 F  App[47934:21259] [com.apple.WebKit:Process] Networking process (0x10d090190) took 1.628516 seconds to launch
+2026-11-25 13:53:12.688 F  App[47934:21259] [com.apple.WebKit:Process] GPU process (0x10d1381e0) took 1.454600 seconds to launch
+2026-11-25 13:58:37.330 F  App[55620:261c1] [com.apple.WebKit:Process] WebContent process (0x11210c0c0) took 1.515005 seconds to launch
+2026-11-25 13:58:37.332 F  App[55620:261c1] [com.apple.WebKit:Process] Networking process (0x112084190) took 1.672929 seconds to launch
+2026-11-25 13:58:37.338 F  App[55620:261c1] [com.apple.WebKit:Process] GPU process (0x11213c1e0) took 1.441117 seconds to launch

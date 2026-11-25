@@ -1,0 +1,38 @@
+{
+	"appId": "com.coastlinecode.stormfile",
+	"appName": "StormFile",
+	"webDir": "www",
+	"server": {
+		"androidScheme": "https",
+		"errorPath": "webview-update.html"
+	},
+	"ios": {
+		"contentInset": "never",
+		"limitsNavigationsToAppBoundDomains": false,
+		"preferredContentMode": "mobile"
+	},
+	"android": {
+		"allowMixedContent": false,
+		"minWebViewVersion": 69
+	},
+	"plugins": {
+		"SplashScreen": {
+			"launchShowDuration": 0,
+			"launchAutoHide": true,
+			"backgroundColor": "#0b2a45",
+			"showSpinner": false
+		}
+	},
+	"backgroundColor": "#0d2350",
+	"packageClassList": [
+		"AppPlugin",
+		"FilesystemPlugin",
+		"SharePlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin",
+		"TextZoomPlugin",
+		"AgeSignalsPlugin",
+		"NativeBiometricPlugin",
+		"CapacitorCalendarPlugin"
+	]
+}

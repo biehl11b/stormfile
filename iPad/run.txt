@@ -1,0 +1,15 @@
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: 17F6A495-4EFA-409F-86B9-C5BC80EE82C4 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/iPad/1-after-5s.png
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: 17F6A495-4EFA-409F-86B9-C5BC80EE82C4 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/iPad/2-after-15s.png
+info device  → iPad Pro (12.9-inch) (3rd generation) iOS 26.5, window 1024x1366
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: C86FE95D-E0B0-45B6-8738-76D68872DC1D (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/iPad/3-start.png
+info iPad window: the test tool can't read StormFile's screen here; check the screenshots (3-start.png)  → app is running and drawn
+ok   app opens and keeps running on iPad  → state 4
+getpwuid_r did not find a match for uid 501
+ok   no crash reports
+iPad Pro (12.9-inch) (3rd generation) (store build): 2 passed, 0 failed

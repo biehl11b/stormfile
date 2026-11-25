@@ -1,0 +1,21 @@
++ cd native/ios/App
++ xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO -derivedDataPath /Users/runner/work/stormfile/stormfile/ddr -quiet build
+2026-11-25 13:24:04.267 xcodebuild[4181:17069] [MT] IDERunDestination: Supported platforms for the buildables in the current scheme is empty.
+/* com.apple.actool.document.warnings */
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/* com.apple.actool.compilation-results */
+/Users/runner/work/stormfile/stormfile/ddr/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/runner/work/stormfile/stormfile/ddr/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/runner/work/stormfile/stormfile/ddr/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/DerivedSources/GeneratedAssetSymbols.swift
+
+/* com.apple.actool.document.warnings */
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/Users/runner/work/stormfile/stormfile/native/ios/App/App/Assets.xcassets:./Splash.imageset/(null)[2d][splash-2732x2732-1.png]: warning: The image set "Splash" has 3 unassigned children.
+/* com.apple.actool.compilation-results */
+/Users/runner/work/stormfile/stormfile/ddr/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/assetcatalog_generated_info.plist_thinned
+/Users/runner/work/stormfile/stormfile/ddr/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/assetcatalog_output/thinned/AppIcon60x60@2x.png
+/Users/runner/work/stormfile/stormfile/ddr/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png
+/Users/runner/work/stormfile/stormfile/ddr/Build/Intermediates.noindex/App.build/Release-iphonesimulator/App.build/assetcatalog_output/thinned/Assets.car
+

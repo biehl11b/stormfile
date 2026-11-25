@@ -1,0 +1,37 @@
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: C751CFF4-01B3-4654-8E4B-9BDC1D88E065 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/Older-iOS/1-after-5s.png
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: C751CFF4-01B3-4654-8E4B-9BDC1D88E065 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/Older-iOS/2-after-15s.png
+info device  → iPhone 14 iOS 26.2, window 390x844
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: BC0099F7-21E5-442E-A8F2-B47EE38AE7D5 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/Older-iOS/3-start.png
+ok   start screen with the I agree button shows  → about 277 s after opening (includes starting the test tool)
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: BC0099F7-21E5-442E-A8F2-B47EE38AE7D5 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/Older-iOS/4-terms-website.png
+ok   Terms of Use opens in Safari and StormFile keeps running  → Safari state 4, StormFile state 3
+ok   back in StormFile, still on the start screen
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: BC0099F7-21E5-442E-A8F2-B47EE38AE7D5 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/Older-iOS/5-after-agree.png
+ok   I agree opens the first setup screen
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: BC0099F7-21E5-442E-A8F2-B47EE38AE7D5 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/Older-iOS/6-policy.png
+ok   Policy tab opens
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: BC0099F7-21E5-442E-A8F2-B47EE38AE7D5 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/Older-iOS/6-claim.png
+ok   Claim tab opens
+Detected file type from extension: PNG
+Note: No display specified. Defaulting to display: BC0099F7-21E5-442E-A8F2-B47EE38AE7D5 (screenID: 1, name: LCD)
+Wrote screenshot to: /Users/runner/work/stormfile/stormfile/store/Older-iOS/7-settings.png
+ok   Settings opens
+ok   no mention of Android or Google Play on the screens checked
+ok   app still running at the end  → state 4
+getpwuid_r did not find a match for uid 501
+ok   no crash reports
+iPhone 14 (store build): 10 passed, 0 failed
