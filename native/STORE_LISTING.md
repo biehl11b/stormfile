@@ -46,6 +46,7 @@ KNOW WHAT YOU'RE COVERED FOR
 • Your hurricane or wind deductible worked out in dollars, not just a percentage
 • A building-cost check that adds recent inflation, so you can spot a gap before a storm does
 • Flood and storm surge gaps called out (most homeowners policies don't cover flood)
+• Roof terms checked: used-value roofs, payment schedules by roof age and cosmetic damage exclusions
 • Renewal reminders in your calendar 45 days ahead, so there's time to shop or adjust
 
 DOCUMENT EVERYTHING BEFORE THE STORM
@@ -53,6 +54,8 @@ DOCUMENT EVERYTHING BEFORE THE STORM
 • Items with what you paid and the year you bought them
 • Receipts and home upgrades (roof, windows, HVAC) attached to each item
 • Vehicles, campers and outbuildings
+• A yearly roof check-up: the same 8 roof views every year before storm season, with a calendar reminder, to help show storm damage is new
+• A fingerprint for every photo (a SHA-256 code), so you can show a photo wasn't changed after it was saved
 • Lock your before-storm record when you file, so anything added later is clearly marked
 
 STORM AND FIRE SEASONS FOR YOUR STATE
@@ -106,6 +109,7 @@ KNOW WHAT YOU'RE COVERED FOR
 • Your hurricane or wind deductible worked out in dollars, not just a percentage
 • A building-cost check that adds recent inflation, so you can spot a gap before a storm does
 • Flood and storm surge gaps called out (most homeowners policies don't cover flood)
+• Roof terms checked: used-value roofs, payment schedules by roof age and cosmetic damage exclusions
 • Renewal reminders in your calendar 45 days ahead, so there's time to shop or adjust
 
 DOCUMENT EVERYTHING BEFORE THE STORM
@@ -113,6 +117,8 @@ DOCUMENT EVERYTHING BEFORE THE STORM
 • Items with what you paid and the year you bought them
 • Receipts and home upgrades (roof, windows, HVAC) attached to each item
 • Vehicles, campers and outbuildings
+• A yearly roof check-up: the same 8 roof views every year before storm season, with a calendar reminder, to help show storm damage is new
+• A fingerprint for every photo (a SHA-256 code), so you can show a photo wasn't changed after it was saved
 • Lock your before-storm record when you file, so anything added later is clearly marked
 
 STORM AND FIRE SEASONS FOR YOUR STATE

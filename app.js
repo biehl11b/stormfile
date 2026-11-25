@@ -206,6 +206,50 @@ function getGPS(){
   });
 }
 const shrinkP = f => new Promise(r=>shrink(f, r));
+/* Photo fingerprint (SHA-256) of the full-size photo as StormFile saved it. If the photo is ever changed, even by one
+   pixel, its fingerprint no longer matches. On its own it doesn't prove when the photo was taken; sending the fingerprints
+   somewhere outside the phone (like an email to yourself) adds a date someone else keeps. */
+async function sha256Hex(data){
+  try{ const buf = data instanceof Blob ? await data.arrayBuffer() : (typeof data === 'string' ? new TextEncoder().encode(data) : data);
+    const h = await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  catch(e){ return ''; }
+}
+const ROOF_SHOTS = [
+  ['front','Front of the roof','Stand back far enough to get the whole slope in one photo.'],
+  ['back','Back of the roof',''],
+  ['left','Left side of the roof',''],
+  ['right','Right side of the roof',''],
+  ['close','Close-up of the shingles or metal','Zoom in from the ground or a ladder. Include any old repairs or missing pieces.'],
+  ['edges','Gutters, vents and flashing','Roof edges, gutters, and around vents, pipes, the chimney and skylights.'],
+  ['attic','Attic, under the roof','Water stains or daylight show up here. Skip it if you can\u2019t get in safely.'],
+  ['ceilings','Top-floor ceilings','Shows there were no water stains before the storm.']];
+const roofOf = (P, y) => ((P.roofBase||{})[y]) || null;
+const roofCount = r => r ? ROOF_SHOTS.filter(([k])=>((r.shots||{})[k]||[]).length).length : 0;
+const roofYears = P => Object.keys(P.roofBase||{}).filter(y=>roofCount(P.roofBase[y])).sort().reverse();
+/* Every saved photo of a property: outside, rooms and roof check-ups. */
+function allPhotos(P){
+  const out = [];
+  (P.exterior||[]).forEach(o=>out.push({o, where:'Outside of the building'}));
+  (P.rooms||[]).forEach(r=>(r.photoData||[]).forEach(o=>out.push({o, where:r.name})));
+  Object.keys(P.roofBase||{}).sort().forEach(y=>ROOF_SHOTS.forEach(([k,t])=>(((P.roofBase[y].shots||{})[k])||[]).forEach(o=>out.push({o, where:`Roof ${y}: ${t}`}))));
+  return out;
+}
+/* Photos saved before fingerprints existed get one the next time StormFile opens (marked with that date). */
+async function backfillFingerprints(){
+  let changed = 0;
+  for(const P of (S.properties||[])){ for(const {o} of allPhotos(P)){
+    if(!o || typeof o !== 'object' || o.fp || !o.id) continue;
+    const rec = await getFile(o.id).catch(()=>null); if(!rec || !rec.blob) continue;
+    const fp = await sha256Hex(rec.blob); if(fp){ o.fp = fp; o.fpLate = nowISO(); changed++; } } }
+  if(changed) save();
+}
+/* One fingerprint for the whole before-storm record: every photo fingerprint plus the item and upgrade list. */
+async function recordFingerprint(P){
+  const parts = allPhotos(P).map(({o})=>photoObj(o).fp).filter(Boolean).sort();
+  (P.rooms||[]).forEach(r=>r.items.forEach(it=>parts.push(['item', r.name, it.n, it.v, it.y, it.addedAt||''].join('|'))));
+  (P.upgrades||[]).forEach(u=>parts.push(['upgrade', u.n, u.v, u.y, u.addedAt||''].join('|')));
+  return sha256Hex(parts.join('\n'));
+}
 
 /* ---------- Files on this phone (full-size photos, receipts) ---------- */
 const DBNAME = 'stormfile', STORE = 'files';
@@ -255,14 +299,20 @@ async function storeDoc(file){
   return {id, kind:/pdf/i.test(file.type||'')?'pdf':'file'};
 }
 let viewerUrl = null;
-async function openViewer(id, fallbackSrc, caption){
+async function openViewer(id, fallbackSrc, caption, fp){
   let src = fallbackSrc || '', isPdf = false, name = '';
   try{ const rec = await getFile(id); if(rec && rec.blob){ if(viewerUrl) URL.revokeObjectURL(viewerUrl); viewerUrl = URL.createObjectURL(rec.blob); src = viewerUrl; isPdf = /pdf/i.test(rec.type||''); name = rec.name||''; } }catch(e){}
   if(!src) return toast('That file isn’t on this phone anymore.');
   const ov = document.createElement('div'); ov.className = 'overlay viewer'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true');
   ov.innerHTML = `<div class="viewer-box">${isPdf ? `<p class="small">PDF receipt: ${esc(name)}</p><a class="btn-like" href="${esc(src)}" target="_blank" rel="noopener">Open the PDF</a>` : `<img src="${esc(src)}" alt="${esc(caption||'Photo')}">`}
-    ${caption?`<p class="small">${esc(caption)}</p>`:''}<button class="primary" data-closeviewer="1">Close</button></div>`;
-  ov.addEventListener('click', e=>{ if(e.target===ov || e.target.closest('[data-closeviewer]')){ ov.remove(); if(viewerUrl){ URL.revokeObjectURL(viewerUrl); viewerUrl = null; } } });
+    ${caption?`<p class="small">${esc(caption)}</p>`:''}
+    ${fp?`<p class="small muted"><span>Photo fingerprint (SHA-256):</span><br><span class="fp" data-notr>${esc(fp)}</span></p>`:''}
+    ${fp && id && !isPdf?`<button class="ghost" data-saveorig="${esc(id)}" data-fp="${esc(fp)}">Save the original photo</button>`:''}
+    <button class="primary" data-closeviewer="1">Close</button></div>`;
+  ov.addEventListener('click', e=>{ const sv = e.target.closest('[data-saveorig]');
+    if(sv){ const fp = sv.dataset.fp || ''; getFile(sv.dataset.saveorig).then(rec=>{ if(!rec || !rec.blob) return toast('That photo isn\u2019t on this phone anymore.');
+      return saveFile(`StormFile-photo-${fp.slice(0,12)||'original'}.jpg`, rec.blob); }).catch(()=>toast('That photo couldn\u2019t be saved.')); return; }
+    if(e.target===ov || e.target.closest('[data-closeviewer]')){ ov.remove(); if(viewerUrl){ URL.revokeObjectURL(viewerUrl); viewerUrl = null; } } });
   document.body.appendChild(ov);
 }
 async function addPhotos(P, files, target, label, source){
@@ -274,11 +324,11 @@ async function addPhotos(P, files, target, label, source){
     const taken = await exifDate(f);
     let ph = null;
     try{ ph = await processPhoto(f); }catch(e){}
-    if(!ph){ const src = await shrinkP(f); if(!src) continue; target.push({src, addedAt: nowISO(), taken, gps, source}); added++; continue; }
+    if(!ph){ const src = await shrinkP(f); if(!src) continue; target.push({src, addedAt: nowISO(), taken, gps, source, fp: await sha256Hex(src)}); added++; continue; }
     const id = fid();
     try{ await putFile({id, name:f.name||'photo.jpg', type:'image/jpeg', blob:ph.blob, w:ph.w, h:ph.h, at:nowISO()}); }
     catch(e){ toast('This phone is out of space for photos. Free up space, then try again.'); break; }
-    target.push({id, src:ph.thumb, w:ph.w, h:ph.h, addedAt: nowISO(), taken, gps, source});
+    target.push({id, src:ph.thumb, w:ph.w, h:ph.h, addedAt: nowISO(), taken, gps, source, fp: await sha256Hex(ph.blob)});
     added++;
   }
   if(!added) return toast('Those photos couldn’t be read. Try a JPG or a new photo.');
@@ -291,7 +341,7 @@ function photoGrid(P, list, alt){
   return `<div class="thumbs">${list.map(x=>{ const o = photoObj(x); const after = isAfterLock(P,o);
     const when = o.taken ? 'Taken ' + fmtDay(o.taken) : o.addedAt ? 'Added ' + fmtDay(o.addedAt) : (o.date ? 'Added ' + esc(o.date) : 'Sample');
     if(!safeImg(o.src)) return '';
-    return `<figure class="ph${after?' after':''}"><button class="phbtn" data-viewphoto="${esc(o.id||'')}" data-thumb="${esc(safeImg(o.src))}" data-cap="${esc(alt + (o.taken?' \u00B7 taken '+fmtDay(o.taken):o.addedAt?' \u00B7 added '+fmtWhen(o.addedAt):'') + (o.gps?' \u00B7 '+o.gps.lat+', '+o.gps.lng:''))}" aria-label="View ${esc(alt)} full size"><img src="${esc(safeImg(o.src))}" alt="${esc(alt)}"></button><figcaption>${when}${o.gps?' · GPS':''}${after?'<br><strong style="color:var(--amber)">After claim</strong>':''}</figcaption></figure>`; }).join('')}</div>`;
+    return `<figure class="ph${after?' after':''}"><button class="phbtn" data-viewphoto="${esc(o.id||'')}" data-fp="${esc(o.fp||'')}" data-thumb="${esc(safeImg(o.src))}" data-cap="${esc(T(alt) + (o.taken?' \u00B7 '+T('Taken '+fmtDay(o.taken)):o.addedAt?' \u00B7 '+T('Added '+fmtDay(o.addedAt))+' '+new Date(o.addedAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):'') + (o.gps?' \u00B7 '+o.gps.lat+', '+o.gps.lng:''))}" aria-label="View ${esc(alt)} full size"><img src="${esc(safeImg(o.src))}" alt="${esc(alt)}"></button><figcaption>${when}${o.gps?' · GPS':''}${after?'<br><strong style="color:var(--amber)">After claim</strong>':''}</figcaption></figure>`; }).join('')}</div>`;
 }
 function photoButtons(attr, label){
   return `<div class="photo-btns">
@@ -722,12 +772,40 @@ function viewPolicy(){
   <p class="foot">StormFile explains policies in plain words. It is not insurance advice. Confirm coverage with your licensed agent.</p>`;
 }
 
+/* Roof check-up: the same 8 roof photos every year before storm season, so a later claim can show the damage is new. */
+function roofMail(P, y){
+  const r = roofOf(P, y); if(!r) return '';
+  const lines = [];
+  ROOF_SHOTS.forEach(([k,t])=>((r.shots||{})[k]||[]).map(photoObj).forEach(o=>{ if(o.fp) lines.push(`${t}: ${o.taken?'taken '+fmtDay(o.taken)+', ':''}saved ${fmtWhen(o.addedAt)}${o.gps?`, location ${o.gps.lat}, ${o.gps.lng}`:''}\nFingerprint: ${o.fp}`); }));
+  if(!lines.length) return '';
+  const body = `Roof photos for ${P.name}${/\d/.test(P.address||'')?' ('+P.address+')':''}, ${y} check-up.\n\n${lines.join('\n\n')}\n\nEach fingerprint is a SHA-256 code StormFile made from the full-size photo when it was saved. If a photo is changed later, its code no longer matches. Keep this email: its date shows the photos existed by then.`;
+  return `mailto:${encodeURIComponent((S.me||{}).email||'')}?subject=${encodeURIComponent(`Roof photo fingerprints - ${P.name} - ${y}`)}&body=${encodeURIComponent(body)}`;
+}
+function roofCard(P){
+  const r = roofOf(P, YEAR), n = roofCount(r), prevY = roofYears(P).find(y=>+y < YEAR), prev = prevY ? roofOf(P, prevY) : null;
+  const status = n ? `${n} of ${ROOF_SHOTS.length} photos for ${YEAR}` : (prevY ? `Last done in ${prevY}` : 'Not started');
+  const mail = roofMail(P, YEAR);
+  const body = `
+    <p class="small muted">Insurers often turn down roof claims as \u201cwear and tear.\u201d The same roof photos taken every year, before storm season, help show the damage is new.</p>
+    <div class="alert warn" style="background:var(--bg)"><p class="small"><strong>Stay off the roof.</strong> Take these from the ground, a ladder or a window.</p></div>
+    ${ROOF_SHOTS.map(([k,t,h])=>{ const list = ((r||{}).shots||{})[k]||[], old = prev ? ((prev.shots||{})[k]||[]) : [];
+      return `<div class="roofshot stack" style="gap:6px;border-top:1px solid var(--line);padding-top:10px">
+        <div class="row"><strong>${t}</strong><span class="chip ${list.length?'ok':'warn'}">${list.length?'Done':'To do'}</span></div>
+        ${h?`<p class="small muted">${h}</p>`:''}
+        ${photoGrid(P, list, t)}
+        ${old.length?`<p class="small muted">Last check-up, ${prevY}:</p>${photoGrid(P, old.slice(-1), t+' '+prevY)}`:''}
+        ${photoButtons(`data-roofphoto="${k}"`, 'photo')}</div>`; }).join('')}
+    <button class="ghost" data-act="calRoof">Remind me every year before storm season</button>
+    ${mail?`<a class="btn-like ghost" href="${esc(mail)}">Email this year\u2019s photo fingerprints to myself</a>
+    <p class="small muted">Sends a list of photo fingerprints, not the photos. The email\u2019s date is outside proof that the photos existed by then.</p>`:''}`;
+  return sec('roof', `Roof check-up ${YEAR}`, status, body, {open: n < ROOF_SHOTS.length});
+}
 function viewInventory(){
   const P = cur(), cfg = TYPES[P.type], inv = invTotals(P);
   const done = P.rooms.filter(roomDone).length;
   return `
   <section class="stack"><p class="label">${esc(P.name)}</p><h1>${esc(cfg.roomsTitle)}</h1></section>
-  ${lockedAt(P)?`<div class="lockbar"><strong>Before-storm record locked</strong><span class="muted">${fmtWhen(lockedAt(P))}. You can still add things; they\u2019re marked \u201Cadded after claim.\u201D</span></div>`:''}
+  ${lockedAt(P)?`<div class="lockbar"><strong>Before-storm record locked</strong><span class="muted">${fmtWhen(lockedAt(P))}. You can still add things; they\u2019re marked \u201Cadded after claim.\u201D</span>${P.claim.lockFp?`<span class="small muted"><span>Record fingerprint:</span> <span class="fp" data-notr>${esc(P.claim.lockFp.slice(0,16))}\u2026</span></span>`:''}</div>`:''}
   <div class="card">
     <div class="row"><span class="label">Logged value today</span><span class="num" style="font-size:20px">${fmt(inv.today)}</span></div>
     <div class="meter"><i style="width:${P.rooms.length?(done/P.rooms.length*100).toFixed(0):0}%;background:var(--accent)"></i></div>
@@ -743,6 +821,8 @@ function viewInventory(){
   </div>`:''}
 
   ${P.type==='rental'?`<div class="alert warn" style="background:var(--surface)"><p class="small">Only log what <strong>you</strong> own at the rental. The tenant’s furniture and belongings are on their renter’s insurance.</p></div>`:''}
+
+  ${roofCard(P)}
 
   <div class="card">
     <div class="row"><h2>Outside of the building</h2><span class="chip ${P.exterior.length>=4?'ok':'warn'}">${P.exterior.length} of 4</span></div>
@@ -1115,7 +1195,7 @@ function viewPolicyForm(){
     <label class="field"><span>5. Renewal date</span><input id="pf-renewal" type="date" value="${v('renewal')}"></label>
     <p class="small muted">Leave anything blank you can\u2019t find. You can fill it in later.</p>
   </div>
-  <details class="card sec" data-sec="pf-more" id="sec-pf-more" ${(S.open||{})['pf-more'] || ['claimPhone','agent','form','allPerils','roofYear'].some(k=>a[k]) ? 'open' : ''}>
+  <details class="card sec" data-sec="pf-more" id="sec-pf-more" ${(S.open||{})['pf-more'] || ['claimPhone','agent','form','allPerils','roofYear','roofRCYears'].some(k=>a[k]) || ['roofPay','roofCosmetic'].some(k=>a[k] && a[k]!=='unsure') ? 'open' : ''}>
     <summary><span class="sec-t"><span class="sec-h">More details (optional)</span><span class="sec-s sec-n">Makes the coverage check more complete</span></span><span class="sec-c" aria-hidden="true"></span></summary>
     <div class="stack sec-b">
     <div class="grid2">
@@ -1144,6 +1224,11 @@ function viewPolicyForm(){
       <label class="field">Square feet<input id="pf-sqft" type="number" inputmode="numeric" value="${esc(P.info.sqft||'')}"></label>
       <label class="field">Year the roof was replaced<input id="pf-roofYear" type="number" inputmode="numeric" value="${v('roofYear')}"></label>
     </div>
+    <h3>Roof coverage</h3>
+    <p class="small muted">Roof terms are a common reason storm claims are paid short or turned down. They\u2019re usually in the list of endorsements (forms) on the declarations page, or in the full policy.</p>
+    ${pfSelect('roofPay','How is roof damage paid?',[['rc','Full replacement cost (cost of a new roof)'],['acv','Actual cash value (minus wear and age)'],['schedule','A payment schedule by roof age'],['unsure','Not sure']],a.roofPay||'unsure','Look for \u201cRoof Surfacing Payment Schedule,\u201d \u201cActual Cash Value Loss Settlement \u2013 Roof,\u201d or \u201cRoof Surfacing\u201d in the endorsements.')}
+    <label class="field">Roof age where the policy starts paying less (if listed)<input id="pf-roofRCYears" type="number" inputmode="numeric" placeholder="e.g. 10 or 15 years" value="${v('roofRCYears')}"></label>
+    ${pfSelect('roofCosmetic','Is there a cosmetic damage exclusion?',YNU,a.roofCosmetic||'unsure','Look for \u201cCosmetic Damage Exclusion\u201d or \u201cWindstorm or Hail Cosmetic Loss.\u201d')}
       </div>
   </details>
   <button class="primary" type="submit">Show what I’m covered for</button>
@@ -1173,8 +1258,15 @@ function buildManualPolicy(P, a){
   if(a.mold==='no') notCovered.push({sev:'warn',title:'Mold',plain:'Mold cleanup isn’t covered, even after a covered leak. Dry out water damage fast.',src:you,quote:'',fromPage:true});
   if(P.type==='rental') notCovered.push({sev:'warn',title:'Your tenant’s belongings',plain:'Landlord policies don’t cover the tenant’s things. Ask them for proof of renter’s insurance.',src:'Check full policy',quote:'',fromPage:false});
   notCovered.push({sev:'warn',title:'Cars, campers and boats',plain:'Vehicles aren’t covered by a property policy. They need auto or RV coverage with comprehensive.',src:'Check full policy',quote:'',fromPage:false});
-  if(a.roofYear){ const age = YEAR - a.roofYear; covered.push({title:'Roof',plain:`Roof is about ${age} year${age===1?'':'s'} old. Newer roofs are usually paid at full replacement cost; ask your agent where your policy draws the line.`,src:you}); }
-  return {id:uid(), manual:true, answers:a, carrier:a.carrier||'Your insurer', form:a.form||cfg.label+' policy', number:a.number||'Not entered', renewal:a.renewal||'',
+  const age = a.roofYear ? Math.max(0, YEAR - a.roofYear) : null, ageTxt = age == null ? '' : age < 2 ? ' Your roof is less than 2 years old.' : ` Your roof is about ${age} years old.`;
+  if(a.roofPay==='acv') notCovered.push({sev:'warn',title:'Roof paid at used value',plain:`Roof damage is paid at what the roof is worth after wear and age, not what a new roof costs.${ageTxt} On an older roof that can be a small part of the cost to replace it. Ask your agent what a full replacement cost roof would add.`,src:you,quote:'',fromPage:true});
+  else if(a.roofPay==='schedule') notCovered.push({sev:'warn',title:'Roof paid on an age schedule',plain:`The older the roof, the smaller the share of a roof repair the policy pays.${ageTxt} Ask your agent for the schedule and what it pays for a roof your age.`,src:you,quote:'',fromPage:true});
+  else if(a.roofPay==='rc' && a.roofRCYears && age != null && age >= a.roofRCYears) notCovered.push({sev:'warn',title:'Roof past full replacement age',plain:`This policy pays full replacement for roofs under ${a.roofRCYears} years old.${ageTxt} Damage to it may be paid at used value. Confirm with your agent.`,src:you,quote:'',fromPage:true});
+  else if(a.roofPay==='rc') covered.push({title:'Roof',plain:`Roof damage is paid at full replacement cost${a.roofRCYears?` for roofs under ${a.roofRCYears} years old`:''}.${ageTxt}`,src:you});
+  else notCovered.push({sev:'warn',title:'Roof payment not confirmed',plain:`Check the endorsements for roof terms, like a payment schedule or used-value roof coverage. More insurers are adding them.${ageTxt}`,src:'Check full policy',quote:'',fromPage:false});
+  if(a.roofCosmetic==='yes') notCovered.push({sev:'warn',title:'Cosmetic roof damage',plain:'Hail or wind marks that don\u2019t let water in aren\u2019t paid, even if they shorten the roof\u2019s life.',src:you,quote:'',fromPage:true});
+  notCovered.push({sev:'warn',title:'Wear and tear',plain:`Damage from age, wear or lack of upkeep isn\u2019t covered, and insurers often call older roof damage wear and tear. The yearly roof check-up on the ${cfg.tab} tab helps show damage is new.`,src:'Standard in most policies',quote:'',fromPage:false});
+  return {id:uid(), manual:true, roofRCYears:a.roofRCYears||null, answers:a, carrier:a.carrier||'Your insurer', form:a.form||cfg.label+' policy', number:a.number||'Not entered', renewal:a.renewal||'',
     agent:a.agent||'Not entered', claimPhone:a.claimPhone||'Not entered', coverages, deductibles:d, inflationGuardPct:0,
     coinsurancePct:a.coins||null, waitHours:a.wait||null, ale:null, covered, notCovered, notes:''};
 }
@@ -1374,17 +1466,17 @@ async function makeClaimPacket(P, opt){
       y -= hgt; page.drawLine({start:{x:M,y:y+1}, end:{x:W-M,y:y+1}, thickness:0.3, color:line}); }); gap(6); };
   const photoBlock = async (list, label) => {
     const items = (list||[]).map(photoObj).filter(o=>o.id || safeImg(o.src)); if(!items.length) return 0;
-    need(30); text(label, {bold:true, size:11}); gap(2);
+    need(250); text(label, {bold:true, size:11}); gap(2); // keep the heading on the same page as its first photo
     const cw = (W-2*M-14)/2; let col = 0, rowH = 0, n = 0;
     for(const o of items){ const bytes = await jpegForPdf(o.id, o.src, 1400); if(!bytes) continue;
       let im; try{ im = await doc.embedJpg(bytes); }catch(e){ continue; }
       const sc = Math.min(cw/im.width, 190/im.height), iw = im.width*sc, ih = im.height*sc;
-      const cap = [(o.taken?'Taken '+fmtDay(o.taken):'')+(o.addedAt?(o.taken?' - added ':'Added ')+fmtWhen(o.addedAt):''), o.gps?`Location ${o.gps.lat}, ${o.gps.lng}${o.gps.acc?` (within ${o.gps.acc} m)`:''}`:'', isAfterLock(P,o)?'ADDED AFTER CLAIM STARTED':''].filter(Boolean);
+      const cap = [(o.taken?'Taken '+fmtDay(o.taken):'')+(o.addedAt?(o.taken?' - added ':'Added ')+fmtWhen(o.addedAt):''), o.gps?`Location ${o.gps.lat}, ${o.gps.lng}${o.gps.acc?` (within ${o.gps.acc} m)`:''}`:'', o.fp?`Fingerprint ${o.fp.slice(0,16)}... (full code in the list at the end)`:'', isAfterLock(P,o)?'ADDED AFTER CLAIM STARTED':''].filter(Boolean);
       const bh = 196 + cap.length*10 + 6;
       if(col===0){ if(y - bh < M + 24) newPage(); rowH = bh; }
       const x = M + col*(cw+14);
       page.drawImage(im, {x, y:y-ih, width:iw, height:ih});
-      cap.forEach((c,i)=>page.drawText(pdfText(c), {x, y:y-196-i*10-6, size:7.5, font:i===2||c.startsWith('ADDED')?FB:F, color:c.startsWith('ADDED')?amber:mute}));
+      cap.forEach((c,i)=>page.drawText(pdfText(c), {x, y:y-196-i*10-6, size:7.5, font:c.startsWith('ADDED')?FB:F, color:c.startsWith('ADDED')?amber:mute}));
       n++; col++; if(col===2){ col = 0; y -= rowH; }
     }
     if(col===1) y -= rowH; gap(6); return n;
@@ -1404,13 +1496,17 @@ async function makeClaimPacket(P, opt){
   const items = P.rooms.flatMap(r=>r.items.map(it=>({...it, room:r.name})));
   const photos = (P.exterior||[]).concat(P.rooms.flatMap(r=>(r.photoData||[]).map(photoObj)));
   kv('Before-storm record', lockedAt(P) ? `Locked ${fmtWhen(lockedAt(P))}. Items and photos logged before then are marked as the before-storm record; anything added later is marked "added after claim."` : 'Not locked yet.');
+  const fp2 = f => f.slice(0,32) + ' ' + f.slice(32); // a 64-character code on two lines
+  if(cl.lockFp) kv('Record fingerprint at lock', fp2(cl.lockFp));
+  const roofYs = roofYears(P); if(roofYs.length) kv('Roof check-ups', roofYs.slice().reverse().map(y=>`${y} (${plural(roofCount(roofOf(P,y)),'view')})`).join(', '));
   kv('Contents logged', `${plural(items.length,'item')}, about ${fmt(c?c.inv.today:invTotals(P).today)} at today's prices`);
-  kv('Photos', `${plural(photos.length,'photo')} (${photos.filter(o=>o.gps).length} with location)`);
+  const allPh = allPhotos(P).map(x=>photoObj(x.o));
+  kv('Photos', `${plural(allPh.length,'photo')} (${allPh.filter(o=>o.gps).length} with location, ${allPh.filter(o=>o.fp).length} with a fingerprint)`);
   kv('Receipts', `${items.filter(i=>i.r).length + (P.upgrades||[]).filter(u=>u.r).length} purchase and upgrade receipts, ${(cl.receipts||[]).filter(r=>r.r).length} expense receipts`);
   kv('Prepared', `${fmtWhen(nowISO())} with StormFile`);
   gap(14);
   text('How this record was made', {bold:true, size:10});
-  text('The policyholder created this record with the StormFile app on their own phone. Photos taken or added in the app carry the date and time they were added, the date the camera recorded when available, and the phone\'s location when allowed. Every addition, removal and receipt is listed with its date in the record history at the end of this packet.', {size:9, color:mute});
+  text('The policyholder created this record with the StormFile app on their own phone. Photos taken or added in the app carry the date and time they were added, the date the camera recorded when available, and the phone\'s location when allowed. Each photo also has a fingerprint (a SHA-256 code) made from the full-size photo when it was saved; if the photo is changed, the code no longer matches. Every addition, removal and receipt is listed with its date in the record history at the end of this packet.', {size:9, color:mute});
   gap(6); text('StormFile helps people organize their records. It does not decide coverage or give insurance or legal advice. Coverage is decided by the policy and the insurance company.', {size:8, color:mute});
 
   // ---- Policy summary ----
@@ -1425,6 +1521,25 @@ async function makeClaimPacket(P, opt){
   if(opt.photos && photos.length){ newPage(); h1('Photos');
     await photoBlock(P.exterior, 'Outside of the building');
     for(const r of P.rooms) await photoBlock(r.photoData, r.name); }
+
+  // ---- Roof ----
+  const ans = (pol && pol.answers) || {};
+  if(opt.photos && (roofYs.length || ans.roofPay)){ newPage(); h1('Roof condition record');
+    text('The same views of the roof, photographed each year before storm season, to show its condition before the storm. Taken from the ground, a ladder or a window.', {size:9, color:mute}); gap(4);
+    const rf = (P.upgrades||[]).find(u=>/roof/i.test(u.n)), ry = ans.roofYear || (rf && rf.y);
+    if(ry) kv('Roof replaced', `${ry} (about ${Math.max(0, YEAR-ry)} years old)`);
+    if(ans.roofPay && ans.roofPay!=='unsure') kv('Roof damage paid at', {rc:'Full replacement cost', acv:'Actual cash value (used value)', schedule:'A payment schedule by roof age'}[ans.roofPay] + (ans.roofRCYears?` (policy line: ${ans.roofRCYears} years)`:'') + ' - as entered by the policyholder');
+    if(ans.roofCosmetic==='yes') kv('Cosmetic damage exclusion', 'Yes, as entered by the policyholder');
+    gap(6);
+    for(const y of roofYs){ const r = roofOf(P, y); need(40); text(`Roof check-up ${y}`, {bold:true, size:12, color:accent}); gap(2);
+      for(const [k,t] of ROOF_SHOTS) await photoBlock((r.shots||{})[k], t); } }
+
+  // ---- Photo fingerprints ----
+  const fps = allPhotos(P).map(x=>({o:photoObj(x.o), where:x.where})).filter(x=>x.o.fp);
+  if(opt.photos && fps.length){ newPage(); h1('Photo fingerprints');
+    text('Each code is a SHA-256 fingerprint of the full-size photo as StormFile saved it on the policyholder\'s phone. Anyone can check a photo: the same photo always gives the same code, and a changed photo gives a different one. The photos printed in this packet are smaller copies, so check codes against the original photos, which the policyholder can provide from the app. A fingerprint shows a photo hasn\'t changed since it was saved; it does not by itself prove the date.', {size:8.5, color:mute}); gap(4);
+    table(['Photo','Saved','Fingerprint (SHA-256)'], fps.map(x=>[x.where, (x.o.addedAt?fmtWhen(x.o.addedAt):'') + (x.o.fpLate?` (code added ${fmtDay(x.o.fpLate)})`:''), fp2(x.o.fp)]), [0.27,0.2,0.53]);
+    if(cl.lockFp){ gap(4); kv('Record fingerprint at lock', fp2(cl.lockFp)); text('Made when the before-storm record was locked, from every photo fingerprint plus the contents and upgrade lists at that moment.', {size:8, color:mute}); } }
 
   // ---- Contents ----
   if(items.length){ need(140); gap(10); h1(P.type==='business'?'Equipment and contents':'Contents inventory');
@@ -2364,7 +2479,7 @@ view.addEventListener('click', e=>{
   const t = e.target.closest('button'); if(!t) return;
   const P = cur();
   if(t.dataset.prop){ S.current = t.dataset.prop; save(); render(); window.scrollTo(0,0); return; }
-  if(t.dataset.viewphoto !== undefined && t.classList.contains('phbtn')) return openViewer(t.dataset.viewphoto, t.dataset.thumb, t.dataset.cap);
+  if(t.dataset.viewphoto !== undefined && t.classList.contains('phbtn')) return openViewer(t.dataset.viewphoto, t.dataset.thumb, t.dataset.cap, t.dataset.fp);
   if(t.dataset.viewfile) return openViewer(t.dataset.viewfile, '', t.dataset.cap);
   if(t.dataset.go) return go(t.dataset.go);
   if(t.dataset.act==='demoPolicy') return readPolicyDemo();
@@ -2446,6 +2561,10 @@ view.addEventListener('click', e=>{
       {date:pol.renewal, title:`${P.name} policy renews today`, desc:'Add the new declarations page to StormFile and check what changed.', dayBefore:false}].filter(e=>at9(e.date) > new Date());
     if(!evs.length) return toast('That renewal date has passed. Update it first.');
     addToCalendar(evs, `StormFile renewal ${P.name}`).then(ok=>{ if(ok){ logEvt(P, 'Renewal reminders added to calendar'); save(); } }); return; }
+  if(t.dataset.act==='calRoof'){ const hurr = stateSeasons(P).some(h=>h.key==='hurricane'), md = hurr ? '05-01' : '03-01';
+    const y = new Date() > new Date(YEAR + '-' + md + 'T09:00:00') ? YEAR + 1 : YEAR;
+    addToCalendar([{date:`${y}-${md}`, yearly:true, title:'StormFile: roof check-up', desc:`Before storm season, open StormFile, go to ${TYPES[P.type].tab}, and retake your 8 roof photos for ${P.name}. Stay off the roof: use the ground, a ladder or a window.`}], `StormFile roof check-up ${P.name}`)
+      .then(ok=>{ if(ok){ logEvt(P, 'Yearly roof check-up reminder added to calendar'); save(); } }); return; }
   if(t.dataset.act==='calSeason'){ const ev = seasonEventsFor(P); if(!ev.length) return toast('Pick a state first.');
     addToCalendar(ev, `StormFile seasons ${stateOf(P)}`).then(ok=>{ if(ok){ logEvt(P, `Season reminders added to calendar (${STATE_NAME[stateOf(P)]})`); save(); } }); return; }
   if(t.dataset.act==='changeState'){ P.state = ''; P.address = String(P.address||'').replace(/,\s*[A-Za-z]{2}\s*$/,''); P.stateCleared = true; save(); return render(); }
@@ -2477,7 +2596,8 @@ view.addEventListener('click', e=>{
     P.upgrades.splice(+t.dataset.delup,1); logEvt(P, `Removed upgrade: ${u.n}`); save(); return render(); }
   if(t.dataset.act==='lockRecord'){
     if(!P.claim.dateOfLoss) return toast('Enter the date of loss above first.');
-    P.claim.lockedAt = nowISO(); logEvt(P, `Before-storm record locked (date of loss ${P.claim.dateOfLoss})`); save(); render(); return toast('Before-storm record locked.');
+    P.claim.lockedAt = nowISO(); logEvt(P, `Before-storm record locked (date of loss ${P.claim.dateOfLoss})`); save(); render(); toast('Before-storm record locked.');
+    recordFingerprint(P).then(fp=>{ if(fp){ P.claim.lockFp = fp; logEvt(P, `Before-storm record fingerprint: ${fp}`); save(); render(); } }); return;
   }
   if(t.dataset.act==='showAllHist'){ S.histAll = !S.histAll; save(); return render(); }
   if(t.dataset.delveh){ P.vehicles.splice(+t.dataset.delveh,1); save(); return render(); }
@@ -2498,6 +2618,9 @@ view.addEventListener('change', e=>{
   if(el.dataset.vcov){ P.vehicles[+el.dataset.vcov].cov = el.value; save(); return render(); }
   if(el.id==='rcFile'){ const n=document.getElementById('rcFileName'); if(n) n.textContent = el.files.length ? 'Attached: '+el.files[0].name : ''; return; }
   if(el.dataset.extphoto){ addPhotos(P, el.files, P.exterior, 'outside of the building', el.dataset.source); return; }
+  if(el.dataset.roofphoto){ const k = el.dataset.roofphoto, shot = ROOF_SHOTS.find(x=>x[0]===k); if(!shot) return;
+    P.roofBase = P.roofBase || {}; const r = P.roofBase[YEAR] || (P.roofBase[YEAR] = {at: nowISO(), shots:{}}); r.shots[k] = r.shots[k] || [];
+    addPhotos(P, el.files, r.shots[k], `roof check-up ${YEAR}: ${shot[1].toLowerCase()}`, el.dataset.source); return; }
   if(el.dataset.roomphoto){
     const r=P.rooms.find(x=>x.id===el.dataset.roomphoto);
     r.photoData = (r.photoData||[]).map(photoObj);
@@ -2576,7 +2699,8 @@ view.addEventListener('submit', e=>{
     const n = id => { const x = parseFloat(g(id).replace(/[^0-9.]/g,'')); return isFinite(x) && x>0 ? x : 0; };
     const a = {carrier:g('carrier'), form:g('form'), number:g('number'), renewal:g('renewal'), claimPhone:g('claimPhone'), agent:g('agent'),
       allPerils:n('allPerils'), windType:g('windType'), windAmt:n('windAmt'), flood:g('flood'), ordinance:g('ordinance'), contentsRC:g('contentsRC'),
-      waterBackup:g('waterBackup'), mold:g('mold'), coins:n('coins'), wait:n('wait'), roofYear:n('roofYear')};
+      waterBackup:g('waterBackup'), mold:g('mold'), coins:n('coins'), wait:n('wait'), roofYear:n('roofYear'),
+      roofPay:g('roofPay'), roofRCYears:n('roofRCYears'), roofCosmetic:g('roofCosmetic')};
     PF_LIMITS[P.type].forEach(([k])=>a['lim'+k]=n('lim-'+k));
     if(!PF_LIMITS[P.type].some(([k])=>a['lim'+k]>0)) return toast('Enter at least one coverage amount.');
     if((a.windType==='pct'||a.windType==='flat') && !a.windAmt) return toast('Enter the wind deductible amount, or choose Not sure.');
@@ -2603,7 +2727,7 @@ view.addEventListener('submit', e=>{
 
 load(); if(!VIEWS[S.tab]) S.tab='home';
 if(!S.lang) S.lang = /^es\b/i.test(navigator.language || '') ? 'es' : 'en'; // Spanish phones start in Spanish
-render(); if(S.lang === 'es') I18N.set('es'); showLock(); runAgeCheck();
+render(); if(S.lang === 'es') I18N.set('es'); showLock(); runAgeCheck(); setTimeout(()=>backfillFingerprints().catch(()=>{}), 1500);
 bioSupported().then(ok=>{ BIO_OK = ok; if(S.tab==='settings') render(); });
 try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
 if(!NAT && 'serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }); }
