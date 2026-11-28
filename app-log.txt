@@ -1,0 +1,88 @@
+11-28 01:23:16.601   521   553 I ActivityManager: Start proc 2584:com.android.chrome/u0a150 for service {com.android.chrome/org.chromium.chrome.browser.customtabs.CustomTabsConnectionService}
+11-28 01:23:17.642   521   551 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch} won't be persisted.
+11-28 01:23:17.642   521   551 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino} won't be persisted.
+11-28 01:23:17.642   521   551 D AppWidgetServiceImpl: Provider info from ComponentInfo{com.android.chrome/org.chromium.chrome.browser.searchwidget.SearchWidgetProvider} won't be persisted.
+11-28 01:23:17.664   521   553 I ActivityManager: Start proc 2731:com.google.android.webview:webview_service/u0a134 for service {com.google.android.webview/org.chromium.android_webview.services.VariationsSeedServer}
+11-28 01:23:18.107   521   553 I ActivityManager: Start proc 2767:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0ai9000 for  {com.coastlinecode.stormfile/org.chromium.content.app.SandboxedProcessService0:0}
+11-28 01:23:18.339  2537  2766 W chromium: [WARNING:dns_config_service_android.cc(115)] Failed to read DnsConfig.
+11-28 01:23:18.401  2767  2767 I cr_WebViewApkApp: Launched version=113.0.5672.136 minSdkVersion=29 isBundle=false processName=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+11-28 01:23:19.358  2537  2537 D Capacitor: Starting BridgeActivity
+11-28 01:23:19.384  2537  2537 D Capacitor: Registering plugin instance: CapacitorCookies
+11-28 01:23:19.387  2537  2537 D Capacitor: Registering plugin instance: WebView
+11-28 01:23:19.389  2537  2537 D Capacitor: Registering plugin instance: CapacitorHttp
+11-28 01:23:19.390  2537  2537 D Capacitor: Registering plugin instance: SystemBars
+11-28 01:23:19.396  2537  2537 D Capacitor: Registering plugin instance: App
+11-28 01:23:19.397  2537  2537 D Capacitor: Registering plugin instance: Filesystem
+11-28 01:23:19.399  2537  2537 D Capacitor: Registering plugin instance: Share
+11-28 01:23:19.404  2537  2537 D Capacitor: Registering plugin instance: SplashScreen
+11-28 01:23:19.406  2537  2537 D Capacitor: Registering plugin instance: StatusBar
+11-28 01:23:19.427  2537  2537 V Capacitor/StatusBarPlugin: Notifying listeners for event statusBarOverlayChanged
+11-28 01:23:19.427  2537  2537 D Capacitor/StatusBarPlugin: No listeners found for event statusBarOverlayChanged
+11-28 01:23:19.428  2537  2537 V Capacitor/StatusBarPlugin: Notifying listeners for event statusBarOverlayChanged
+11-28 01:23:19.428  2537  2537 D Capacitor/StatusBarPlugin: No listeners found for event statusBarOverlayChanged
+11-28 01:23:19.429  2537  2537 D Capacitor: Registering plugin instance: TextZoom
+11-28 01:23:19.430  2537  2537 D Capacitor: Registering plugin instance: AgeSignals
+11-28 01:23:19.432  2537  2537 D Capacitor: Registering plugin instance: NativeBiometric
+11-28 01:23:19.437  2537  2537 D Capacitor: Registering plugin instance: CapacitorCalendar
+11-28 01:23:19.515  2537  2537 W Capacitor: Unable to read file at path public/plugins
+11-28 01:23:19.518  2537  2537 D Capacitor: Loading app at https://localhost
+11-28 01:23:19.558  2537  2766 D Capacitor: Handling local request: https://localhost/
+11-28 01:23:19.567  2537  2537 D Capacitor: App started
+11-28 01:23:19.573  2537  2537 D Capacitor/AppPlugin: Firing change: true
+11-28 01:23:19.573  2537  2537 V Capacitor/AppPlugin: Notifying listeners for event appStateChange
+11-28 01:23:19.573  2537  2537 D Capacitor/AppPlugin: No listeners found for event appStateChange
+11-28 01:23:19.600  2537  2537 V Capacitor/NativeBiometric: Notifying listeners for event biometryChange
+11-28 01:23:19.600  2537  2537 D Capacitor/NativeBiometric: No listeners found for event biometryChange
+11-28 01:23:19.601  2537  2537 D Capacitor: App resumed
+11-28 01:23:20.343  2537  2537 E Capacitor/Console: File:  - Line 6 - Msg: Error injecting safe area CSS: TypeError: Cannot read properties of null (reading 'style')
+11-28 01:23:20.344  2537  2537 E Capacitor/Console: File:  - Line 6 - Msg: Error injecting safe area CSS: TypeError: Cannot read properties of null (reading 'style')
+11-28 01:23:20.670  2537  2839 D Capacitor: Handling local request: https://localhost/vendor/fonts/ibm-plex-sans-latin-400-normal.woff2
+11-28 01:23:20.689  2537  2841 D Capacitor: Handling local request: https://localhost/compat.js
+11-28 01:23:20.719  2537  2962 D Capacitor: Handling local request: https://localhost/vendor/fonts/barlow-condensed-latin-700-normal.woff2
+11-28 01:23:20.721  2537  2961 D Capacitor: Handling local request: https://localhost/vendor/fonts/ibm-plex-sans-latin-600-normal.woff2
+11-28 01:23:21.069   521   553 I ActivityManager: Start proc 3196:com.google.android.webview:webview_apk/u0a134 for service {com.google.android.webview/org.chromium.android_webview.nonembedded.AwComponentUpdateService}
+11-28 01:23:21.605  2537  2839 D Capacitor: Handling local request: https://localhost/es.js
+11-28 01:23:21.971  3196  3252 W cr_AWNetworkFetcherTask: 	at org.chromium.android_webview.nonembedded.NetworkFetcherTask.download(chromium-TrichromeWebViewGoogle6432.apk-stable-567263637:48)
+11-28 01:23:22.387  2537  2768 D Capacitor: Handling local request: https://localhost/vendor/capacitor.js
+11-28 01:23:22.480  2537  2768 D Capacitor: Handling local request: https://localhost/native.js
+11-28 01:23:22.560  2537  2839 D Capacitor: Handling local request: https://localhost/app.js
+11-28 01:23:22.609  2537  2537 I Capacitor/Console: File: https://localhost/native.js - Line 99 - Msg: SF_NATIVE_OK {"platform":"android","plugins":["AgeSignals","App","CapacitorCalendar","CapacitorCookies","CapacitorHttp","Filesystem","NativeBiometric","Share","SplashScreen","StatusBar","SystemBars","TextZoom","WebView"]}
+11-28 01:23:22.609  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:22.618  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829598, pluginId: TextZoom, methodName: getPreferred
+11-28 01:23:22.619  2537  2537 V Capacitor: callback: 129829598, pluginId: TextZoom, methodName: getPreferred, methodData: {}
+11-28 01:23:22.619  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:22.620  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829599, pluginId: App, methodName: addListener
+11-28 01:23:22.620  2537  2537 V Capacitor: callback: 129829599, pluginId: App, methodName: addListener, methodData: {"eventName":"resume"}
+11-28 01:23:22.682  2537  2537 I Capacitor/Console: File:  - Line 333 - Msg: {"value":1}
+11-28 01:23:22.689  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:22.693  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829600, pluginId: TextZoom, methodName: set
+11-28 01:23:22.697  2537  2537 V Capacitor: callback: 129829600, pluginId: TextZoom, methodName: set, methodData: {"value":1}
+11-28 01:23:22.755  2537  2537 I Capacitor/Console: File:  - Line 333 - Msg: undefined
+11-28 01:23:23.246  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:23.247  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829601, pluginId: AgeSignals, methodName: isAvailable
+11-28 01:23:23.247  2537  2537 V Capacitor: callback: 129829601, pluginId: AgeSignals, methodName: isAvailable, methodData: {}
+11-28 01:23:23.248  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:23.249  2537  2839 D Capacitor: Handling local request: https://localhost/vendor/fonts/barlow-condensed-latin-600-normal.woff2
+11-28 01:23:23.250  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829602, pluginId: NativeBiometric, methodName: isAvailable
+11-28 01:23:23.250  2537  2537 V Capacitor: callback: 129829602, pluginId: NativeBiometric, methodName: isAvailable, methodData: {}
+11-28 01:23:23.250  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:23.251  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829603, pluginId: App, methodName: addListener
+11-28 01:23:23.251  2537  2537 V Capacitor: callback: 129829603, pluginId: App, methodName: addListener, methodData: {"eventName":"backButton"}
+11-28 01:23:23.317  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:23.318  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829604, pluginId: SplashScreen, methodName: hide
+11-28 01:23:23.318  2537  2537 V Capacitor: callback: 129829604, pluginId: SplashScreen, methodName: hide, methodData: {}
+11-28 01:23:23.328  2537  2537 I Capacitor/Console: File:  - Line 333 - Msg: {"available":true}
+11-28 01:23:23.329  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:23.330  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829605, pluginId: AgeSignals, methodName: getRegulatoryRequirements
+11-28 01:23:23.330  2537  2537 V Capacitor: callback: 129829605, pluginId: AgeSignals, methodName: getRegulatoryRequirements, methodData: {}
+11-28 01:23:23.332  2537  2839 D Capacitor: Handling local request: https://localhost/icon-192.png
+11-28 01:23:23.463  2537  2977 D Capacitor: Sending plugin error: {"save":false,"callbackId":"129829605","pluginId":"AgeSignals","methodName":"getRegulatoryRequirements","success":false,"error":{"message":"This method is not available on this platform.","code":"UNIMPLEMENTED"}}
+11-28 01:23:23.565  2537  2537 I Capacitor/Console: File:  - Line 333 - Msg: {"biometryType":6,"deviceIsSecure":false,"strongBiometryIsAvailable":false,"errorCode":3,"isAvailable":false,"authenticationStrength":0}
+11-28 01:23:23.567  2537  2537 I Capacitor/Console: File:  - Line 333 - Msg: undefined
+11-28 01:23:23.567  2537  2537 E Capacitor/Console: File:  - Line 330 - Msg: [object Object]
+11-28 01:23:27.544  2537  2537 I Capacitor/Console: File:  - Line 349 - Msg: [object Object]
+11-28 01:23:27.545  2537  2537 V Capacitor/Plugin: To native (Capacitor plugin): callbackId: 129829606, pluginId: Filesystem, methodName: rmdir
+11-28 01:23:27.545  2537  2537 V Capacitor: callback: 129829606, pluginId: Filesystem, methodName: rmdir, methodData: {"path":"stormfile-out","directory":"CACHE","recursive":true}
+11-28 01:23:27.615  2537  2537 D Capacitor: Sending plugin error: {"save":false,"callbackId":"129829606","pluginId":"Filesystem","methodName":"rmdir","success":false,"error":{"message":"'rmdir' failed because file at '\/data\/user\/0\/com.coastlinecode.stormfile\/cache\/stormfile-out\/' does not exist.","code":"OS-PLUG-FILE-0008"}}
+11-28 01:23:27.616  2537  2537 E Capacitor/Console: File:  - Line 330 - Msg: [object Object]
+11-28 01:23:28.532  1799  2392 W earchbox:search: Long monitor contention with owner CronetInit (3679) at void il.run()(:com.google.android.gms.dynamite_cronetdynamite@231818047@23.18.18 (190800-0):3) waiters=0 in iu org.chromium.net.impl.CronetUrlRequestContext.b(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor, int, java.util.Collection, boolean, boolean, boolean, boolean, int, boolean, int, org.chromium.net.RequestFinishedInfo$Listener, int, long) for 181ms

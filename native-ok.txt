@@ -1,0 +1,1 @@
+SF_NATIVE_OK {"platform":"android","plugins":["AgeSignals","App","CapacitorCalendar","CapacitorCookies","CapacitorHttp","Filesystem","NativeBiometric","Share","SplashScreen","StatusBar","SystemBars","TextZoom","WebView"]}
