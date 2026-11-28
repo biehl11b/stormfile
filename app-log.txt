@@ -1,0 +1,42 @@
+11-28 01:28:08.082  1652  4695 I ActivityManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.coastlinecode.stormfile/.MainActivity} from uid 2000
+11-28 01:28:08.103  1652  1806 I ActivityManager: Start proc 6351:com.coastlinecode.stormfile/u0a80 for activity com.coastlinecode.stormfile/.MainActivity
+11-28 01:28:08.131  6351  6351 I WebViewFactory: Loading com.android.chrome version 69.0.3497.100 (code 349710067)
+11-28 01:28:08.158  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getWebViewProviderClass(java.lang.ClassLoader) (WebViewFactory.java:150)
+11-28 01:28:08.158  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:417)
+11-28 01:28:08.158  6351  6351 I zygote64:   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:211)
+11-28 01:28:08.158  6351  6351 I zygote64:   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:28:08.158  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getWebViewProviderClass(java.lang.ClassLoader) (WebViewFactory.java:150)
+11-28 01:28:08.158  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:417)
+11-28 01:28:08.158  6351  6351 I zygote64:   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:211)
+11-28 01:28:08.158  6351  6351 I zygote64:   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:28:08.159  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getWebViewProviderClass(java.lang.ClassLoader) (WebViewFactory.java:150)
+11-28 01:28:08.159  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:417)
+11-28 01:28:08.159  6351  6351 I zygote64:   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:211)
+11-28 01:28:08.159  6351  6351 I zygote64:   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:28:08.159  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getWebViewProviderClass(java.lang.ClassLoader) (WebViewFactory.java:150)
+11-28 01:28:08.159  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:417)
+11-28 01:28:08.159  6351  6351 I zygote64:   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:211)
+11-28 01:28:08.159  6351  6351 I zygote64:   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:28:08.161  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getWebViewProviderClass(java.lang.ClassLoader) (WebViewFactory.java:150)
+11-28 01:28:08.161  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:417)
+11-28 01:28:08.161  6351  6351 I zygote64:   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:211)
+11-28 01:28:08.161  6351  6351 I zygote64:   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:28:08.161  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getWebViewProviderClass(java.lang.ClassLoader) (WebViewFactory.java:150)
+11-28 01:28:08.161  6351  6351 I zygote64:   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:417)
+11-28 01:28:08.161  6351  6351 I zygote64:   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:211)
+11-28 01:28:08.161  6351  6351 I zygote64:   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:28:08.182  6351  6351 I chromium: [INFO:library_loader_hooks.cc(36)] Chromium logging enabled: level = 0, default verbosity = 0
+11-28 01:28:08.189  6351  6373 E cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed_new": /data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed_new (No such file or directory)
+11-28 01:28:08.189  6351  6373 E cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed": /data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed (No such file or directory)
+11-28 01:28:08.222  6351  6351 I cr_BrowserStartup: Initializing chromium process, singleProcess=false
+11-28 01:28:08.225  1652  2663 I ActivityManager: Start proc 6376:com.android.chrome:sandboxed_process0/u0i8 for webview_service com.coastlinecode.stormfile/org.chromium.content.app.SandboxedProcessService0
+11-28 01:28:08.359  6351  6351 I chatty  : uid=10080(u0_a80) com.coastlinecode.stormfile identical 2 lines
+11-28 01:28:08.361  6351  6351 I chatty  : uid=10080(u0_a80) com.coastlinecode.stormfile identical 2 lines
+11-28 01:28:08.364  6351  6351 I chatty  : uid=10080(u0_a80) com.coastlinecode.stormfile identical 2 lines
+11-28 01:28:08.375  6351  6351 D Capacitor: Starting BridgeActivity
+11-28 01:28:08.382  6365  6365 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:28:08.482  6376  6407 I chromium: [INFO:library_loader_hooks.cc(36)] Chromium logging enabled: level = 0, default verbosity = 0
+11-28 01:28:08.504  6365  6365 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:28:08.736  1652  1683 I ActivityManager: Displayed com.coastlinecode.stormfile/.MainActivity: +642ms
+11-28 01:28:08.851  6351  6370 W cr_CrashFileManager: /data/user/0/com.coastlinecode.stormfile/cache/WebView/Crash Reports does not exist or is not a directory
+11-28 01:28:10.967  6365  6365 D AndroidRuntime: Shutting down VM
