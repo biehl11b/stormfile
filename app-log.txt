@@ -1,0 +1,35 @@
+11-28 01:27:53.576  1757  1757 V installd: DexInv: --- END '/data/app/com.coastlinecode.stormfile-n6QQZy1BWoOKUwg7AMEPXw==/base.apk' (success) ---
+11-28 01:27:53.622  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.packageinstaller/com.android.packageinstaller.PackageInstalledReceiver
+11-28 01:27:53.628  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.android.musicfx/.Compatibility$Receiver
+11-28 01:27:53.628  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.gms/.games.chimera.GamesSystemBroadcastReceiverProxy
+11-28 01:27:53.628  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.gms/.gass.chimera.PackageChangeBroadcastReceiver
+11-28 01:27:53.628  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+11-28 01:27:53.629  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.googlequicksearchbox/com.google.android.apps.gsa.googlequicksearchbox.GelStubAppWatcher
+11-28 01:27:53.629  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.ims/.receivers.RcsAutoStartReceiver
+11-28 01:27:53.705  2052  8670 W GCM     : Unexpected forwarded intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 cmp=com.google.android.gms/.chimera.PersistentIntentOperationService (has extras) }
+11-28 01:27:53.717  2052  8742 W GCM     : Unexpected forwarded intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 cmp=com.google.android.gms/.chimera.PersistentIntentOperationService (has extras) }
+11-28 01:27:53.721  2276  8739 I ChromeSync: [Sync,SyncIntentOperation] Handling the intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 cmp=com.google.android.gms/.chimera.GmsIntentOperationService (has extras) }.
+11-28 01:27:54.192  2276  8739 I ChromeSync: [Persistence,AffiliationManager] One of affiliation or grouping data for android://tPjH_caCtoK7y0ztG7HpLeTXugtv-aG-2mkSlVSrPZ_V56KGo9NWb-rbtW1s24qcZhoGYP5LjMUhx11PUQpBnw==@com.coastlinecode.stormfile/ was not found. Marking affiliation data as stale...
+11-28 01:27:55.634  1909  2376 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.coastlinecode.stormfile/.MainActivity} from uid 2000
+11-28 01:27:55.671  1909  1944 I ActivityManager: Start proc 8763:com.coastlinecode.stormfile/u0a149 for activity {com.coastlinecode.stormfile/com.coastlinecode.stormfile.MainActivity}
+11-28 01:27:55.831  8763  8763 I WebViewFactory: Loading com.google.android.webview version 74.0.3729.185 (code 373018568)
+11-28 01:27:55.864  8763  8763 I chromium: [INFO:library_loader_hooks.cc(50)] Chromium logging enabled: level = 0, default verbosity = 0
+11-28 01:27:55.921  8769  8769 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:27:55.935  8769  8769 I AndroidRuntime: Using default boot image
+11-28 01:27:55.935  8769  8769 I AndroidRuntime: Leaving lock profiling enabled
+11-28 01:27:55.958  8763  8763 I cr_BrowserStartup: Initializing chromium process, singleProcess=false
+11-28 01:27:55.989  8763  8763 E chromium: [ERROR:filesystem_posix.cc(89)] stat /data/user/0/com.coastlinecode.stormfile/cache/WebView/Crashpad: No such file or directory (2)
+11-28 01:27:55.989  8763  8763 E chromium: [ERROR:filesystem_posix.cc(62)] mkdir /data/user/0/com.coastlinecode.stormfile/cache/WebView/Crashpad: No such file or directory (2)
+11-28 01:27:56.033  1909  1944 I ActivityManager: Start proc 8792:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0/u0i8 for  {com.coastlinecode.stormfile/org.chromium.content.app.SandboxedProcessService0}
+11-28 01:27:56.134  8769  8769 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:27:56.130  8763  8763 W RenderThread: type=1400 audit(0.0:215): avc: denied { write } for name="property_service" dev="tmpfs" ino=6844 scontext=u:r:untrusted_app:s0:c149,c256,c512,c768 tcontext=u:object_r:property_socket:s0 tclass=sock_file permissive=0 app=com.coastlinecode.stormfile
+11-28 01:27:56.210  8763  8763 D Capacitor: Starting BridgeActivity
+11-28 01:27:56.289  8792  8820 I chromium: [INFO:library_loader_hooks.cc(50)] Chromium logging enabled: level = 0, default verbosity = 0
+11-28 01:27:56.613  1909  1942 I ActivityTaskManager: Displayed com.coastlinecode.stormfile/.MainActivity: +876ms
+11-28 01:27:56.871  8763  8844 I chatty  : uid=10149(com.coastlinecode.stormfile) Chrome_InProcGp identical 4 lines
+11-28 01:27:57.908  8769  8769 D AndroidRuntime: Shutting down VM
+11-28 01:27:58.519  8863  8863 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:27:58.531  8863  8863 I AndroidRuntime: Using default boot image
+11-28 01:27:58.532  8863  8863 I AndroidRuntime: Leaving lock profiling enabled
+11-28 01:27:58.575  8863  8863 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:27:59.617  8863  8863 D AndroidRuntime: Shutting down VM

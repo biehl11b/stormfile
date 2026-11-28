@@ -1,0 +1,9 @@
+Archive:  sf.apks
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+      263  1981-01-01 01:01   toc.pb
+    41306  1981-01-01 01:01   splits/base-en.apk
+ 13862334  1981-01-01 01:01   splits/base-master.apk
+   455449  1981-01-01 01:01   splits/base-xxhdpi.apk
+---------                     -------
+ 14359352                     4 files

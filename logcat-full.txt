@@ -1,0 +1,222 @@
+--------- beginning of main
+11-28 01:27:53.501  8728  8728 I dex2oat : Explicit concurrent copying GC freed 39017(10082KB) AllocSpace objects, 0(0B) LOS objects, 99% free, 712B/1536KB, paused 335us total 2.855ms
+11-28 01:27:53.571  8728  8728 I dex2oat : dex2oat took 5.097s (6.509s cpu) (threads: 2) arena alloc=1000B (1000B) java alloc=16KB (17096B) native alloc=12MB (13477712B) free=834KB (854192B)
+11-28 01:27:53.576  1757  1757 V installd: DexInv: --- END '/data/app/com.coastlinecode.stormfile-n6QQZy1BWoOKUwg7AMEPXw==/base.apk' (success) ---
+11-28 01:27:53.581  1661  2212 I netd    : trafficSetNetPermForUids(4, [10149]) <0.03ms>
+11-28 01:27:53.587  1757  1757 E         : Couldn't opendir /data/app/vmdl2031483744.tmp: No such file or directory
+11-28 01:27:53.587  1757  1757 E installd: Failed to delete /data/app/vmdl2031483744.tmp: No such file or directory
+11-28 01:27:53.580  1909  1909 W Binder:1909_1B: type=1400 audit(0.0:208): avc: denied { getopt } for scontext=u:r:system_server:s0 tcontext=u:r:shell:s0 tclass=unix_stream_socket permissive=0
+11-28 01:27:53.580  1909  1909 I chatty  : uid=1000 system_server identical 1 line
+11-28 01:27:53.580  1909  1909 W Binder:1909_1B: type=1400 audit(0.0:210): avc: denied { getopt } for scontext=u:r:system_server:s0 tcontext=u:r:shell:s0 tclass=unix_stream_socket permissive=0
+11-28 01:27:53.580  1742  1742 W adbd    : type=1400 audit(0.0:211): avc: denied { shutdown } for scontext=u:r:adbd:s0 tcontext=u:r:shell:s0 tclass=unix_stream_socket permissive=0
+--------- beginning of system
+11-28 01:27:53.613  1909  1909 I RoleManagerService: Granting default permissions...
+11-28 01:27:53.622  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.packageinstaller/com.android.packageinstaller.PackageInstalledReceiver
+11-28 01:27:53.627  1909  2001 I InputReader: Reconfiguring input devices.  changes=0x00000010
+11-28 01:27:53.628  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.android.musicfx/.Compatibility$Receiver
+11-28 01:27:53.628  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.gms/.games.chimera.GamesSystemBroadcastReceiverProxy
+11-28 01:27:53.628  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.gms/.gass.chimera.PackageChangeBroadcastReceiver
+11-28 01:27:53.628  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+11-28 01:27:53.629  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.googlequicksearchbox/com.google.android.apps.gsa.googlequicksearchbox.GelStubAppWatcher
+11-28 01:27:53.629  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 (has extras) } to com.google.android.ims/.receivers.RcsAutoStartReceiver
+11-28 01:27:53.702  1909  1920 I system_server: Background concurrent copying GC freed 19948(1353KB) AllocSpace objects, 11(476KB) LOS objects, 31% free, 12MB/18MB, paused 957us total 120.630ms
+11-28 01:27:53.705  2052  8670 W GCM     : Unexpected forwarded intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 cmp=com.google.android.gms/.chimera.PersistentIntentOperationService (has extras) }
+11-28 01:27:53.706  2276  8739 I Auth    : [SupervisedAccountIntentOperation] onHandleIntent(): android.intent.action.PACKAGE_ADDED
+11-28 01:27:53.707  2383  2383 D CarrierSvcBindHelper: No carrier app for: 0
+11-28 01:27:53.707  2276  8739 I Auth    : [SupervisedAccountIntentOperation] This operation is disabled
+11-28 01:27:53.708  1909  2109 W ActivityManager: Unable to start service Intent { act=com.google.android.gms.auth.key.retrieval.service.START pkg=com.google.android.gms } U=0: not found
+11-28 01:27:53.711  1909  2810 W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@e96c3f0
+11-28 01:27:53.714  2276  3130 E GmsClient: unable to connect to service: com.google.android.gms.auth.key.retrieval.service.START on com.google.android.gms
+11-28 01:27:53.717  2052  8742 W GCM     : Unexpected forwarded intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 cmp=com.google.android.gms/.chimera.PersistentIntentOperationService (has extras) }
+11-28 01:27:53.718  2383  2383 D CarrierConfigLoader: mHandler: 9 phoneId: 0
+11-28 01:27:53.721  2276  8739 I ChromeSync: [Sync,SyncIntentOperation] Handling the intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.coastlinecode.stormfile flg=0x4000010 cmp=com.google.android.gms/.chimera.GmsIntentOperationService (has extras) }.
+11-28 01:27:53.736  1909  1909 I Telecom : DefaultDialerCache: Refreshing default dialer for user 0: now com.android.dialer: CM.CCCR->CM.UECNT->CM.CCCR->CM.UECNT@AEI
+11-28 01:27:53.754  8151  8181 I ProvidersCache: Provider returned no roots. Possibly naughty: com.google.android.apps.docs.storage
+11-28 01:27:53.819  1909  3282 I ActivityManager: Killing 6833:com.google.android.gms.unstable/u0a119 (adj 985): empty #17
+11-28 01:27:53.858  1662  1662 I Zygote  : Process 6833 exited due to signal 9 (Killed)
+11-28 01:27:53.867  1909  1945 I libprocessgroup: Successfully killed process cgroup uid 10119 pid 6833 in 43ms
+11-28 01:27:53.981  1661  2212 I netd    : firewallSetUidRule(2, 10149, 2) <0.04ms>
+11-28 01:27:54.192  2276  8739 I ChromeSync: [Persistence,AffiliationManager] One of affiliation or grouping data for android://tPjH_caCtoK7y0ztG7HpLeTXugtv-aG-2mkSlVSrPZ_V56KGo9NWb-rbtW1s24qcZhoGYP5LjMUhx11PUQpBnw==@com.coastlinecode.stormfile/ was not found. Marking affiliation data as stale...
+11-28 01:27:54.988  1909  1942 I RoleUserState: Wrote roles.xml successfully
+11-28 01:27:55.591  2276  6448 I Icing   : Indexing com.google.android.gms-apps from com.google.android.gms
+11-28 01:27:55.634  1909  2376 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.coastlinecode.stormfile/.MainActivity} from uid 2000
+11-28 01:27:55.643  1909  1936 E system_server: Invalid ID 0x00000000.
+11-28 01:27:55.644  1909  2971 W InputReader: Device has associated, but no associated display id.
+11-28 01:27:55.644  1909  2971 I chatty  : uid=1000(system) Binder:1909_13 identical 8 lines
+11-28 01:27:55.644  1909  2971 W InputReader: Device has associated, but no associated display id.
+11-28 01:27:55.647  2276  6448 I Icing   : Indexing done com.google.android.gms-apps
+11-28 01:27:55.670  1662  1662 D Zygote  : Forked child process 8763
+11-28 01:27:55.671  1909  1944 I ActivityManager: Start proc 8763:com.coastlinecode.stormfile/u0a149 for activity {com.coastlinecode.stormfile/com.coastlinecode.stormfile.MainActivity}
+11-28 01:27:55.682  8763  8763 W ecode.stormfil: Unexpected CPU variant for X86 using defaults: x86_64
+11-28 01:27:55.701  1694  1726 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 9850880
+11-28 01:27:55.728  1909  2971 W InputReader: Device has associated, but no associated display id.
+11-28 01:27:55.777  1909  2971 W ActivityManager: Slow operation: 88ms so far, now at attachApplicationLocked: after mServices.attachApplicationLocked
+11-28 01:27:55.774  1909  2971 I chatty  : uid=1000(system) Binder:1909_13 identical 28 lines
+11-28 01:27:55.774  1909  2971 W InputReader: Device has associated, but no associated display id.
+11-28 01:27:55.782  1661  2212 I netd    : firewallSetUidRule(2, 10149, 1) <0.01ms>
+11-28 01:27:55.788  3641  3729 I MicroDetector: Keeping mic open: false
+11-28 01:27:55.789  3641  6942 I AudioController: internalShutdown
+11-28 01:27:55.789  3641  6946 I MicroRecognitionRunner: Stopping hotword detection.
+11-28 01:27:55.795  3641  3793 I DeviceStateChecker: DeviceStateChecker cancelled
+11-28 01:27:55.804  2276  6448 I Icing   : Indexing com.google.android.gms-internal.3p:MobileApplication from com.google.android.gms
+11-28 01:27:55.816  3641  6942 I MicrophoneInputStream: mic_close  SR : 16000 CC : 16 SO : 1999
+11-28 01:27:55.818  3641  6942 E AudioSource: Stop listening is called on already closed AudioSource
+11-28 01:27:55.819  3641  3858 I MicroRecognitionRunner: Detection finished
+11-28 01:27:55.821  8763  8763 W ecode.stormfil: JIT profile information will not be recorded: profile file does not exits.
+11-28 01:27:55.821  8763  8763 W ecode.stormfil: JIT profile information will not be recorded: profile file does not exits.
+11-28 01:27:55.831  8763  8763 I WebViewFactory: Loading com.google.android.webview version 74.0.3729.185 (code 373018568)
+11-28 01:27:55.832  8763  8763 I ecode.stormfil: The ClassLoaderContext is a special shared library.
+11-28 01:27:55.833  8763  8763 I ecode.stormfil: The ClassLoaderContext is a special shared library.
+11-28 01:27:55.857  8763  8763 I cr_LibraryLoader: Time to load native libraries: 15 ms (timestamps 4195-4210)
+11-28 01:27:55.861  1909  1936 W InputReader: Device has associated, but no associated display id.
+11-28 01:27:55.861  1909  1936 I chatty  : uid=1000(system) android.anim identical 8 lines
+11-28 01:27:55.861  1909  1936 W InputReader: Device has associated, but no associated display id.
+11-28 01:27:55.864  8763  8763 I chromium: [INFO:library_loader_hooks.cc(50)] Chromium logging enabled: level = 0, default verbosity = 0
+11-28 01:27:55.864  8763  8763 I cr_LibraryLoader: Expected native library version number "74.0.3729.185", actual native library version number "74.0.3729.185"
+11-28 01:27:55.875  1694  1726 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 9850880
+11-28 01:27:55.903  8763  8790 W cr_ChildProcLH: Create a new ChildConnectionAllocator with package name = com.google.android.webview, sandboxed = true
+11-28 01:27:55.921  8769  8769 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:27:55.935  8769  8769 E libc    : Access denied finding property "persist.device_config.runtime_native_boot.enable_apex_image"
+11-28 01:27:55.935  8769  8769 I AndroidRuntime: Using default boot image
+11-28 01:27:55.935  8769  8769 E libc    : Access denied finding property "persist.device_config.runtime_native_boot.disable_lock_profiling"
+11-28 01:27:55.935  8769  8769 I AndroidRuntime: Leaving lock profiling enabled
+11-28 01:27:55.935  8769  8769 E libc    : Access denied finding property "persist.device_config.runtime_native_boot.enable_generational_cc"
+11-28 01:27:55.936  8769  8769 I app_process: Core platform API reporting enabled, enforcing=false
+11-28 01:27:55.958  8763  8763 I cr_BrowserStartup: Initializing chromium process, singleProcess=false
+11-28 01:27:55.977  2314  2314 D Zygote  : Forked child process 8792
+11-28 01:27:55.989  8763  8763 E chromium: [ERROR:filesystem_posix.cc(89)] stat /data/user/0/com.coastlinecode.stormfile/cache/WebView/Crashpad: No such file or directory (2)
+11-28 01:27:55.989  8763  8763 E chromium: [ERROR:filesystem_posix.cc(62)] mkdir /data/user/0/com.coastlinecode.stormfile/cache/WebView/Crashpad: No such file or directory (2)
+11-28 01:27:56.029  3641  3725 D EGL_emulation: eglMakeCurrent: 0xea9d66e0: ver 3 0 (tinfo 0xe04660e0)
+11-28 01:27:56.033  1909  1944 W ActivityManager: Slow operation: 81ms so far, now at startProcess: done updating battery stats
+11-28 01:27:56.033  1909  1944 W ActivityManager: Slow operation: 81ms so far, now at startProcess: building log message
+11-28 01:27:56.033  1909  1944 I ActivityManager: Start proc 8792:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0/u0i8 for  {com.coastlinecode.stormfile/org.chromium.content.app.SandboxedProcessService0}
+11-28 01:27:56.033  1909  1944 W ActivityManager: Slow operation: 81ms so far, now at startProcess: starting to update pids map
+11-28 01:27:56.033  1909  1944 W ActivityManager: Slow operation: 81ms so far, now at startProcess: done updating pids map
+11-28 01:27:56.035  2567  3029 D EGL_emulation: eglMakeCurrent: 0x729657249d20: ver 3 0 (tinfo 0x729657218920)
+11-28 01:27:56.039  8792  8792 W ProcessService: Unexpected CPU variant for X86 using defaults: x86_64
+11-28 01:27:56.074  1909  1942 E memtrack: Couldn't load memtrack module
+11-28 01:27:56.075  1909  1942 W android.os.Debug: failed to get memory consumption info: -1
+11-28 01:27:56.093  8792  8792 I LoadedApk: No resource references to update in package com.google.android.webview
+11-28 01:27:56.094  8792  8792 I LoadedApk: No resource references to update in package com.google.android.trichromelibrary
+11-28 01:27:56.094  8792  8792 I cr_ChildProcessService: Creating new ChildProcessService pid=8792
+11-28 01:27:56.113  8769  8769 D ICU     : Time zone APEX file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+11-28 01:27:56.116  1909  1920 I system_server: NativeAlloc concurrent copying GC freed 32402(2366KB) AllocSpace objects, 18(1212KB) LOS objects, 34% free, 11MB/17MB, paused 441us total 374.119ms
+11-28 01:27:56.124  8769  8769 W app_process: Unexpected CPU variant for X86 using defaults: x86_64
+11-28 01:27:56.124  8769  8769 I app_process: The ClassLoaderContext is a special shared library.
+11-28 01:27:56.125  8769  8769 I app_process: The ClassLoaderContext is a special shared library.
+11-28 01:27:56.127  8763  8763 I SF_LIFE : web viewer ready before the first screen
+11-28 01:27:56.132  8769  8769 W app_process: JNI RegisterNativeMethods: attempt to register 0 native methods for android.media.AudioAttributes
+11-28 01:27:56.134  8769  8769 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:27:56.135  1722  1807 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+11-28 01:27:56.136  1722  1807 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+11-28 01:27:56.137  8763  8837 D libEGL  : Emulator has host GPU support, qemu.gles is set to 1.
+11-28 01:27:56.137  8763  8837 W libc    : Unable to set property "qemu.gles" to "1": connection failed; errno=13 (Permission denied)
+11-28 01:27:56.140  2276  6448 I Icing   : Indexing done com.google.android.gms-internal.3p:MobileApplication
+11-28 01:27:55.900  8769  8769 W app_process: type=1400 audit(0.0:212): avc: denied { read } for name="u:object_r:device_config_runtime_native_boot_prop:s0" dev="tmpfs" ino=6750 scontext=u:r:shell:s0 tcontext=u:object_r:device_config_runtime_native_boot_prop:s0 tclass=file permissive=0
+11-28 01:27:55.920  8769  8769 I chatty  : uid=2000(shell) app_process identical 1 line
+11-28 01:27:55.920  8769  8769 W app_process: type=1400 audit(0.0:214): avc: denied { read } for name="u:object_r:device_config_runtime_native_boot_prop:s0" dev="tmpfs" ino=6750 scontext=u:r:shell:s0 tcontext=u:object_r:device_config_runtime_native_boot_prop:s0 tclass=file permissive=0
+11-28 01:27:56.147  8763  8837 D libEGL  : loaded /vendor/lib64/egl/libEGL_emulation.so
+11-28 01:27:56.147  8763  8837 D libEGL  : loaded /vendor/lib64/egl/libGLESv1_CM_emulation.so
+11-28 01:27:56.148  8763  8763 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+11-28 01:27:56.151  8763  8763 I SF_LIFE : onCreate restored=false
+11-28 01:27:56.157  8763  8837 D libEGL  : loaded /vendor/lib64/egl/libGLESv2_emulation.so
+11-28 01:27:56.130  8763  8763 W RenderThread: type=1400 audit(0.0:215): avc: denied { write } for name="property_service" dev="tmpfs" ino=6844 scontext=u:r:untrusted_app:s0:c149,c256,c512,c768 tcontext=u:object_r:property_socket:s0 tclass=sock_file permissive=0 app=com.coastlinecode.stormfile
+11-28 01:27:56.163  1909  1909 V SettingsProvider: Notifying for 0: content://settings/secure/accessibility_enabled
+11-28 01:27:56.210  8763  8763 D Capacitor: Starting BridgeActivity
+11-28 01:27:56.224  8763  8763 W ecode.stormfil: Accessing hidden method Landroid/view/View;->getWindowInsetsController()Landroid/view/WindowInsetsController; (blacklist, linking, denied)
+11-28 01:27:56.224  8763  8763 W ecode.stormfil: Accessing hidden method Landroid/view/View;->getWindowInsetsController()Landroid/view/WindowInsetsController; (blacklist, linking, denied)
+11-28 01:27:56.245  8763  8814 W cr_media: Requires BLUETOOTH permission
+11-28 01:27:56.259  8763  8844 D HostConnection: HostConnection::get() New Host Connection established 0x729608f85440, tid 8844
+11-28 01:27:56.259  8763  8763 I SF_LIFE : screen started
+11-28 01:27:56.267  8763  8844 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform ANDROID_EMU_hwc_display_power_mode GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0 
+11-28 01:27:56.271  8763  8844 D EGL_emulation: eglCreateContext: 0x729608f85620: maj 3 min 0 rcv 3
+11-28 01:27:56.272  8763  8844 D EGL_emulation: eglMakeCurrent: 0x729608f85620: ver 3 0 (tinfo 0x729608f5dbc0)
+11-28 01:27:56.288  8792  8820 I cr_LibraryLoader: Time to load native libraries: 0 ms (timestamps 4641-4641)
+11-28 01:27:56.289  8792  8820 I chromium: [INFO:library_loader_hooks.cc(50)] Chromium logging enabled: level = 0, default verbosity = 0
+11-28 01:27:56.289  8792  8820 I cr_LibraryLoader: Expected native library version number "74.0.3729.185", actual native library version number "74.0.3729.185"
+11-28 01:27:56.324  8763  8833 D HostConnection: HostConnection::get() New Host Connection established 0x72960ac23b80, tid 8833
+11-28 01:27:56.342  8763  8833 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform ANDROID_EMU_hwc_display_power_mode GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0 
+11-28 01:27:56.344  8763  8833 D EGL_emulation: eglCreateContext: 0x72960ac23c20: maj 3 min 0 rcv 3
+11-28 01:27:56.345  8763  8833 D EGL_emulation: eglMakeCurrent: 0x72960ac23c20: ver 3 0 (tinfo 0x72960ac31680)
+11-28 01:27:56.368  1694  1726 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 9850880
+11-28 01:27:56.371  1567  1567 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+11-28 01:27:56.371  8763  8833 W Gralloc3: mapper 3.x is not supported
+11-28 01:27:56.377  8763  8844 I VideoCapabilities: Unsupported profile 4 for video/mp4v-es
+11-28 01:27:56.378  8763  8844 W cr_MediaCodecUtil: HW encoder for video/avc is not available on this device.
+11-28 01:27:56.398  8763  8833 D HostConnection: createUnique: call
+11-28 01:27:56.398  8763  8833 D HostConnection: HostConnection::get() New Host Connection established 0x72960ac24800, tid 8833
+11-28 01:27:56.398  8763  8833 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_hwc_color_transform ANDROID_EMU_hwc_display_power_mode GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0 
+11-28 01:27:56.399  8763  8833 D eglCodecCommon: allocate: Ask for block of size 0x1000
+11-28 01:27:56.399  8763  8833 D eglCodecCommon: allocate: ioctl allocate returned offset 0x3ffff6000 size 0x2000
+11-28 01:27:56.402  1694  1726 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 9850880
+11-28 01:27:56.402  8763  8833 D EGL_emulation: eglMakeCurrent: 0x72960ac23c20: ver 3 0 (tinfo 0x72960ac31680)
+11-28 01:27:56.402  1694  1726 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 9850880
+11-28 01:27:56.412  8763  8833 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+11-28 01:27:56.481  1909  1934 I DropBoxManagerService: add tag=system_server_strictmode isTagEnabled=true flags=0x2
+11-28 01:27:56.412  8763  8833 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+11-28 01:27:56.488  8763  8844 D EGL_emulation: eglCreateContext: 0x729608f84d60: maj 3 min 0 rcv 3
+11-28 01:27:56.489  8763  8844 D EGL_emulation: eglMakeCurrent: 0x729608f84d60: ver 3 0 (tinfo 0x729608f5dbc0)
+11-28 01:27:56.508  8763  8844 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+11-28 01:27:56.508  8763  8844 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+11-28 01:27:56.613  1909  1942 I ActivityTaskManager: Displayed com.coastlinecode.stormfile/.MainActivity: +876ms
+11-28 01:27:56.685  2060  2338 D EGL_emulation: eglMakeCurrent: 0x7296556da520: ver 3 0 (tinfo 0x72960af05b20)
+11-28 01:27:56.703  2060  2338 D EGL_emulation: eglMakeCurrent: 0x7296556da520: ver 3 0 (tinfo 0x72960af05b20)
+11-28 01:27:56.747  3641  6942 I PBSessionCacheImpl: Deleted sessionId[155397245652] from persistence.
+11-28 01:27:56.789  3641  3729 W SearchServiceCore: Abort, client detached.
+11-28 01:27:56.801  8763  8844 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+11-28 01:27:56.871  8763  8844 I chatty  : uid=10149(com.coastlinecode.stormfile) Chrome_InProcGp identical 4 lines
+11-28 01:27:56.871  8763  8844 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ef
+11-28 01:27:57.020  2276  8739 I Vision  : Requesting optional module download of ocr.
+11-28 01:27:57.020  2276  8739 I Vision  : Exceeded maximum feature download tries for ocr
+11-28 01:27:57.020  2276  8739 W Vision  : Request of optional module download of ocr failed.
+11-28 01:27:57.021  2276  8739 I Vision  : Checking for download completion for 185374 -- ocr
+11-28 01:27:57.153  2276  7913 W ChimeraConfigurator: Error syncing flags: qoq: COMMIT_TIMEOUT
+11-28 01:27:57.153  2276  7913 I ChmraDebugLogger: [79] COMMIT_TIMEOUT
+11-28 01:27:57.162  2276  7913 I ChmraDebugLogger: [52] null
+11-28 01:27:57.167  2276  7913 I ChimeraConfigService: Scheduling checkin for one-off execution between [3300,43200] seconds from now (1795829277167)
+11-28 01:27:57.173  2276  3959 W gle.android.gm: Long monitor contention with owner [com.google.android.gms.chimera.GmsIntentOperationService$ChimeraService-Executor] processing qlx for action com.google.android.chimera.container.REQUESTED_FEATURES_CHANGED (7913) at void sun.misc.Unsafe.park(boolean, long)(Unsafe.java:-2) waiters=0 in boolean qmo.a(int, qmh, java.util.List, qmn) for 40.877s
+11-28 01:27:57.173  2276  3959 I ChimeraConfigurator: Starting update, reason: 1 urgentFeatures: 
+11-28 01:27:57.202  2276  3959 I ChmraDebugLogger: [52] null
+11-28 01:27:57.211  2276  3959 W ChimeraConfigService: Retry attempt was throttled.
+11-28 01:27:57.215  2276  3959 I ChimeraConfigService: Scheduling checkin every 43200 seconds, with flex of 1800 seconds
+11-28 01:27:57.437  2276  6448 I TelephonySpam: TelephonySpamChimeraService - Running Telephony Spam Chimera Service
+11-28 01:27:57.469  8763  8763 I Choreographer: Skipped 30 frames!  The application may be doing too much work on its main thread.
+11-28 01:27:57.836  8769  8769 W AccessibilityNodeInfoDumper: Fetch time: 1ms
+11-28 01:27:56.486  1909  1934 I chatty  : uid=1000(system) android.io identical 6 lines
+11-28 01:27:56.490  1909  1934 I DropBoxManagerService: add tag=system_server_strictmode isTagEnabled=true flags=0x2
+11-28 01:27:57.839  1909  3279 W WindowManager: removeWindowToken: Attempted to remove non-existing token: android.os.Binder@b13f79
+11-28 01:27:57.841  1909  1909 V SettingsProvider: Notifying for 0: content://settings/secure/accessibility_enabled
+11-28 01:27:57.908  8769  8769 D AndroidRuntime: Shutting down VM
+11-28 01:27:58.382  3567  4516 I Dialer  : OmtpVvmCarrierCfgHlpr - OmtpEvent:CONFIG_STATUS_SMS_TIME_OUT
+11-28 01:27:58.382  3567  3567 I Dialer  : RetryPolicy - discarding deferred status: configuration_state=4
+11-28 01:27:58.384  3567  3567 I Dialer  : VvmTaskExecutor - no more tasks, stopping service if no task are added in 5000 millis
+11-28 01:27:58.384  3567  3567 I Dialer  : VvmTaskReceiver - task received
+11-28 01:27:58.384  3567  3567 I Dialer  : VvmTaskReceiver - TaskExecutor already running
+11-28 01:27:58.385  3567  3567 I Dialer  : Task.createTask - create task:com.android.voicemail.impl.ActivationTask
+11-28 01:27:58.385  3567  3567 I Dialer  : RetryPolicy - retry #2 for com.android.voicemail.impl.ActivationTask@f23ca95 queued, executing in 5000
+11-28 01:27:58.385  3567  3567 I Dialer  : VvmTaskExecutor - com.android.voicemail.impl.ActivationTask@f23ca95 added
+11-28 01:27:58.385  3567  3567 I Dialer  : VvmTaskExecutor - minimal wait time:5000
+11-28 01:27:58.385  3567  3567 I Dialer  : VvmTaskExecutor - sleep for 5000 millis
+11-28 01:27:58.484  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.stats.service.DropBoxEntryAddedReceiver
+11-28 01:27:58.484  1909  1943 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.DROPBOX_ENTRY_ADDED flg=0x10 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+11-28 01:27:58.519  8863  8863 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:27:58.531  8863  8863 E libc    : Access denied finding property "persist.device_config.runtime_native_boot.enable_apex_image"
+11-28 01:27:58.510  8863  8863 W app_process: type=1400 audit(0.0:216): avc: denied { read } for name="u:object_r:device_config_runtime_native_boot_prop:s0" dev="tmpfs" ino=6750 scontext=u:r:shell:s0 tcontext=u:object_r:device_config_runtime_native_boot_prop:s0 tclass=file permissive=0
+11-28 01:27:58.510  8863  8863 I chatty  : uid=2000(shell) app_process identical 1 line
+11-28 01:27:58.510  8863  8863 W app_process: type=1400 audit(0.0:218): avc: denied { read } for name="u:object_r:device_config_runtime_native_boot_prop:s0" dev="tmpfs" ino=6750 scontext=u:r:shell:s0 tcontext=u:object_r:device_config_runtime_native_boot_prop:s0 tclass=file permissive=0
+11-28 01:27:58.531  8863  8863 I AndroidRuntime: Using default boot image
+11-28 01:27:58.532  8863  8863 E libc    : Access denied finding property "persist.device_config.runtime_native_boot.disable_lock_profiling"
+11-28 01:27:58.532  8863  8863 I AndroidRuntime: Leaving lock profiling enabled
+11-28 01:27:58.532  8863  8863 E libc    : Access denied finding property "persist.device_config.runtime_native_boot.enable_generational_cc"
+11-28 01:27:58.533  8863  8863 I app_process: Core platform API reporting enabled, enforcing=false
+11-28 01:27:58.561  8863  8863 D ICU     : Time zone APEX file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+11-28 01:27:58.564  8863  8863 W app_process: Unexpected CPU variant for X86 using defaults: x86_64
+11-28 01:27:58.566  8863  8863 I app_process: The ClassLoaderContext is a special shared library.
+11-28 01:27:58.566  8863  8863 I app_process: The ClassLoaderContext is a special shared library.
+11-28 01:27:58.573  8863  8863 W app_process: JNI RegisterNativeMethods: attempt to register 0 native methods for android.media.AudioAttributes
+11-28 01:27:58.575  8863  8863 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:27:58.580  1909  1909 V SettingsProvider: Notifying for 0: content://settings/secure/accessibility_enabled
+11-28 01:27:59.609  8863  8863 W AccessibilityNodeInfoDumper: Fetch time: 3ms
+11-28 01:27:59.609  1909  2964 W WindowManager: removeWindowToken: Attempted to remove non-existing token: android.os.Binder@2d950ea
+11-28 01:27:59.610  1909  1909 V SettingsProvider: Notifying for 0: content://settings/secure/accessibility_enabled
+11-28 01:27:59.617  8863  8863 D AndroidRuntime: Shutting down VM
