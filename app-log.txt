@@ -1,0 +1,32 @@
+11-28 01:26:58.917  5689  5689 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:26:58.918  5689  5689 D AndroidRuntime: CheckJNI is OFF
+11-28 01:26:58.941  5689  5689 D AndroidRuntime: Calling main entry com.android.commands.am.Am
+11-28 01:26:58.943  1622  2359 I ActivityManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.coastlinecode.stormfile/.MainActivity} from uid 2000 on display 0
+11-28 01:26:58.956  5689  5689 D AndroidRuntime: Shutting down VM
+11-28 01:26:58.966  1622  2357 I ActivityManager: Start proc 5699:com.coastlinecode.stormfile/u0a81 for activity com.coastlinecode.stormfile/.MainActivity
+11-28 01:26:58.972  5699  5699 W System  : ClassLoader referenced unknown path: /data/app/com.coastlinecode.stormfile-1/lib/x86_64
+11-28 01:26:59.003  5699  5699 I WebViewFactory: Loading com.android.chrome version 69.0.3497.100 (code 349710067)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:349)
+11-28 01:26:59.025  5699  5699 I art     :   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:194)
+11-28 01:26:59.025  5699  5699 I art     :   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:349)
+11-28 01:26:59.025  5699  5699 I art     :   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:194)
+11-28 01:26:59.025  5699  5699 I art     :   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:26:59.032  5699  5699 I chromium: [INFO:library_loader_hooks.cc(36)] Chromium logging enabled: level = 0, default verbosity = 0
+11-28 01:26:59.034  5699  5720 E cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed_new": /data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed_new (No such file or directory)
+11-28 01:26:59.035  5699  5720 E cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed": /data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed (No such file or directory)
+11-28 01:26:59.047  5699  5699 I cr_BrowserStartup: Initializing chromium process, singleProcess=true
+11-28 01:26:59.150  5699  5699 D Capacitor: Starting BridgeActivity
+11-28 01:26:59.197  5713  5713 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:26:59.200  5713  5713 D AndroidRuntime: CheckJNI is OFF
+11-28 01:26:59.294  5713  5713 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:26:59.536  1622  1643 I ActivityManager: Displayed com.coastlinecode.stormfile/.MainActivity: +580ms
+11-28 01:26:59.569  1622  1643 I WindowManager: Destroying surface Surface(name=Starting com.coastlinecode.stormfile) called by com.android.server.wm.WindowStateAnimator.destroySurface:2016 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:882 com.android.server.wm.WindowState.destroyOrSaveSurface:2100 com.android.server.wm.AppWindowToken.destroySurfaces:363 com.android.server.wm.WindowStateAnimator.finishExit:565 com.android.server.wm.WindowStateAnimator.stepAnimationLocked:491 com.android.server.wm.WindowAnimator.updateWindowsLocked:303 com.android.server.wm.WindowAnimator.animateLocked:704 
+11-28 01:26:59.631  5699  5717 W cr_CrashFileManager: /data/user/0/com.coastlinecode.stormfile/cache/WebView/Crash Reports does not exist or is not a directory
+11-28 01:27:00.636  5713  5713 D AndroidRuntime: Shutting down VM
+11-28 01:27:04.793  1622  1884 D VoldConnector: SND -> {36 volume mkdirs /storage/emulated/0/Android/data/com.coastlinecode.stormfile/cache/}
+11-28 01:27:04.867  5699  5772 D ProfileInstaller: Installing profile for com.coastlinecode.stormfile
+11-28 01:27:06.243  5775  5775 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:27:06.244  5775  5775 D AndroidRuntime: CheckJNI is OFF
+11-28 01:27:06.271  5775  5775 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:27:07.287  5775  5775 D AndroidRuntime: Shutting down VM

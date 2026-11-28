@@ -1,0 +1,321 @@
+--------- beginning of main
+11-28 01:26:58.917  5689  5689 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:26:58.918  5689  5689 D AndroidRuntime: CheckJNI is OFF
+11-28 01:26:58.928  5689  5689 W art     : Unexpected CPU variant for X86 using defaults: x86_64
+11-28 01:26:58.930  5689  5689 D ICU     : No timezone override file found: /data/misc/zoneinfo/current/icu/icu_tzdata.dat
+11-28 01:26:58.937  5689  5689 E memtrack: Couldn't load memtrack module (No such file or directory)
+11-28 01:26:58.937  5689  5689 E android.os.Debug: failed to load memtrack module: -2
+11-28 01:26:58.938  5689  5689 I Radio-JNI: register_android_hardware_Radio DONE
+11-28 01:26:58.941  5689  5689 D AndroidRuntime: Calling main entry com.android.commands.am.Am
+--------- beginning of system
+11-28 01:26:58.943  1622  2359 I ActivityManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.coastlinecode.stormfile/.MainActivity} from uid 2000 on display 0
+11-28 01:26:58.943  1622  2359 W ResourceType: ResTable_typeSpec entry count inconsistent: given 191, previously 193
+11-28 01:26:58.944  1622  2359 W ResourceType: ResTable_typeSpec entry count inconsistent: given 233, previously 236
+11-28 01:26:58.944  1622  2359 W ResourceType: ResTable_typeSpec entry count inconsistent: given 220, previously 1122
+11-28 01:26:58.944  1622  2359 W ResourceType: For resource 0x7f120277, entry index(631) is beyond type entryCount(220)
+11-28 01:26:58.944  1622  2359 W ResourceType: For resource 0x7f120278, entry index(632) is beyond type entryCount(220)
+11-28 01:26:58.944  1622  2359 W ResourceType: For resource 0x7f120123, entry index(291) is beyond type entryCount(220)
+11-28 01:26:58.945  1622  1643 W ResourceType: For resource 0x7f1100c0, entry index(192) is beyond type entryCount(191)
+11-28 01:26:58.956  5689  5689 D AndroidRuntime: Shutting down VM
+11-28 01:26:58.959  5699  5699 W art     : Unexpected CPU variant for X86 using defaults: x86_64
+11-28 01:26:58.966  1622  2357 I ActivityManager: Start proc 5699:com.coastlinecode.stormfile/u0a81 for activity com.coastlinecode.stormfile/.MainActivity
+11-28 01:26:58.972  5699  5699 W System  : ClassLoader referenced unknown path: /data/app/com.coastlinecode.stormfile-1/lib/x86_64
+11-28 01:26:58.973  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 191, previously 193
+11-28 01:26:58.973  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 233, previously 236
+11-28 01:26:58.973  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 220, previously 1122
+11-28 01:26:59.002  5699  5699 W System  : ClassLoader referenced unknown path: /system/app/Chrome/lib/x86_64
+11-28 01:26:59.003  5699  5699 I WebViewFactory: Loading com.android.chrome version 69.0.3497.100 (code 349710067)
+11-28 01:26:59.025  5699  5699 I art     : Rejecting re-init on previously-failed class java.lang.Class<uJ>: java.lang.NoClassDefFoundError: Failed resolution of: Landroid/webkit/TracingController;
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class java.lang.Class.classForName!(java.lang.String, boolean, java.lang.ClassLoader) (Class.java:-2)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class java.lang.Class.forName(java.lang.String, boolean, java.lang.ClassLoader) (Class.java:400)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:349)
+11-28 01:26:59.025  5699  5699 I art     :   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:194)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.String android.webkit.WebSettings.getDefaultUserAgent(android.content.Context) (WebSettings.java:1246)
+11-28 01:26:59.025  5699  5699 I art     :   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.Instrumentation.callApplicationOnCreate(android.app.Application) (Instrumentation.java:1024)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.ActivityThread.handleBindApplication(android.app.ActivityThread$AppBindData) (ActivityThread.java:5361)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.ActivityThread.-wrap2(android.app.ActivityThread, android.app.ActivityThread$AppBindData) (ActivityThread.java:-1)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.ActivityThread$H.handleMessage(android.os.Message) (ActivityThread.java:1528)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.os.Handler.dispatchMessage(android.os.Message) (Handler.java:102)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.os.Looper.loop() (Looper.java:154)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.ActivityThread.main(java.lang.String[]) (ActivityThread.java:6077)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Object java.lang.reflect.Method.invoke!(java.lang.Object, java.lang.Object[]) (Method.java:-2)
+11-28 01:26:59.025  5699  5699 I art     :   at void com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run() (ZygoteInit.java:866)
+11-28 01:26:59.025  5699  5699 I art     :   at void com.android.internal.os.ZygoteInit.main(java.lang.String[]) (ZygoteInit.java:756)
+11-28 01:26:59.025  5699  5699 I art     : Caused by: java.lang.ClassNotFoundException: Didn't find class "android.webkit.TracingController" on path: DexPathList[[zip file "/system/app/Chrome/Chrome.apk"],nativeLibraryDirectories=[/system/app/Chrome/lib/x86_64, /system/app/Chrome/Chrome.apk!/lib/x86_64, /system/lib64, /vendor/lib64, /system/lib64, /vendor/lib64]]
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class dalvik.system.BaseDexClassLoader.findClass(java.lang.String) (BaseDexClassLoader.java:56)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class java.lang.ClassLoader.loadClass(java.lang.String, boolean) (ClassLoader.java:380)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class java.lang.ClassLoader.loadClass(java.lang.String) (ClassLoader.java:312)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class java.lang.Class.classForName!(java.lang.String, boolean, java.lang.ClassLoader) (Class.java:-2)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class java.lang.Class.forName(java.lang.String, boolean, java.lang.ClassLoader) (Class.java:400)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Class android.webkit.WebViewFactory.getProviderClass() (WebViewFactory.java:349)
+11-28 01:26:59.025  5699  5699 I art     :   at android.webkit.WebViewFactoryProvider android.webkit.WebViewFactory.getProvider() (WebViewFactory.java:194)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.String android.webkit.WebSettings.getDefaultUserAgent(android.content.Context) (WebSettings.java:1246)
+11-28 01:26:59.025  5699  5699 I art     :   at void com.coastlinecode.stormfile.StormFileApp.onCreate() (StormFileApp.java:26)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.Instrumentation.callApplicationOnCreate(android.app.Application) (Instrumentation.java:1024)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.ActivityThread.handleBindApplication(android.app.ActivityThread$AppBindData) (ActivityThread.java:5361)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.ActivityThread.-wrap2(android.app.ActivityThread, android.app.ActivityThread$AppBindData) (ActivityThread.java:-1)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.ActivityThread$H.handleMessage(android.os.Message) (ActivityThread.java:1528)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.os.Handler.dispatchMessage(android.os.Message) (Handler.java:102)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.os.Looper.loop() (Looper.java:154)
+11-28 01:26:59.025  5699  5699 I art     :   at void android.app.ActivityThread.main(java.lang.String[]) (ActivityThread.java:6077)
+11-28 01:26:59.025  5699  5699 I art     :   at java.lang.Object java.lang.reflect.Method.invoke!(java.lang.Object, java.lang.Object[]) (Method.java:-2)
+11-28 01:26:59.025  5699  5699 I art     :   at void com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run() (ZygoteInit.java:866)
+11-28 01:26:59.025  5699  5699 I art     :   at void com.android.internal.os.ZygoteInit.main(java.lang.String[]) (ZygoteInit.java:756)
+11-28 01:26:59.025  5699  5699 I art     : 
+11-28 01:26:59.030  5699  5699 I cr_LibraryLoader: Time to load native libraries: 2 ms (timestamps 4193-4195)
+11-28 01:26:59.032  5699  5699 I chromium: [INFO:library_loader_hooks.cc(36)] Chromium logging enabled: level = 0, default verbosity = 0
+11-28 01:26:59.032  5699  5699 I cr_LibraryLoader: Expected native library version number "69.0.3497.100", actual native library version number "69.0.3497.100"
+11-28 01:26:59.034  5699  5720 E cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed_new": /data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed_new (No such file or directory)
+11-28 01:26:59.035  5699  5720 E cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed": /data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed (No such file or directory)
+11-28 01:26:59.039  5699  5720 W System  : ClassLoader referenced unknown path: 
+11-28 01:26:59.039  5699  5720 W System  : ClassLoader referenced unknown path: /system/app/Chrome/lib/x86_64
+11-28 01:26:59.045  1309  2077 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 8294400
+11-28 01:26:59.047  5699  5699 I cr_BrowserStartup: Initializing chromium process, singleProcess=true
+11-28 01:26:59.048  5699  5699 W ResourceType: For resource 0x7f1204b0, entry index(1200) is beyond type entryCount(1122)
+11-28 01:26:59.048  5699  5699 W ResourceType: For resource 0x7f1204b0, entry index(1200) is beyond type entryCount(220)
+11-28 01:26:59.048  5699  5699 W ResourceType: Failure getting entry for 0x7f1204b0 (t=17 e=1200) (error -75)
+11-28 01:26:59.068  1792  1792 W ResourceType: ResTable_typeSpec entry count inconsistent: given 191, previously 193
+11-28 01:26:59.069  1792  1792 W ResourceType: ResTable_typeSpec entry count inconsistent: given 233, previously 236
+11-28 01:26:59.069  1792  1792 W ResourceType: ResTable_typeSpec entry count inconsistent: given 220, previously 1122
+11-28 01:26:59.069  1792  1792 W ResourceType: For resource 0x7f1100c0, entry index(192) is beyond type entryCount(191)
+11-28 01:26:59.105  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 191, previously 193
+11-28 01:26:59.105  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 233, previously 236
+11-28 01:26:59.105  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 220, previously 1122
+11-28 01:26:59.118  5699  5699 I SF_LIFE : web viewer ready before the first screen
+11-28 01:26:59.126  5699  5699 W ResourceType: For resource 0x7f1100c0, entry index(192) is beyond type entryCount(191)
+11-28 01:26:59.127  5699  5699 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+11-28 01:26:59.127  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 191, previously 193
+11-28 01:26:59.127  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 233, previously 236
+11-28 01:26:59.127  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 220, previously 1122
+11-28 01:26:59.128  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 191, previously 193
+11-28 01:26:59.128  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 233, previously 236
+11-28 01:26:59.128  5699  5699 W ResourceType: ResTable_typeSpec entry count inconsistent: given 220, previously 1122
+11-28 01:26:59.128  5699  5699 W ResourceType: For resource 0x7f12021c, entry index(540) is beyond type entryCount(220)
+11-28 01:26:59.128  5699  5699 W ResourceType: For resource 0x7f120277, entry index(631) is beyond type entryCount(220)
+11-28 01:26:59.129  5699  5699 W ResourceType: For resource 0x7f120278, entry index(632) is beyond type entryCount(220)
+11-28 01:26:59.129  5699  5699 W ResourceType: For resource 0x7f120123, entry index(291) is beyond type entryCount(220)
+11-28 01:26:59.129  5699  5699 I SF_LIFE : onCreate restored=false
+11-28 01:26:59.131  5699  5699 W art     : Before Android 4.1, method android.graphics.PorterDuffColorFilter androidx.vectordrawable.graphics.drawable.VectorDrawableCompat.updateTintFilter(android.graphics.PorterDuffColorFilter, android.content.res.ColorStateList, android.graphics.PorterDuff$Mode) would have incorrectly overridden the package-private method in android.graphics.drawable.Drawable
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120217, entry index(535) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120223, entry index(547) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12021d, entry index(541) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12013e, entry index(318) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120147, entry index(327) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120217, entry index(535) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120223, entry index(547) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12021d, entry index(541) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12013e, entry index(318) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120147, entry index(327) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120304, entry index(772) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120304, entry index(772) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120306, entry index(774) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12030a, entry index(778) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120308, entry index(776) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12027b, entry index(635) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120318, entry index(792) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202ef, entry index(751) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202f1, entry index(753) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12027b, entry index(635) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120316, entry index(790) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202f2, entry index(754) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120281, entry index(641) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202f3, entry index(755) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202fa, entry index(762) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120280, entry index(640) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12031c, entry index(796) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120301, entry index(769) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120302, entry index(770) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120319, entry index(793) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f12031a, entry index(794) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120210, entry index(528) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120315, entry index(789) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120317, entry index(791) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120328, entry index(808) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120300, entry index(768) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1202fe, entry index(766) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1201af, entry index(431) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120198, entry index(408) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1201af, entry index(431) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1201c2, entry index(450) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1201ab, entry index(427) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f1201ac, entry index(428) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120331, entry index(817) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f120330, entry index(816) is beyond type entryCount(220)
+11-28 01:26:59.133  5699  5699 W ResourceType: For resource 0x7f0800ea, entry index(234) is beyond type entryCount(233)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120304, entry index(772) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120304, entry index(772) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120306, entry index(774) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f12030a, entry index(778) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120308, entry index(776) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f12027b, entry index(635) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120318, entry index(792) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202ef, entry index(751) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202f1, entry index(753) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f12027b, entry index(635) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120316, entry index(790) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202f2, entry index(754) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120281, entry index(641) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202f3, entry index(755) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202fa, entry index(762) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120280, entry index(640) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f12031c, entry index(796) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120301, entry index(769) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120302, entry index(770) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120319, entry index(793) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f12031a, entry index(794) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120210, entry index(528) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120315, entry index(789) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120317, entry index(791) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120328, entry index(808) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120300, entry index(768) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1202fe, entry index(766) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1201af, entry index(431) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120198, entry index(408) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1201af, entry index(431) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1201c2, entry index(450) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1201ab, entry index(427) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f1201ac, entry index(428) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120331, entry index(817) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f120330, entry index(816) is beyond type entryCount(220)
+11-28 01:26:59.138  5699  5699 W ResourceType: For resource 0x7f0800ea, entry index(234) is beyond type entryCount(233)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120304, entry index(772) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120304, entry index(772) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120306, entry index(774) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f12030a, entry index(778) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120308, entry index(776) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f12027b, entry index(635) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120318, entry index(792) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202ef, entry index(751) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202f1, entry index(753) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f12027b, entry index(635) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120316, entry index(790) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202f2, entry index(754) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120281, entry index(641) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202f3, entry index(755) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202f7, entry index(759) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202fa, entry index(762) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120280, entry index(640) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f12031c, entry index(796) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120301, entry index(769) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120302, entry index(770) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120319, entry index(793) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f12031a, entry index(794) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120210, entry index(528) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120315, entry index(789) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120317, entry index(791) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120328, entry index(808) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120300, entry index(768) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1202fe, entry index(766) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1201af, entry index(431) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120198, entry index(408) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1201af, entry index(431) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1201c2, entry index(450) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1201ab, entry index(427) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f1201ac, entry index(428) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120331, entry index(817) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f120330, entry index(816) is beyond type entryCount(220)
+11-28 01:26:59.140  5699  5699 W ResourceType: For resource 0x7f0800ea, entry index(234) is beyond type entryCount(233)
+11-28 01:26:59.142  2474  2629 D EGL_emulation: eglMakeCurrent: 0x7bbe7b6568c0: ver 3 0 (tinfo 0x7bbe7b60c7c0)
+11-28 01:26:59.150  5699  5699 D Capacitor: Starting BridgeActivity
+11-28 01:26:59.197  5713  5713 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:26:59.200  5713  5713 D AndroidRuntime: CheckJNI is OFF
+11-28 01:26:59.209  5699  5728 W cr_media: Requires BLUETOOTH permission
+11-28 01:26:59.215  5699  5699 I SF_LIFE : screen started
+11-28 01:26:59.247  5699  5741 E libEGL  : validate_display:99 error 3008 (EGL_BAD_DISPLAY)
+11-28 01:26:59.251  5699  5741 D         : HostConnection::get() New Host Connection established 0x7bbe674a6b00, tid 5741
+11-28 01:26:59.258  5713  5713 W art     : Unexpected CPU variant for X86 using defaults: x86_64
+11-28 01:26:59.258  5699  5741 D EGL_emulation: eglCreateContext: 0x7bbe76e21760: maj 3 min 0 rcv 3
+11-28 01:26:59.258  5699  5741 D EGL_emulation: eglMakeCurrent: 0x7bbe76e21760: ver 3 0 (tinfo 0x7bbe78cc5fc0)
+11-28 01:26:59.259  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008cdf
+11-28 01:26:59.259  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008824
+11-28 01:26:59.266  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x000087fe
+11-28 01:26:59.267  5713  5713 D ICU     : No timezone override file found: /data/local/tmp/misc/zoneinfo/current/icu/icu_tzdata.dat
+11-28 01:26:59.272  1309  1320 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+11-28 01:26:59.278  5699  5699 D         : HostConnection::get() New Host Connection established 0x7bbe674a6e60, tid 5699
+11-28 01:26:59.281  5699  5741 I VideoCapabilities: Unsupported profile 4 for video/mp4v-es
+11-28 01:26:59.282  5699  5741 W cr_MediaCodecUtil: HW encoder for video/avc is not available on this device.
+11-28 01:26:59.285  5713  5713 E memtrack: Couldn't load memtrack module (No such file or directory)
+11-28 01:26:59.286  5713  5713 E android.os.Debug: failed to load memtrack module: -2
+11-28 01:26:59.287  5713  5713 I Radio-JNI: register_android_hardware_Radio DONE
+11-28 01:26:59.290  5699  5741 D EGL_emulation: eglCreateContext: 0x7bbe67481d20: maj 3 min 0 rcv 3
+11-28 01:26:59.290  5699  5741 D EGL_emulation: eglMakeCurrent: 0x7bbe67481d20: ver 3 0 (tinfo 0x7bbe78cc5fc0)
+11-28 01:26:59.290  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008cdf
+11-28 01:26:59.291  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008824
+11-28 01:26:59.294  5713  5713 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:26:59.294  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008a34
+11-28 01:26:59.294  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008073
+11-28 01:26:59.295  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ff
+11-28 01:26:59.303  5699  5750 I OpenGLRenderer: Initialized EGL, version 1.4
+11-28 01:26:59.303  5699  5750 D OpenGLRenderer: Swap behavior 1
+11-28 01:26:59.304  5699  5750 D         : HostConnection::get() New Host Connection established 0x7bbe669d5540, tid 5750
+11-28 01:26:59.321  5699  5750 D EGL_emulation: eglCreateContext: 0x7bbe669d9f40: maj 3 min 0 rcv 3
+11-28 01:26:59.324  5699  5750 D EGL_emulation: eglMakeCurrent: 0x7bbe669d9f40: ver 3 0 (tinfo 0x7bbe669d39c0)
+11-28 01:26:59.333  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008cdf
+11-28 01:26:59.337  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008824
+11-28 01:26:59.343  5699  5741 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ff
+11-28 01:26:59.352  5699  5750 D EGL_emulation: eglMakeCurrent: 0x7bbe669d9f40: ver 3 0 (tinfo 0x7bbe669d39c0)
+11-28 01:26:59.477  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:26:59.481  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008a34
+11-28 01:26:59.482  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x00008073
+11-28 01:26:59.482  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000088ff
+11-28 01:26:59.536  1622  1643 I ActivityManager: Displayed com.coastlinecode.stormfile/.MainActivity: +580ms
+11-28 01:26:59.569  1622  1643 I WindowManager: Destroying surface Surface(name=Starting com.coastlinecode.stormfile) called by com.android.server.wm.WindowStateAnimator.destroySurface:2016 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:882 com.android.server.wm.WindowState.destroyOrSaveSurface:2100 com.android.server.wm.AppWindowToken.destroySurfaces:363 com.android.server.wm.WindowStateAnimator.finishExit:565 com.android.server.wm.WindowStateAnimator.stepAnimationLocked:491 com.android.server.wm.WindowAnimator.updateWindowsLocked:303 com.android.server.wm.WindowAnimator.animateLocked:704 
+11-28 01:26:59.607  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:26:59.631  5699  5717 W cr_CrashFileManager: /data/user/0/com.coastlinecode.stormfile/cache/WebView/Crash Reports does not exist or is not a directory
+11-28 01:26:59.654  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:26:59.654  1622  1633 I WindowManager: Destroying surface Surface(name=com.android.launcher3/com.android.launcher3.Launcher) called by com.android.server.wm.WindowStateAnimator.destroySurface:2016 com.android.server.wm.WindowStateAnimator.destroySurfaceLocked:882 com.android.server.wm.WindowState.destroyOrSaveSurface:2100 com.android.server.wm.AppWindowToken.destroySurfaces:363 com.android.server.wm.AppWindowToken.notifyAppStopped:389 com.android.server.wm.WindowManagerService.notifyAppStopped:4463 com.android.server.am.ActivityStack.activityStoppedLocked:1252 com.android.server.am.ActivityManagerService.activityStopped:6903 
+11-28 01:26:59.689  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:26:59.699  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:26:59.757  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:26:59.795  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:26:59.879  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:26:59.946  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:00.426  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:00.450  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:00.576  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:00.632  5713  5713 W AccessibilityNodeInfoDumper: Fetch time: 1ms
+11-28 01:27:00.633  1622  1880 W WindowManager: Attempted to remove non-existing token: android.os.Binder@488762f
+11-28 01:27:00.636  5713  5713 D AndroidRuntime: Shutting down VM
+11-28 01:27:00.643  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:00.908  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:00.930  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:00.979  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.000  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.033  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.064  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.102  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.128  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.163  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.192  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.240  5699  5750 E eglCodecCommon: glUtilsParamSize: unknow param 0x000085b5
+11-28 01:27:01.946  1622  1727 E TaskPersister: File error accessing recents directory (directory doesn't exist?).
+11-28 01:27:02.918  2130  5767 I Vision  : Requesting optional module download of ocr.
+11-28 01:27:02.918  2130  5767 I Vision  : Checking for download completion for 128083 -- ocr
+11-28 01:27:04.793  1622  1884 D VoldConnector: SND -> {36 volume mkdirs /storage/emulated/0/Android/data/com.coastlinecode.stormfile/cache/}
+11-28 01:27:04.795  1622  1667 D VoldConnector: RCV <- {200 36 Command succeeded}
+11-28 01:27:04.867  5699  5772 D ProfileInstaller: Installing profile for com.coastlinecode.stormfile
+11-28 01:27:05.895  1622  1633 I ActivityManager: Killing 2647:com.android.providers.calendar/u0a2 (adj 906): empty #17
+11-28 01:27:05.955  1622  1884 D ActivityManager: cleanUpApplicationRecord -- 2647
+11-28 01:27:06.243  5775  5775 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:27:06.244  5775  5775 D AndroidRuntime: CheckJNI is OFF
+11-28 01:27:06.255  5775  5775 W art     : Unexpected CPU variant for X86 using defaults: x86_64
+11-28 01:27:06.257  5775  5775 D ICU     : No timezone override file found: /data/local/tmp/misc/zoneinfo/current/icu/icu_tzdata.dat
+11-28 01:27:06.268  5775  5775 E memtrack: Couldn't load memtrack module (No such file or directory)
+11-28 01:27:06.268  5775  5775 E android.os.Debug: failed to load memtrack module: -2
+11-28 01:27:06.268  5775  5775 I Radio-JNI: register_android_hardware_Radio DONE
+11-28 01:27:06.271  5775  5775 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:27:07.284  5775  5775 W AccessibilityNodeInfoDumper: Fetch time: 2ms
+11-28 01:27:07.284  1622  2357 W WindowManager: Attempted to remove non-existing token: android.os.Binder@745ba35
+11-28 01:27:07.287  5775  5775 D AndroidRuntime: Shutting down VM
