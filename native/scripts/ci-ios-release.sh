@@ -20,7 +20,7 @@ try:
     der = base64.b64decode(body, validate=True)
 except Exception:
     der = b""
-print(info + ", decodes to %d bytes (a good Apple key is 138)" % len(der))
+print(info + ", decodes to %d bytes (Apple keys are about 138-150)" % len(der))
 if len(der) < 100 or der[:1] != b"\x30":
     print("::error::The ASC_KEY_P8 secret is not a complete Apple key. Copy the whole AuthKey .p8 file again (all lines, BEGIN to END) into the secret.")
     sys.exit(1)
@@ -32,16 +32,12 @@ BUILD=$((100 + ${GITHUB_RUN_NUMBER:-1}))
 AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
 read -r -a T < .xcode-target
 cd ios/App
-# Sign the archive for App Store distribution (a development profile would need a registered iPhone on the team).
-# If Xcode won't sign that way, archive unsigned and let the export step do the App Store signing.
-archive() { xcodebuild "${T[@]}" -scheme App -configuration Release -destination 'generic/platform=iOS' \
+# Archive unsigned and let the export step do the App Store signing (with the API key). Signing the archive itself
+# with automatic signing asks for a development profile, which needs a registered iPhone on the team.
+xcodebuild "${T[@]}" -scheme App -configuration Release -destination 'generic/platform=iOS' \
   -archivePath "$RUNNER_TEMP/StormFile.xcarchive" archive \
-  DEVELOPMENT_TEAM="$APPLE_TEAM_ID" MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD" "$@" -quiet; }
-if ! archive CODE_SIGN_STYLE=Automatic CODE_SIGN_IDENTITY="Apple Distribution" "${AUTH[@]}"; then
-  echo "Distribution-signed archive failed; trying an unsigned archive signed at export"
-  rm -rf "$RUNNER_TEMP/StormFile.xcarchive"
-  archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
-fi
+  DEVELOPMENT_TEAM="$APPLE_TEAM_ID" MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD" \
+  CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" -quiet
 cat > "$RUNNER_TEMP/export.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
