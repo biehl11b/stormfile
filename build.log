@@ -1,0 +1,1288 @@
++ node -v
+v22.23.5
++ java -version
+openjdk version "21.0.13.1" 2026-11-17 LTS
+OpenJDK Runtime Environment Temurin-21.0.13.1+2 (build 21.0.13.1+2-LTS)
+OpenJDK 64-Bit Server VM Temurin-21.0.13.1+2 (build 21.0.13.1+2-LTS, mixed mode, sharing)
+++ cat plugins.txt
++ npm install --no-audit --no-fund --legacy-peer-deps @capacitor/core@8.6.0 @capacitor/cli@8.6.0 @capacitor/ios@8.6.0 @capacitor/android@8.6.0 @capacitor/app@8.1.2 @capacitor/filesystem@8.1.5 @capacitor/share@8.0.3 @capacitor/splash-screen@8.0.2 @capacitor/status-bar@8.0.4 @capacitor/text-zoom@8 @capgo/capacitor-native-biometric@8.9.1 @ebarooni/capacitor-calendar@8.10.0 @capacitor/assets@4.0.0 @capawesome/capacitor-age-signals@0.5.1
+
+added 162 packages in 8s
++ npm ls --depth=0
+stormfile-native@1.0.0 /home/runner/work/stormfile/stormfile/native
+├── @capacitor/android@8.6.0
+├── @capacitor/app@8.1.2
+├── @capacitor/assets@4.0.0
+├── @capacitor/cli@8.6.0
+├── @capacitor/core@8.6.0
+├── @capacitor/filesystem@8.1.5
+├── @capacitor/ios@8.6.0
+├── @capacitor/share@8.0.3
+├── @capacitor/splash-screen@8.0.2
+├── @capacitor/status-bar@8.0.4
+├── @capacitor/text-zoom@8.0.1
+├── @capawesome/capacitor-age-signals@0.5.1
+├── @capgo/capacitor-native-biometric@8.9.1
+├── @ebarooni/capacitor-calendar@8.10.0
+├── @emnapi/runtime@1.11.3 extraneous
+└── @img/sharp-wasm32@0.35.5 extraneous
+
++ A=/home/runner/work/_temp/syntax-check
++ npm install --prefix /home/runner/work/_temp/syntax-check --no-audit --no-fund acorn@8.14.0
++ node scripts/check-old-syntax.cjs /home/runner/work/_temp/syntax-check/node_modules/acorn
+StormFile's scripts work on older phones (Android WebView 69+, iOS 15+)
++ node scripts/prepare-www.mjs
+older-phone CSS fallbacks added: 8
+www ready: [
+  'app.js',
+  'apple-touch-icon.png',
+  'compat.js',
+  'es.js',
+  'icon-192.png',
+  'icon-512.png',
+  'index.html',
+  'native.js',
+  'privacy.html',
+  'support.html',
+  'terms.html',
+  'vendor',
+  'webview-update.html'
+] [
+  'capacitor.js',
+  'fonts',
+  'jsQR-LICENSE.txt',
+  'jsQR.js',
+  'pdf-lib-LICENSE.md',
+  'pdf-lib.min.js',
+  'pdf.min.js',
+  'pdf.worker.min.js',
+  'pdfjs-LICENSE.txt',
+  'qrcode-LICENSE.txt',
+  'qrcode.js'
+]
++ '[' -d android ']'
++ npx cap add android
+✔ Adding native android project in android in 36.86ms
+✔ add in 37.52ms
+✔ Copying web assets from www to android/app/src/main/assets/public in 6.76ms
+✔ Creating capacitor.config.json in android/app/src/main/assets in 369.70μs
+✔ copy android in 17.44ms
+✔ Updating Android plugins in 1.60ms
+[info] Found 9 Capacitor plugins for android:
+       @capacitor/app@8.1.2
+       @capacitor/filesystem@8.1.5
+       @capacitor/share@8.0.3
+       @capacitor/splash-screen@8.0.2
+       @capacitor/status-bar@8.0.4
+       @capacitor/text-zoom@8.0.1
+       @capawesome/capacitor-age-signals@0.5.1
+       @capgo/capacitor-native-biometric@8.9.1
+       @ebarooni/capacitor-calendar@8.10.0
+✔ update android in 34.72ms
+✔ Syncing Gradle in 166.48μs
+[success] android platform added!
+Follow the Developer Workflow guide to get building:
+https://capacitorjs.com/docs/basics/workflow
++ node scripts/patch-native.mjs android
+Android manifest patched
++ npx capacitor-assets generate --android --iconBackgroundColor '#0d2350' --iconBackgroundColorDark '#0d2350' --splashBackgroundColor '#0d2350' --splashBackgroundColorDark '#091630'
+[log] xml(load) at /home/runner/work/stormfile/stormfile/native/android/app/src/main/AndroidManifest.xml
+[log] xml(load) Found root namespaces in XML file: http://schemas.android.com/apk/res/android
+Generating assets for android
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-ldpi/ic_launcher.png (1.43 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-mdpi/ic_launcher.png (3.08 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-hdpi/ic_launcher.png (7.06 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png (11.33 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png (21.19 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png (32.38 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-ldpi/ic_launcher_round.png (3.44 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png (5.3 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png (9.18 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png (13.29 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png (22.15 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png (32.09 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-ldpi/ic_launcher_foreground.png (910 B)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png (1.32 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png (2.36 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png (3.48 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png (6 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png (8.93 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-ldpi/ic_launcher_background.png (3.08 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-mdpi/ic_launcher_background.png (4.72 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-hdpi/ic_launcher_background.png (7.92 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xhdpi/ic_launcher_background.png (10.19 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_background.png (16.21 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_background.png (22.24 KB)
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+CREATE android icon /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable/splash.png (21.37 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-ldpi/splash.png (12.3 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-mdpi/splash.png (21.51 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-hdpi/splash.png (43.26 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-xhdpi/splash.png (82.3 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-xxhdpi/splash.png (119.94 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-xxxhdpi/splash.png (169.17 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-ldpi/splash.png (12.31 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-mdpi/splash.png (21.37 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-hdpi/splash.png (42.66 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-xhdpi/splash.png (83.18 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-xxhdpi/splash.png (119 KB)
+CREATE android splash /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-xxxhdpi/splash.png (163.98 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-night/splash.png (12.17 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-night-ldpi/splash.png (12.17 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-night-mdpi/splash.png (21.21 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-night-hdpi/splash.png (41.64 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-night-xhdpi/splash.png (77.88 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-night-xxhdpi/splash.png (114.86 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-land-night-xxxhdpi/splash.png (162.03 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-night-ldpi/splash.png (12.12 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-night-mdpi/splash.png (21.12 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-night-hdpi/splash.png (41.11 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-night-xhdpi/splash.png (78.54 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-night-xxhdpi/splash.png (113.81 KB)
+CREATE android splash-dark /home/runner/work/stormfile/stormfile/native/android/app/src/main/res/drawable-port-night-xxxhdpi/splash.png (156.87 KB)
+
+
+Totals:
+android: 74 generated, 1.98 MB total
++ npx cap sync android
+✔ Copying web assets from www to android/app/src/main/assets/public in 10.66ms
+✔ Creating capacitor.config.json in android/app/src/main/assets in 567.51μs
+✔ copy android in 21.65ms
+✔ Updating Android plugins in 1.58ms
+[info] Found 9 Capacitor plugins for android:
+       @capacitor/app@8.1.2
+       @capacitor/filesystem@8.1.5
+       @capacitor/share@8.0.3
+       @capacitor/splash-screen@8.0.2
+       @capacitor/status-bar@8.0.4
+       @capacitor/text-zoom@8.0.1
+       @capawesome/capacitor-age-signals@0.5.1
+       @capgo/capacitor-native-biometric@8.9.1
+       @ebarooni/capacitor-calendar@8.10.0
+✔ update android in 40.70ms
+[info] Sync finished in 0.083s
++ cd android
++ chmod +x gradlew
++ grep -n 'compileSdkVersion\|targetSdkVersion\|minSdkVersion' variables.gradle
+2:    minSdkVersion = 24
+3:    compileSdkVersion = 36
+4:    targetSdkVersion = 36
+++ grep -o 'targetSdkVersion *= *[0-9]*' variables.gradle
+++ grep -o '[0-9]*$'
++ TS=36
++ '[' 36 -lt 36 ']'
++ VC=124
+++ node -p 'require('\''../package.json'\'').version'
++ VN=1.0.0
++ sed -i 's/versionCode [0-9]\+/versionCode 124/; s/versionName "[^"]*"/versionName "1.0.0"/' app/build.gradle
++ grep -n 'versionCode\|versionName' app/build.gradle
+10:        versionCode 124
+11:        versionName "1.0.0"
++ ./gradlew assembleDebug --no-daemon --stacktrace
+Downloading https://services.gradle.org/distributions/gradle-8.14.3-all.zip
+.....................10%.....................20%......................30%.....................40%......................50%.....................60%.....................70%......................80%.....................90%......................100%
+
+Welcome to Gradle 8.14.3!
+
+Here are the highlights of this release:
+ - Java 24 support
+ - GraalVM Native Image toolchain selection
+ - Enhancements to test reporting
+ - Build Authoring improvements
+
+For more details see https://docs.gradle.org/8.14.3/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Configure project :capacitor-cordova-android-plugins
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+The Kotlin Gradle plugin was loaded multiple times in different subprojects, which is not supported and may break the build. 
+This might happen in subprojects that apply the Kotlin plugins with the Gradle 'plugins { ... }' DSL if they specify explicit versions, even if the versions are equal.
+Please add the Kotlin plugin to the common parent project or the root project, then remove the versions in the subprojects.
+If the parent project does not need the plugin, add 'apply false' to the plugin line.
+See: https://docs.gradle.org/current/userguide/plugins.html#sec:subprojects_plugins_dsl
+The Kotlin plugin was loaded in the following projects: ':capacitor-filesystem', ':ebarooni-capacitor-calendar'
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :capacitor-android:preBuild UP-TO-DATE
+> Task :capacitor-android:preDebugBuild UP-TO-DATE
+> Task :capacitor-app:preBuild UP-TO-DATE
+> Task :capacitor-app:preDebugBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:preBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:preDebugBuild UP-TO-DATE
+> Task :capacitor-android:writeDebugAarMetadata
+> Task :capacitor-app:writeDebugAarMetadata
+> Task :app:javaPreCompileDebug
+> Task :capacitor-filesystem:preBuild UP-TO-DATE
+> Task :capacitor-filesystem:preDebugBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:writeDebugAarMetadata
+> Task :capacitor-share:preBuild UP-TO-DATE
+> Task :capacitor-share:preDebugBuild UP-TO-DATE
+> Task :capacitor-filesystem:writeDebugAarMetadata
+> Task :capacitor-splash-screen:preBuild UP-TO-DATE
+> Task :capacitor-splash-screen:preDebugBuild UP-TO-DATE
+> Task :capacitor-share:writeDebugAarMetadata
+> Task :capacitor-status-bar:preBuild UP-TO-DATE
+> Task :capacitor-status-bar:preDebugBuild UP-TO-DATE
+> Task :capacitor-splash-screen:writeDebugAarMetadata
+> Task :capacitor-text-zoom:preBuild UP-TO-DATE
+> Task :capacitor-text-zoom:preDebugBuild UP-TO-DATE
+> Task :capacitor-status-bar:writeDebugAarMetadata
+> Task :capacitor-text-zoom:writeDebugAarMetadata
+> Task :capawesome-capacitor-age-signals:preBuild UP-TO-DATE
+> Task :capawesome-capacitor-age-signals:preDebugBuild UP-TO-DATE
+> Task :capgo-capacitor-native-biometric:preBuild UP-TO-DATE
+> Task :capgo-capacitor-native-biometric:preDebugBuild UP-TO-DATE
+> Task :capawesome-capacitor-age-signals:writeDebugAarMetadata
+> Task :ebarooni-capacitor-calendar:preBuild UP-TO-DATE
+> Task :ebarooni-capacitor-calendar:preDebugBuild UP-TO-DATE
+> Task :capgo-capacitor-native-biometric:writeDebugAarMetadata
+> Task :ebarooni-capacitor-calendar:writeDebugAarMetadata
+> Task :capacitor-android:processDebugNavigationResources
+> Task :capacitor-app:processDebugNavigationResources
+> Task :app:checkDebugAarMetadata
+> Task :capacitor-cordova-android-plugins:processDebugNavigationResources
+> Task :capacitor-filesystem:processDebugNavigationResources
+> Task :capacitor-share:processDebugNavigationResources
+> Task :capacitor-splash-screen:processDebugNavigationResources
+> Task :capacitor-status-bar:processDebugNavigationResources
+> Task :capacitor-text-zoom:processDebugNavigationResources
+> Task :capawesome-capacitor-age-signals:processDebugNavigationResources
+> Task :capgo-capacitor-native-biometric:processDebugNavigationResources
+> Task :ebarooni-capacitor-calendar:processDebugNavigationResources
+> Task :app:processDebugNavigationResources
+> Task :app:generateDebugResValues
+> Task :capacitor-android:generateDebugResValues
+> Task :capacitor-android:generateDebugResources
+> Task :capacitor-android:packageDebugResources
+> Task :capacitor-app:generateDebugResValues
+> Task :capacitor-app:generateDebugResources
+> Task :capacitor-app:packageDebugResources
+> Task :capacitor-cordova-android-plugins:generateDebugResValues
+> Task :capacitor-cordova-android-plugins:generateDebugResources
+> Task :app:compileDebugNavigationResources
+> Task :capacitor-cordova-android-plugins:packageDebugResources
+> Task :capacitor-filesystem:generateDebugResValues
+> Task :capacitor-filesystem:generateDebugResources
+> Task :capacitor-filesystem:packageDebugResources
+> Task :capacitor-share:generateDebugResValues
+> Task :capacitor-share:generateDebugResources
+> Task :capacitor-share:packageDebugResources
+> Task :capacitor-splash-screen:generateDebugResValues
+> Task :capacitor-splash-screen:generateDebugResources
+> Task :capacitor-splash-screen:packageDebugResources
+> Task :capacitor-status-bar:generateDebugResValues
+> Task :capacitor-status-bar:generateDebugResources
+> Task :capacitor-status-bar:packageDebugResources
+> Task :capacitor-text-zoom:generateDebugResValues
+> Task :capacitor-text-zoom:generateDebugResources
+> Task :capacitor-text-zoom:packageDebugResources
+> Task :capawesome-capacitor-age-signals:generateDebugResValues
+> Task :capawesome-capacitor-age-signals:generateDebugResources
+> Task :capawesome-capacitor-age-signals:packageDebugResources
+> Task :capgo-capacitor-native-biometric:generateDebugResValues
+> Task :capgo-capacitor-native-biometric:generateDebugResources
+> Task :capgo-capacitor-native-biometric:packageDebugResources
+> Task :ebarooni-capacitor-calendar:generateDebugResValues
+> Task :ebarooni-capacitor-calendar:generateDebugResources
+> Task :ebarooni-capacitor-calendar:packageDebugResources
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :capacitor-android:extractDeepLinksDebug
+> Task :capacitor-app:extractDeepLinksDebug
+> Task :capacitor-cordova-android-plugins:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :capacitor-filesystem:extractDeepLinksDebug
+> Task :capacitor-android:processDebugManifest
+> Task :capacitor-filesystem:processDebugManifest
+> Task :capacitor-share:extractDeepLinksDebug
+> Task :capacitor-cordova-android-plugins:processDebugManifest
+> Task :capacitor-app:processDebugManifest
+> Task :capacitor-splash-screen:extractDeepLinksDebug
+> Task :capacitor-share:processDebugManifest
+> Task :capacitor-status-bar:extractDeepLinksDebug
+> Task :capacitor-splash-screen:processDebugManifest
+> Task :capacitor-status-bar:processDebugManifest
+> Task :capacitor-text-zoom:extractDeepLinksDebug
+> Task :capawesome-capacitor-age-signals:extractDeepLinksDebug
+> Task :capacitor-text-zoom:processDebugManifest
+> Task :capawesome-capacitor-age-signals:processDebugManifest
+> Task :capgo-capacitor-native-biometric:extractDeepLinksDebug
+> Task :ebarooni-capacitor-calendar:extractDeepLinksDebug
+> Task :capgo-capacitor-native-biometric:processDebugManifest
+> Task :ebarooni-capacitor-calendar:processDebugManifest
+> Task :capacitor-android:compileDebugLibraryResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :capacitor-app:compileDebugLibraryResources
+> Task :app:processDebugManifestForPackage
+> Task :capacitor-android:parseDebugLocalResources
+> Task :capacitor-app:parseDebugLocalResources
+> Task :capacitor-cordova-android-plugins:compileDebugLibraryResources
+> Task :capacitor-filesystem:compileDebugLibraryResources
+> Task :capacitor-filesystem:parseDebugLocalResources
+> Task :capacitor-cordova-android-plugins:parseDebugLocalResources
+> Task :capacitor-filesystem:generateDebugRFile
+> Task :capacitor-app:generateDebugRFile
+> Task :capacitor-android:generateDebugRFile
+> Task :capacitor-cordova-android-plugins:generateDebugRFile
+> Task :capacitor-share:compileDebugLibraryResources
+> Task :capacitor-splash-screen:compileDebugLibraryResources
+> Task :capacitor-share:parseDebugLocalResources
+> Task :capacitor-splash-screen:parseDebugLocalResources
+> Task :capacitor-share:generateDebugRFile
+> Task :capacitor-status-bar:compileDebugLibraryResources
+> Task :capacitor-text-zoom:compileDebugLibraryResources
+> Task :capacitor-splash-screen:generateDebugRFile
+> Task :capacitor-status-bar:parseDebugLocalResources
+> Task :capawesome-capacitor-age-signals:compileDebugLibraryResources
+> Task :capacitor-text-zoom:parseDebugLocalResources
+> Task :capawesome-capacitor-age-signals:parseDebugLocalResources
+> Task :capacitor-status-bar:generateDebugRFile
+> Task :capacitor-text-zoom:generateDebugRFile
+> Task :capawesome-capacitor-age-signals:generateDebugRFile
+> Task :capgo-capacitor-native-biometric:compileDebugLibraryResources
+> Task :ebarooni-capacitor-calendar:compileDebugLibraryResources
+> Task :capacitor-app:javaPreCompileDebug
+> Task :capacitor-android:javaPreCompileDebug
+> Task :capacitor-cordova-android-plugins:javaPreCompileDebug
+> Task :capgo-capacitor-native-biometric:parseDebugLocalResources
+> Task :ebarooni-capacitor-calendar:parseDebugLocalResources
+
+> Task :capacitor-android:compileDebugJavaWithJavac
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :ebarooni-capacitor-calendar:generateDebugRFile
+> Task :capgo-capacitor-native-biometric:generateDebugRFile
+> Task :capacitor-android:bundleLibCompileToJarDebug
+> Task :capacitor-app:compileDebugJavaWithJavac
+> Task :capacitor-cordova-android-plugins:compileDebugJavaWithJavac NO-SOURCE
+> Task :capacitor-filesystem:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :capacitor-cordova-android-plugins:bundleLibCompileToJarDebug
+> Task :capacitor-app:bundleLibCompileToJarDebug
+> Task :app:processDebugResources
+> Task :capacitor-filesystem:javaPreCompileDebug
+> Task :capacitor-share:javaPreCompileDebug
+> Task :capacitor-splash-screen:javaPreCompileDebug
+> Task :capacitor-share:compileDebugJavaWithJavac
+> Task :capacitor-share:bundleLibCompileToJarDebug
+> Task :capacitor-splash-screen:compileDebugJavaWithJavac
+> Task :capacitor-splash-screen:bundleLibCompileToJarDebug
+> Task :capacitor-status-bar:javaPreCompileDebug
+> Task :capacitor-text-zoom:javaPreCompileDebug
+> Task :capacitor-status-bar:compileDebugJavaWithJavac
+> Task :capacitor-status-bar:bundleLibCompileToJarDebug
+> Task :capacitor-text-zoom:compileDebugJavaWithJavac
+> Task :capawesome-capacitor-age-signals:javaPreCompileDebug
+> Task :capacitor-text-zoom:bundleLibCompileToJarDebug
+> Task :capgo-capacitor-native-biometric:javaPreCompileDebug
+> Task :capawesome-capacitor-age-signals:compileDebugJavaWithJavac
+> Task :capawesome-capacitor-age-signals:bundleLibCompileToJarDebug
+
+> Task :capgo-capacitor-native-biometric:compileDebugJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :ebarooni-capacitor-calendar:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :capgo-capacitor-native-biometric:bundleLibCompileToJarDebug
+> Task :ebarooni-capacitor-calendar:javaPreCompileDebug
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :capacitor-android:mergeDebugShaders
+> Task :capacitor-android:compileDebugShaders NO-SOURCE
+> Task :capacitor-android:generateDebugAssets UP-TO-DATE
+> Task :capacitor-android:mergeDebugAssets
+> Task :capacitor-app:mergeDebugShaders
+> Task :capacitor-app:compileDebugShaders NO-SOURCE
+> Task :capacitor-app:generateDebugAssets UP-TO-DATE
+> Task :capacitor-app:mergeDebugAssets
+> Task :capacitor-cordova-android-plugins:mergeDebugShaders
+> Task :capacitor-cordova-android-plugins:compileDebugShaders NO-SOURCE
+> Task :capacitor-cordova-android-plugins:generateDebugAssets UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:mergeDebugAssets
+> Task :capacitor-filesystem:mergeDebugShaders
+> Task :capacitor-filesystem:compileDebugShaders NO-SOURCE
+> Task :capacitor-filesystem:generateDebugAssets UP-TO-DATE
+> Task :capacitor-filesystem:mergeDebugAssets
+> Task :capacitor-share:mergeDebugShaders
+> Task :capacitor-share:compileDebugShaders NO-SOURCE
+> Task :capacitor-share:generateDebugAssets UP-TO-DATE
+> Task :capacitor-share:mergeDebugAssets
+> Task :capacitor-splash-screen:mergeDebugShaders
+> Task :capacitor-splash-screen:compileDebugShaders NO-SOURCE
+> Task :capacitor-splash-screen:generateDebugAssets UP-TO-DATE
+> Task :capacitor-splash-screen:mergeDebugAssets
+> Task :capacitor-status-bar:mergeDebugShaders
+> Task :capacitor-status-bar:compileDebugShaders NO-SOURCE
+> Task :capacitor-status-bar:generateDebugAssets UP-TO-DATE
+> Task :capacitor-status-bar:mergeDebugAssets
+> Task :capacitor-text-zoom:mergeDebugShaders
+> Task :capacitor-text-zoom:compileDebugShaders NO-SOURCE
+> Task :capacitor-text-zoom:generateDebugAssets UP-TO-DATE
+> Task :capacitor-text-zoom:mergeDebugAssets
+> Task :capawesome-capacitor-age-signals:mergeDebugShaders
+> Task :capawesome-capacitor-age-signals:compileDebugShaders NO-SOURCE
+> Task :capawesome-capacitor-age-signals:generateDebugAssets UP-TO-DATE
+> Task :capawesome-capacitor-age-signals:mergeDebugAssets
+> Task :capgo-capacitor-native-biometric:mergeDebugShaders
+> Task :capgo-capacitor-native-biometric:compileDebugShaders NO-SOURCE
+> Task :capgo-capacitor-native-biometric:generateDebugAssets UP-TO-DATE
+> Task :capgo-capacitor-native-biometric:mergeDebugAssets
+> Task :ebarooni-capacitor-calendar:mergeDebugShaders
+> Task :ebarooni-capacitor-calendar:compileDebugShaders NO-SOURCE
+> Task :ebarooni-capacitor-calendar:generateDebugAssets UP-TO-DATE
+> Task :ebarooni-capacitor-calendar:mergeDebugAssets
+> Task :app:mergeDebugAssets
+> Task :capacitor-app:bundleLibRuntimeToJarDebug
+> Task :app:compressDebugAssets
+> Task :capacitor-share:bundleLibRuntimeToJarDebug
+> Task :capacitor-splash-screen:bundleLibRuntimeToJarDebug
+> Task :capacitor-status-bar:bundleLibRuntimeToJarDebug
+> Task :capacitor-text-zoom:bundleLibRuntimeToJarDebug
+> Task :capawesome-capacitor-age-signals:bundleLibRuntimeToJarDebug
+> Task :capgo-capacitor-native-biometric:bundleLibRuntimeToJarDebug
+> Task :capacitor-android:bundleLibRuntimeToJarDebug
+> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToJarDebug
+> Task :app:desugarDebugFileDependencies
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :capacitor-android:processDebugJavaRes NO-SOURCE
+> Task :capacitor-app:processDebugJavaRes NO-SOURCE
+> Task :capacitor-cordova-android-plugins:processDebugJavaRes NO-SOURCE
+> Task :capacitor-share:processDebugJavaRes NO-SOURCE
+> Task :capacitor-splash-screen:processDebugJavaRes NO-SOURCE
+> Task :capacitor-status-bar:processDebugJavaRes NO-SOURCE
+> Task :capacitor-text-zoom:processDebugJavaRes NO-SOURCE
+> Task :capawesome-capacitor-age-signals:processDebugJavaRes NO-SOURCE
+> Task :capgo-capacitor-native-biometric:processDebugJavaRes NO-SOURCE
+> Task :capacitor-app:bundleLibRuntimeToDirDebug
+> Task :app:checkDebugDuplicateClasses
+> Task :capacitor-filesystem:compileDebugKotlin
+> Task :ebarooni-capacitor-calendar:compileDebugKotlin
+> Task :app:mergeExtDexDebug
+> Task :capacitor-filesystem:compileDebugJavaWithJavac NO-SOURCE
+> Task :ebarooni-capacitor-calendar:compileDebugJavaWithJavac NO-SOURCE
+> Task :capacitor-filesystem:bundleLibCompileToJarDebug
+> Task :capacitor-filesystem:bundleLibRuntimeToJarDebug
+> Task :ebarooni-capacitor-calendar:bundleLibCompileToJarDebug
+> Task :ebarooni-capacitor-calendar:bundleLibRuntimeToJarDebug
+> Task :app:compileDebugJavaWithJavac
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :capacitor-filesystem:processDebugJavaRes
+> Task :ebarooni-capacitor-calendar:processDebugJavaRes
+> Task :capacitor-share:bundleLibRuntimeToDirDebug
+> Task :capacitor-filesystem:bundleLibRuntimeToDirDebug
+> Task :capacitor-splash-screen:bundleLibRuntimeToDirDebug
+> Task :capacitor-text-zoom:bundleLibRuntimeToDirDebug
+> Task :capacitor-status-bar:bundleLibRuntimeToDirDebug
+> Task :capawesome-capacitor-age-signals:bundleLibRuntimeToDirDebug
+> Task :capgo-capacitor-native-biometric:bundleLibRuntimeToDirDebug
+> Task :ebarooni-capacitor-calendar:bundleLibRuntimeToDirDebug
+> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToDirDebug
+> Task :capacitor-android:bundleLibRuntimeToDirDebug
+> Task :app:mergeDebugJavaResource
+> Task :app:mergeDebugJniLibFolders
+> Task :capacitor-android:mergeDebugJniLibFolders
+> Task :app:mergeProjectDexDebug
+> Task :capacitor-android:mergeDebugNativeLibs NO-SOURCE
+> Task :capacitor-android:copyDebugJniLibsProjectOnly
+> Task :capacitor-app:mergeDebugJniLibFolders
+> Task :capacitor-app:mergeDebugNativeLibs NO-SOURCE
+> Task :capacitor-app:copyDebugJniLibsProjectOnly
+> Task :capacitor-cordova-android-plugins:mergeDebugJniLibFolders
+> Task :capacitor-cordova-android-plugins:mergeDebugNativeLibs NO-SOURCE
+> Task :capacitor-cordova-android-plugins:copyDebugJniLibsProjectOnly
+> Task :capacitor-filesystem:mergeDebugJniLibFolders
+> Task :capacitor-filesystem:mergeDebugNativeLibs NO-SOURCE
+> Task :capacitor-filesystem:copyDebugJniLibsProjectOnly
+> Task :capacitor-share:mergeDebugJniLibFolders
+> Task :capacitor-share:mergeDebugNativeLibs NO-SOURCE
+> Task :capacitor-share:copyDebugJniLibsProjectOnly
+> Task :capacitor-splash-screen:mergeDebugJniLibFolders
+> Task :capacitor-splash-screen:mergeDebugNativeLibs NO-SOURCE
+> Task :capacitor-splash-screen:copyDebugJniLibsProjectOnly
+> Task :capacitor-status-bar:mergeDebugJniLibFolders
+> Task :capacitor-status-bar:mergeDebugNativeLibs NO-SOURCE
+> Task :capacitor-status-bar:copyDebugJniLibsProjectOnly
+> Task :capacitor-text-zoom:mergeDebugJniLibFolders
+> Task :capacitor-text-zoom:mergeDebugNativeLibs NO-SOURCE
+> Task :capacitor-text-zoom:copyDebugJniLibsProjectOnly
+> Task :capawesome-capacitor-age-signals:mergeDebugJniLibFolders
+> Task :capawesome-capacitor-age-signals:mergeDebugNativeLibs NO-SOURCE
+> Task :capawesome-capacitor-age-signals:copyDebugJniLibsProjectOnly
+> Task :capgo-capacitor-native-biometric:mergeDebugJniLibFolders
+> Task :capgo-capacitor-native-biometric:mergeDebugNativeLibs NO-SOURCE
+> Task :capgo-capacitor-native-biometric:copyDebugJniLibsProjectOnly
+> Task :ebarooni-capacitor-calendar:mergeDebugJniLibFolders
+> Task :ebarooni-capacitor-calendar:mergeDebugNativeLibs NO-SOURCE
+> Task :ebarooni-capacitor-calendar:copyDebugJniLibsProjectOnly
+> Task :app:validateSigningDebug
+> Task :app:mergeDebugNativeLibs NO-SOURCE
+> Task :app:mergeLibDexDebug
+> Task :app:stripDebugDebugSymbols NO-SOURCE
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :capacitor-android:checkDebugAarMetadata
+> Task :capacitor-android:stripDebugDebugSymbols NO-SOURCE
+> Task :capacitor-android:copyDebugJniLibsProjectAndLocalJars
+> Task :capacitor-android:extractDebugAnnotations
+> Task :capacitor-android:extractDeepLinksForAarDebug
+> Task :capacitor-android:mergeDebugGeneratedProguardFiles
+> Task :capacitor-android:mergeDebugConsumerProguardFiles
+> Task :capacitor-android:prepareDebugArtProfile
+> Task :capacitor-android:prepareLintJarForPublish
+> Task :capacitor-android:mergeDebugJavaResource
+> Task :capacitor-app:checkDebugAarMetadata
+> Task :capacitor-android:syncDebugLibJars
+> Task :capacitor-android:bundleDebugAar
+> Task :capacitor-android:assembleDebug
+> Task :capacitor-app:stripDebugDebugSymbols NO-SOURCE
+> Task :capacitor-app:copyDebugJniLibsProjectAndLocalJars
+> Task :capacitor-app:extractDebugAnnotations
+> Task :capacitor-app:extractDeepLinksForAarDebug
+> Task :capacitor-app:mergeDebugGeneratedProguardFiles
+> Task :capacitor-app:mergeDebugConsumerProguardFiles
+> Task :capacitor-app:prepareDebugArtProfile
+> Task :capacitor-app:prepareLintJarForPublish
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+> Task :capacitor-app:mergeDebugJavaResource
+> Task :capacitor-cordova-android-plugins:checkDebugAarMetadata
+> Task :capacitor-app:syncDebugLibJars
+> Task :capacitor-app:bundleDebugAar
+> Task :capacitor-app:assembleDebug
+> Task :capacitor-cordova-android-plugins:stripDebugDebugSymbols NO-SOURCE
+> Task :capacitor-cordova-android-plugins:copyDebugJniLibsProjectAndLocalJars
+> Task :capacitor-cordova-android-plugins:extractDebugAnnotations
+> Task :capacitor-cordova-android-plugins:extractDeepLinksForAarDebug
+> Task :capacitor-cordova-android-plugins:mergeDebugGeneratedProguardFiles
+> Task :capacitor-cordova-android-plugins:mergeDebugConsumerProguardFiles
+> Task :capacitor-cordova-android-plugins:prepareDebugArtProfile
+> Task :capacitor-cordova-android-plugins:prepareLintJarForPublish
+> Task :capacitor-cordova-android-plugins:mergeDebugJavaResource
+> Task :capacitor-filesystem:checkDebugAarMetadata
+> Task :capacitor-cordova-android-plugins:syncDebugLibJars
+> Task :capacitor-cordova-android-plugins:bundleDebugAar
+> Task :capacitor-cordova-android-plugins:assembleDebug
+> Task :capacitor-filesystem:stripDebugDebugSymbols NO-SOURCE
+> Task :capacitor-filesystem:copyDebugJniLibsProjectAndLocalJars
+> Task :capacitor-filesystem:extractDebugAnnotations
+> Task :capacitor-filesystem:extractDeepLinksForAarDebug
+> Task :capacitor-filesystem:mergeDebugGeneratedProguardFiles
+> Task :capacitor-filesystem:mergeDebugConsumerProguardFiles
+> Task :capacitor-filesystem:prepareDebugArtProfile
+> Task :capacitor-filesystem:prepareLintJarForPublish
+> Task :capacitor-share:stripDebugDebugSymbols NO-SOURCE
+> Task :capacitor-share:checkDebugAarMetadata
+> Task :capacitor-share:copyDebugJniLibsProjectAndLocalJars
+> Task :capacitor-filesystem:mergeDebugJavaResource
+> Task :capacitor-share:extractDebugAnnotations
+> Task :capacitor-filesystem:syncDebugLibJars
+> Task :capacitor-filesystem:bundleDebugAar
+> Task :capacitor-filesystem:assembleDebug
+> Task :capacitor-share:extractDeepLinksForAarDebug
+> Task :capacitor-share:mergeDebugGeneratedProguardFiles
+> Task :capacitor-share:mergeDebugConsumerProguardFiles
+> Task :capacitor-share:prepareDebugArtProfile
+> Task :capacitor-share:prepareLintJarForPublish
+> Task :capacitor-share:mergeDebugJavaResource
+> Task :capacitor-splash-screen:checkDebugAarMetadata
+> Task :capacitor-share:syncDebugLibJars
+> Task :capacitor-share:bundleDebugAar
+> Task :capacitor-share:assembleDebug
+> Task :capacitor-splash-screen:stripDebugDebugSymbols NO-SOURCE
+> Task :capacitor-splash-screen:copyDebugJniLibsProjectAndLocalJars
+> Task :capacitor-splash-screen:extractDebugAnnotations
+> Task :capacitor-splash-screen:extractDeepLinksForAarDebug
+> Task :capacitor-splash-screen:mergeDebugGeneratedProguardFiles
+> Task :capacitor-splash-screen:mergeDebugConsumerProguardFiles
+> Task :capacitor-splash-screen:prepareDebugArtProfile
+> Task :capacitor-splash-screen:prepareLintJarForPublish
+> Task :capacitor-status-bar:stripDebugDebugSymbols NO-SOURCE
+> Task :capacitor-status-bar:checkDebugAarMetadata
+> Task :capacitor-splash-screen:mergeDebugJavaResource
+> Task :capacitor-status-bar:copyDebugJniLibsProjectAndLocalJars
+> Task :capacitor-splash-screen:syncDebugLibJars
+> Task :capacitor-splash-screen:bundleDebugAar
+> Task :capacitor-splash-screen:assembleDebug
+> Task :capacitor-status-bar:extractDebugAnnotations
+> Task :capacitor-status-bar:extractDeepLinksForAarDebug
+> Task :capacitor-status-bar:mergeDebugGeneratedProguardFiles
+> Task :capacitor-status-bar:mergeDebugConsumerProguardFiles
+> Task :capacitor-status-bar:prepareDebugArtProfile
+> Task :capacitor-status-bar:prepareLintJarForPublish
+> Task :capacitor-status-bar:mergeDebugJavaResource
+> Task :capacitor-status-bar:syncDebugLibJars
+> Task :capacitor-text-zoom:checkDebugAarMetadata
+> Task :capacitor-status-bar:bundleDebugAar
+> Task :capacitor-status-bar:assembleDebug
+> Task :capacitor-text-zoom:stripDebugDebugSymbols NO-SOURCE
+> Task :capacitor-text-zoom:copyDebugJniLibsProjectAndLocalJars
+> Task :capacitor-text-zoom:extractDebugAnnotations
+> Task :capacitor-text-zoom:extractDeepLinksForAarDebug
+> Task :capacitor-text-zoom:mergeDebugGeneratedProguardFiles
+> Task :capacitor-text-zoom:mergeDebugConsumerProguardFiles
+> Task :capacitor-text-zoom:prepareDebugArtProfile
+> Task :capacitor-text-zoom:prepareLintJarForPublish
+> Task :capacitor-text-zoom:mergeDebugJavaResource
+> Task :capawesome-capacitor-age-signals:checkDebugAarMetadata
+> Task :capacitor-text-zoom:syncDebugLibJars
+> Task :capacitor-text-zoom:bundleDebugAar
+> Task :capacitor-text-zoom:assembleDebug
+> Task :capawesome-capacitor-age-signals:stripDebugDebugSymbols NO-SOURCE
+> Task :capawesome-capacitor-age-signals:copyDebugJniLibsProjectAndLocalJars
+> Task :capawesome-capacitor-age-signals:extractDebugAnnotations
+> Task :capawesome-capacitor-age-signals:extractDeepLinksForAarDebug
+> Task :capawesome-capacitor-age-signals:mergeDebugGeneratedProguardFiles
+> Task :capawesome-capacitor-age-signals:mergeDebugConsumerProguardFiles
+> Task :capawesome-capacitor-age-signals:prepareDebugArtProfile
+> Task :capawesome-capacitor-age-signals:prepareLintJarForPublish
+> Task :capawesome-capacitor-age-signals:mergeDebugJavaResource
+> Task :capgo-capacitor-native-biometric:checkDebugAarMetadata
+> Task :capawesome-capacitor-age-signals:syncDebugLibJars
+> Task :capawesome-capacitor-age-signals:bundleDebugAar
+> Task :capawesome-capacitor-age-signals:assembleDebug
+> Task :capgo-capacitor-native-biometric:stripDebugDebugSymbols NO-SOURCE
+> Task :capgo-capacitor-native-biometric:copyDebugJniLibsProjectAndLocalJars
+> Task :capgo-capacitor-native-biometric:extractDebugAnnotations
+> Task :capgo-capacitor-native-biometric:extractDeepLinksForAarDebug
+> Task :capgo-capacitor-native-biometric:mergeDebugGeneratedProguardFiles
+> Task :capgo-capacitor-native-biometric:mergeDebugConsumerProguardFiles
+> Task :capgo-capacitor-native-biometric:prepareDebugArtProfile
+> Task :capgo-capacitor-native-biometric:prepareLintJarForPublish
+> Task :capgo-capacitor-native-biometric:mergeDebugJavaResource
+> Task :ebarooni-capacitor-calendar:checkDebugAarMetadata
+> Task :capgo-capacitor-native-biometric:syncDebugLibJars
+> Task :capgo-capacitor-native-biometric:bundleDebugAar
+> Task :capgo-capacitor-native-biometric:assembleDebug
+> Task :ebarooni-capacitor-calendar:stripDebugDebugSymbols NO-SOURCE
+> Task :ebarooni-capacitor-calendar:copyDebugJniLibsProjectAndLocalJars
+> Task :ebarooni-capacitor-calendar:extractDebugAnnotations
+> Task :ebarooni-capacitor-calendar:extractDeepLinksForAarDebug
+> Task :ebarooni-capacitor-calendar:mergeDebugGeneratedProguardFiles
+> Task :ebarooni-capacitor-calendar:mergeDebugConsumerProguardFiles
+> Task :ebarooni-capacitor-calendar:prepareDebugArtProfile
+> Task :ebarooni-capacitor-calendar:prepareLintJarForPublish
+> Task :ebarooni-capacitor-calendar:mergeDebugJavaResource
+> Task :ebarooni-capacitor-calendar:syncDebugLibJars
+> Task :ebarooni-capacitor-calendar:bundleDebugAar
+> Task :ebarooni-capacitor-calendar:assembleDebug
+w: Detected multiple Kotlin daemon sessions at 
+
+[Incubating] Problems report is available at: file:///home/runner/work/stormfile/stormfile/native/android/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 2m 26s
+365 actionable tasks: 365 executed
++ mkdir -p ../out
++ cp app/build/outputs/apk/debug/app-debug.apk ../out/StormFile-test.apk
++ ls -la ../out
+total 10440
+drwxr-xr-x  2 runner runner     4096 Nov 28 01:20 .
+drwxr-xr-x 11 runner runner     4096 Nov 28 01:20 ..
+-rw-r--r--  1 runner runner 10680128 Nov 28 01:20 StormFile-test.apk
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Configure project :capacitor-cordova-android-plugins
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+The Kotlin Gradle plugin was loaded multiple times in different subprojects, which is not supported and may break the build. 
+This might happen in subprojects that apply the Kotlin plugins with the Gradle 'plugins { ... }' DSL if they specify explicit versions, even if the versions are equal.
+Please add the Kotlin plugin to the common parent project or the root project, then remove the versions in the subprojects.
+If the parent project does not need the plugin, add 'apply false' to the plugin line.
+See: https://docs.gradle.org/current/userguide/plugins.html#sec:subprojects_plugins_dsl
+The Kotlin plugin was loaded in the following projects: ':capacitor-filesystem', ':ebarooni-capacitor-calendar'
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :capacitor-android:preBuild UP-TO-DATE
+> Task :capacitor-android:preReleaseBuild UP-TO-DATE
+> Task :capacitor-android:processReleaseNavigationResources
+> Task :capacitor-app:preBuild UP-TO-DATE
+> Task :capacitor-app:preReleaseBuild UP-TO-DATE
+> Task :capacitor-app:processReleaseNavigationResources
+> Task :capacitor-cordova-android-plugins:preBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:preReleaseBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:processReleaseNavigationResources
+> Task :capacitor-filesystem:preBuild UP-TO-DATE
+> Task :capacitor-filesystem:preReleaseBuild UP-TO-DATE
+> Task :capacitor-filesystem:processReleaseNavigationResources
+> Task :capacitor-share:preBuild UP-TO-DATE
+> Task :capacitor-share:preReleaseBuild UP-TO-DATE
+> Task :capacitor-share:processReleaseNavigationResources
+> Task :capacitor-splash-screen:preBuild UP-TO-DATE
+> Task :capacitor-splash-screen:preReleaseBuild UP-TO-DATE
+> Task :capacitor-splash-screen:processReleaseNavigationResources
+> Task :capacitor-status-bar:preBuild UP-TO-DATE
+> Task :capacitor-status-bar:preReleaseBuild UP-TO-DATE
+> Task :capacitor-status-bar:processReleaseNavigationResources
+> Task :capacitor-text-zoom:preBuild UP-TO-DATE
+> Task :capacitor-text-zoom:preReleaseBuild UP-TO-DATE
+> Task :capacitor-text-zoom:processReleaseNavigationResources
+> Task :capawesome-capacitor-age-signals:preBuild UP-TO-DATE
+> Task :capawesome-capacitor-age-signals:preReleaseBuild UP-TO-DATE
+> Task :capawesome-capacitor-age-signals:processReleaseNavigationResources
+> Task :capgo-capacitor-native-biometric:preBuild UP-TO-DATE
+> Task :capgo-capacitor-native-biometric:preReleaseBuild UP-TO-DATE
+> Task :capgo-capacitor-native-biometric:processReleaseNavigationResources
+> Task :ebarooni-capacitor-calendar:preBuild UP-TO-DATE
+> Task :ebarooni-capacitor-calendar:preReleaseBuild UP-TO-DATE
+> Task :ebarooni-capacitor-calendar:processReleaseNavigationResources
+> Task :app:processReleaseNavigationResources
+> Task :app:generateReleaseResValues
+> Task :capacitor-android:generateReleaseResValues
+> Task :capacitor-android:generateReleaseResources
+> Task :capacitor-android:packageReleaseResources
+> Task :capacitor-app:generateReleaseResValues
+> Task :app:compileReleaseNavigationResources
+> Task :capacitor-app:generateReleaseResources
+> Task :capacitor-app:packageReleaseResources
+> Task :capacitor-cordova-android-plugins:generateReleaseResValues
+> Task :capacitor-cordova-android-plugins:generateReleaseResources
+> Task :capacitor-cordova-android-plugins:packageReleaseResources
+> Task :capacitor-filesystem:generateReleaseResValues
+> Task :capacitor-filesystem:generateReleaseResources
+> Task :capacitor-filesystem:packageReleaseResources
+> Task :capacitor-share:generateReleaseResValues
+> Task :capacitor-share:generateReleaseResources
+> Task :capacitor-share:packageReleaseResources
+> Task :capacitor-splash-screen:generateReleaseResValues
+> Task :capacitor-splash-screen:generateReleaseResources
+> Task :capacitor-splash-screen:packageReleaseResources
+> Task :capacitor-status-bar:generateReleaseResValues
+> Task :capacitor-status-bar:generateReleaseResources
+> Task :capacitor-status-bar:packageReleaseResources
+> Task :capacitor-text-zoom:generateReleaseResValues
+> Task :capacitor-text-zoom:generateReleaseResources
+> Task :capacitor-text-zoom:packageReleaseResources
+> Task :capawesome-capacitor-age-signals:generateReleaseResValues
+> Task :capawesome-capacitor-age-signals:generateReleaseResources
+> Task :capawesome-capacitor-age-signals:packageReleaseResources
+> Task :capgo-capacitor-native-biometric:generateReleaseResValues
+> Task :capgo-capacitor-native-biometric:generateReleaseResources
+> Task :capgo-capacitor-native-biometric:packageReleaseResources
+> Task :ebarooni-capacitor-calendar:generateReleaseResValues
+> Task :ebarooni-capacitor-calendar:generateReleaseResources
+> Task :ebarooni-capacitor-calendar:packageReleaseResources
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :capacitor-android:extractDeepLinksRelease
+> Task :capacitor-app:extractDeepLinksRelease
+> Task :capacitor-cordova-android-plugins:extractDeepLinksRelease
+> Task :capacitor-android:processReleaseManifest
+> Task :capacitor-filesystem:extractDeepLinksRelease
+> Task :capacitor-cordova-android-plugins:processReleaseManifest
+> Task :capacitor-share:extractDeepLinksRelease
+> Task :capacitor-app:processReleaseManifest
+> Task :capacitor-splash-screen:extractDeepLinksRelease
+> Task :capacitor-filesystem:processReleaseManifest
+> Task :capacitor-status-bar:extractDeepLinksRelease
+> Task :capacitor-splash-screen:processReleaseManifest
+> Task :capacitor-text-zoom:extractDeepLinksRelease
+> Task :capacitor-share:processReleaseManifest
+> Task :capawesome-capacitor-age-signals:extractDeepLinksRelease
+> Task :capacitor-status-bar:processReleaseManifest
+> Task :capgo-capacitor-native-biometric:extractDeepLinksRelease
+> Task :capacitor-text-zoom:processReleaseManifest
+> Task :ebarooni-capacitor-calendar:extractDeepLinksRelease
+> Task :capawesome-capacitor-age-signals:processReleaseManifest
+> Task :capgo-capacitor-native-biometric:processReleaseManifest
+> Task :ebarooni-capacitor-calendar:processReleaseManifest
+> Task :capacitor-android:writeReleaseAarMetadata
+> Task :capacitor-app:writeReleaseAarMetadata
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processApplicationManifestReleaseForBundle
+> Task :capacitor-filesystem:writeReleaseAarMetadata
+> Task :capacitor-cordova-android-plugins:writeReleaseAarMetadata
+> Task :capacitor-splash-screen:writeReleaseAarMetadata
+> Task :capacitor-share:writeReleaseAarMetadata
+> Task :capacitor-status-bar:writeReleaseAarMetadata
+> Task :capacitor-text-zoom:writeReleaseAarMetadata
+> Task :capawesome-capacitor-age-signals:writeReleaseAarMetadata
+> Task :app:packageReleaseResources
+> Task :ebarooni-capacitor-calendar:writeReleaseAarMetadata
+> Task :capgo-capacitor-native-biometric:writeReleaseAarMetadata
+> Task :app:parseReleaseLocalResources
+> Task :app:processReleaseManifestForPackage
+> Task :app:checkReleaseAarMetadata
+> Task :capacitor-android:compileReleaseLibraryResources
+> Task :capacitor-app:compileReleaseLibraryResources
+> Task :capacitor-android:parseReleaseLocalResources
+> Task :capacitor-cordova-android-plugins:compileReleaseLibraryResources
+> Task :capacitor-app:parseReleaseLocalResources
+> Task :capacitor-app:generateReleaseRFile
+> Task :capacitor-cordova-android-plugins:parseReleaseLocalResources
+> Task :capacitor-android:generateReleaseRFile
+> Task :capacitor-cordova-android-plugins:generateReleaseRFile
+> Task :capacitor-filesystem:compileReleaseLibraryResources
+> Task :capacitor-share:compileReleaseLibraryResources
+> Task :capacitor-filesystem:parseReleaseLocalResources
+> Task :capacitor-share:parseReleaseLocalResources
+> Task :capacitor-splash-screen:compileReleaseLibraryResources
+> Task :capacitor-filesystem:generateReleaseRFile
+> Task :capacitor-share:generateReleaseRFile
+> Task :capacitor-splash-screen:parseReleaseLocalResources
+> Task :capacitor-status-bar:compileReleaseLibraryResources
+> Task :capacitor-status-bar:parseReleaseLocalResources
+> Task :capacitor-status-bar:generateReleaseRFile
+> Task :capacitor-text-zoom:compileReleaseLibraryResources
+> Task :app:mergeReleaseResources
+> Task :capawesome-capacitor-age-signals:compileReleaseLibraryResources
+> Task :capacitor-splash-screen:generateReleaseRFile
+> Task :capacitor-text-zoom:parseReleaseLocalResources
+> Task :capgo-capacitor-native-biometric:compileReleaseLibraryResources
+> Task :capawesome-capacitor-age-signals:parseReleaseLocalResources
+> Task :capacitor-text-zoom:generateReleaseRFile
+> Task :capgo-capacitor-native-biometric:parseReleaseLocalResources
+> Task :capawesome-capacitor-age-signals:generateReleaseRFile
+> Task :ebarooni-capacitor-calendar:compileReleaseLibraryResources
+> Task :capgo-capacitor-native-biometric:generateReleaseRFile
+> Task :ebarooni-capacitor-calendar:parseReleaseLocalResources
+> Task :app:extractReleaseVersionControlInfo
+> Task :capacitor-filesystem:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :capacitor-app:javaPreCompileRelease
+> Task :ebarooni-capacitor-calendar:generateReleaseRFile
+> Task :capacitor-android:javaPreCompileRelease
+> Task :capacitor-filesystem:javaPreCompileRelease
+> Task :capacitor-share:javaPreCompileRelease
+> Task :app:processReleaseResources
+
+> Task :capacitor-android:compileReleaseJavaWithJavac
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :capacitor-splash-screen:javaPreCompileRelease
+> Task :capacitor-status-bar:javaPreCompileRelease
+> Task :capacitor-text-zoom:javaPreCompileRelease
+> Task :capawesome-capacitor-age-signals:javaPreCompileRelease
+> Task :ebarooni-capacitor-calendar:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :capgo-capacitor-native-biometric:javaPreCompileRelease
+> Task :ebarooni-capacitor-calendar:javaPreCompileRelease
+> Task :capacitor-cordova-android-plugins:javaPreCompileRelease
+> Task :capacitor-cordova-android-plugins:compileReleaseJavaWithJavac NO-SOURCE
+> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToDirRelease
+> Task :capacitor-android:bundleLibCompileToJarRelease
+> Task :capacitor-android:bundleLibRuntimeToDirRelease
+> Task :capacitor-app:compileReleaseJavaWithJavac
+> Task :capacitor-app:bundleLibRuntimeToDirRelease
+> Task :app:bundleReleaseResources
+> Task :capacitor-share:compileReleaseJavaWithJavac
+> Task :capacitor-share:bundleLibRuntimeToDirRelease
+> Task :capacitor-splash-screen:compileReleaseJavaWithJavac
+> Task :capacitor-splash-screen:bundleLibRuntimeToDirRelease
+> Task :capacitor-status-bar:compileReleaseJavaWithJavac
+> Task :capacitor-status-bar:bundleLibRuntimeToDirRelease
+> Task :capacitor-text-zoom:compileReleaseJavaWithJavac
+> Task :capacitor-text-zoom:bundleLibRuntimeToDirRelease
+> Task :capawesome-capacitor-age-signals:compileReleaseJavaWithJavac
+> Task :capawesome-capacitor-age-signals:bundleLibRuntimeToDirRelease
+
+> Task :capgo-capacitor-native-biometric:compileReleaseJavaWithJavac
+Note: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :capgo-capacitor-native-biometric:bundleLibRuntimeToDirRelease
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:javaPreCompileRelease
+> Task :capacitor-app:bundleLibCompileToJarRelease
+> Task :capacitor-cordova-android-plugins:bundleLibCompileToJarRelease
+> Task :capacitor-share:bundleLibCompileToJarRelease
+> Task :capacitor-splash-screen:bundleLibCompileToJarRelease
+> Task :capacitor-status-bar:bundleLibCompileToJarRelease
+> Task :capacitor-text-zoom:bundleLibCompileToJarRelease
+> Task :capawesome-capacitor-age-signals:bundleLibCompileToJarRelease
+> Task :capgo-capacitor-native-biometric:bundleLibCompileToJarRelease
+> Task :app:desugarReleaseFileDependencies
+> Task :app:mergeReleaseStartupProfile
+> Task :capacitor-filesystem:compileReleaseKotlin
+> Task :ebarooni-capacitor-calendar:compileReleaseKotlin
+> Task :app:mergeExtDexRelease
+> Task :capacitor-filesystem:compileReleaseJavaWithJavac NO-SOURCE
+> Task :ebarooni-capacitor-calendar:compileReleaseJavaWithJavac NO-SOURCE
+> Task :capacitor-filesystem:bundleLibRuntimeToDirRelease
+> Task :capacitor-filesystem:bundleLibCompileToJarRelease
+> Task :ebarooni-capacitor-calendar:bundleLibCompileToJarRelease
+> Task :ebarooni-capacitor-calendar:bundleLibRuntimeToDirRelease
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:dexBuilderRelease
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-android:mergeReleaseShaders
+> Task :capacitor-android:compileReleaseShaders NO-SOURCE
+> Task :capacitor-android:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-android:mergeReleaseAssets
+> Task :capacitor-app:mergeReleaseShaders
+> Task :capacitor-app:compileReleaseShaders NO-SOURCE
+> Task :capacitor-app:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-app:mergeReleaseAssets
+> Task :capacitor-cordova-android-plugins:mergeReleaseShaders
+> Task :capacitor-cordova-android-plugins:compileReleaseShaders NO-SOURCE
+> Task :capacitor-cordova-android-plugins:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:mergeReleaseAssets
+> Task :capacitor-filesystem:mergeReleaseShaders
+> Task :capacitor-filesystem:compileReleaseShaders NO-SOURCE
+> Task :capacitor-filesystem:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-filesystem:mergeReleaseAssets
+> Task :capacitor-share:mergeReleaseShaders
+> Task :capacitor-share:compileReleaseShaders NO-SOURCE
+> Task :capacitor-share:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-share:mergeReleaseAssets
+> Task :capacitor-splash-screen:mergeReleaseShaders
+> Task :capacitor-splash-screen:compileReleaseShaders NO-SOURCE
+> Task :capacitor-splash-screen:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-splash-screen:mergeReleaseAssets
+> Task :capacitor-status-bar:mergeReleaseShaders
+> Task :capacitor-status-bar:compileReleaseShaders NO-SOURCE
+> Task :capacitor-status-bar:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-status-bar:mergeReleaseAssets
+> Task :capacitor-text-zoom:mergeReleaseShaders
+> Task :capacitor-text-zoom:compileReleaseShaders NO-SOURCE
+> Task :capacitor-text-zoom:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-text-zoom:mergeReleaseAssets
+> Task :capawesome-capacitor-age-signals:mergeReleaseShaders
+> Task :capawesome-capacitor-age-signals:compileReleaseShaders NO-SOURCE
+> Task :capawesome-capacitor-age-signals:generateReleaseAssets UP-TO-DATE
+> Task :capawesome-capacitor-age-signals:mergeReleaseAssets
+> Task :capgo-capacitor-native-biometric:mergeReleaseShaders
+> Task :capgo-capacitor-native-biometric:compileReleaseShaders NO-SOURCE
+> Task :capgo-capacitor-native-biometric:generateReleaseAssets UP-TO-DATE
+> Task :capgo-capacitor-native-biometric:mergeReleaseAssets
+> Task :ebarooni-capacitor-calendar:mergeReleaseShaders
+> Task :ebarooni-capacitor-calendar:compileReleaseShaders NO-SOURCE
+> Task :ebarooni-capacitor-calendar:generateReleaseAssets UP-TO-DATE
+> Task :ebarooni-capacitor-calendar:mergeReleaseAssets
+> Task :app:mergeReleaseAssets
+> Task :capacitor-app:bundleLibRuntimeToJarRelease
+> Task :capacitor-filesystem:bundleLibRuntimeToJarRelease
+> Task :capacitor-share:bundleLibRuntimeToJarRelease
+> Task :capacitor-splash-screen:bundleLibRuntimeToJarRelease
+> Task :capacitor-status-bar:bundleLibRuntimeToJarRelease
+> Task :capacitor-text-zoom:bundleLibRuntimeToJarRelease
+> Task :capawesome-capacitor-age-signals:bundleLibRuntimeToJarRelease
+> Task :capgo-capacitor-native-biometric:bundleLibRuntimeToJarRelease
+> Task :ebarooni-capacitor-calendar:bundleLibRuntimeToJarRelease
+> Task :capacitor-android:bundleLibRuntimeToJarRelease
+> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToJarRelease
+> Task :app:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-android:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-app:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-cordova-android-plugins:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-filesystem:processReleaseJavaRes
+> Task :capacitor-share:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-splash-screen:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-status-bar:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-text-zoom:processReleaseJavaRes NO-SOURCE
+> Task :capawesome-capacitor-age-signals:processReleaseJavaRes NO-SOURCE
+> Task :capgo-capacitor-native-biometric:processReleaseJavaRes NO-SOURCE
+> Task :ebarooni-capacitor-calendar:processReleaseJavaRes
+> Task :app:mergeReleaseJniLibFolders
+> Task :capacitor-android:mergeReleaseJniLibFolders
+> Task :capacitor-android:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-android:copyReleaseJniLibsProjectOnly
+> Task :capacitor-app:mergeReleaseJniLibFolders
+> Task :capacitor-app:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-app:copyReleaseJniLibsProjectOnly
+> Task :capacitor-cordova-android-plugins:mergeReleaseJniLibFolders
+> Task :capacitor-cordova-android-plugins:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-cordova-android-plugins:copyReleaseJniLibsProjectOnly
+> Task :capacitor-filesystem:mergeReleaseJniLibFolders
+> Task :capacitor-filesystem:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-filesystem:copyReleaseJniLibsProjectOnly
+> Task :capacitor-share:mergeReleaseJniLibFolders
+> Task :capacitor-share:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-share:copyReleaseJniLibsProjectOnly
+> Task :capacitor-splash-screen:mergeReleaseJniLibFolders
+> Task :capacitor-splash-screen:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-splash-screen:copyReleaseJniLibsProjectOnly
+> Task :capacitor-status-bar:mergeReleaseJniLibFolders
+> Task :capacitor-status-bar:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-status-bar:copyReleaseJniLibsProjectOnly
+> Task :capacitor-text-zoom:mergeReleaseJniLibFolders
+> Task :capacitor-text-zoom:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :capacitor-text-zoom:copyReleaseJniLibsProjectOnly
+> Task :capawesome-capacitor-age-signals:mergeReleaseJniLibFolders
+> Task :capawesome-capacitor-age-signals:mergeReleaseNativeLibs NO-SOURCE
+> Task :capawesome-capacitor-age-signals:copyReleaseJniLibsProjectOnly
+> Task :capgo-capacitor-native-biometric:mergeReleaseJniLibFolders
+> Task :capgo-capacitor-native-biometric:mergeReleaseNativeLibs NO-SOURCE
+> Task :capgo-capacitor-native-biometric:copyReleaseJniLibsProjectOnly
+> Task :ebarooni-capacitor-calendar:mergeReleaseJniLibFolders
+> Task :ebarooni-capacitor-calendar:mergeReleaseNativeLibs NO-SOURCE
+> Task :ebarooni-capacitor-calendar:copyReleaseJniLibsProjectOnly
+> Task :app:writeReleaseAppMetadata
+> Task :app:mergeReleaseNativeLibs NO-SOURCE
+> Task :app:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-android:prepareReleaseArtProfile
+> Task :capacitor-app:prepareReleaseArtProfile
+> Task :capacitor-cordova-android-plugins:prepareReleaseArtProfile
+> Task :capacitor-filesystem:prepareReleaseArtProfile
+> Task :capacitor-share:prepareReleaseArtProfile
+> Task :capacitor-splash-screen:prepareReleaseArtProfile
+> Task :capacitor-status-bar:prepareReleaseArtProfile
+> Task :capacitor-text-zoom:prepareReleaseArtProfile
+> Task :capawesome-capacitor-age-signals:prepareReleaseArtProfile
+> Task :capgo-capacitor-native-biometric:prepareReleaseArtProfile
+> Task :ebarooni-capacitor-calendar:prepareReleaseArtProfile
+> Task :app:mergeReleaseArtProfile
+> Task :app:collectReleaseDependencies
+> Task :app:configureReleaseDependencies
+> Task :app:extractReleaseNativeSymbolTables NO-SOURCE
+> Task :app:extractProguardFiles
+> Task :capacitor-android:createFullJarRelease
+> Task :capacitor-android:extractProguardFiles
+> Task :app:mergeReleaseJavaResource
+> Task :capacitor-android:generateReleaseLintModel
+> Task :capacitor-android:prepareLintJarForPublish UP-TO-DATE
+> Task :capacitor-app:createFullJarRelease
+> Task :capacitor-app:extractProguardFiles
+> Task :capacitor-app:generateReleaseLintModel
+> Task :capacitor-app:prepareLintJarForPublish UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:createFullJarRelease
+> Task :capacitor-cordova-android-plugins:extractProguardFiles
+> Task :capacitor-cordova-android-plugins:generateReleaseLintModel
+> Task :capacitor-cordova-android-plugins:prepareLintJarForPublish UP-TO-DATE
+> Task :capacitor-filesystem:createFullJarRelease
+> Task :capacitor-filesystem:extractProguardFiles
+> Task :capacitor-filesystem:generateReleaseLintModel
+> Task :capacitor-filesystem:prepareLintJarForPublish UP-TO-DATE
+> Task :capacitor-share:createFullJarRelease
+> Task :capacitor-share:extractProguardFiles
+> Task :capacitor-share:generateReleaseLintModel
+> Task :capacitor-share:prepareLintJarForPublish UP-TO-DATE
+> Task :capacitor-splash-screen:createFullJarRelease
+> Task :capacitor-splash-screen:extractProguardFiles
+> Task :capacitor-splash-screen:generateReleaseLintModel
+> Task :capacitor-splash-screen:prepareLintJarForPublish UP-TO-DATE
+> Task :capacitor-status-bar:createFullJarRelease
+> Task :capacitor-status-bar:extractProguardFiles
+> Task :capacitor-status-bar:generateReleaseLintModel
+> Task :capacitor-status-bar:prepareLintJarForPublish UP-TO-DATE
+> Task :capacitor-text-zoom:createFullJarRelease
+> Task :capacitor-text-zoom:extractProguardFiles
+> Task :capacitor-text-zoom:generateReleaseLintModel
+> Task :capacitor-text-zoom:prepareLintJarForPublish UP-TO-DATE
+> Task :capawesome-capacitor-age-signals:createFullJarRelease
+> Task :capawesome-capacitor-age-signals:extractProguardFiles
+> Task :capawesome-capacitor-age-signals:generateReleaseLintModel
+> Task :capawesome-capacitor-age-signals:prepareLintJarForPublish UP-TO-DATE
+> Task :capgo-capacitor-native-biometric:createFullJarRelease
+> Task :capgo-capacitor-native-biometric:extractProguardFiles
+> Task :capgo-capacitor-native-biometric:generateReleaseLintModel
+> Task :capgo-capacitor-native-biometric:prepareLintJarForPublish UP-TO-DATE
+> Task :ebarooni-capacitor-calendar:createFullJarRelease
+> Task :ebarooni-capacitor-calendar:extractProguardFiles
+> Task :ebarooni-capacitor-calendar:generateReleaseLintModel
+> Task :ebarooni-capacitor-calendar:prepareLintJarForPublish UP-TO-DATE
+> Task :app:generateReleaseLintVitalReportModel
+> Task :capacitor-app:checkReleaseAarMetadata
+> Task :capacitor-app:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-app:extractDeepLinksForAarRelease
+> Task :capacitor-app:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-app:extractReleaseAnnotations
+> Task :capacitor-app:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-app:mergeReleaseConsumerProguardFiles
+> Task :capacitor-app:mergeReleaseJavaResource
+> Task :capacitor-filesystem:checkReleaseAarMetadata
+> Task :capacitor-app:syncReleaseLibJars
+> Task :capacitor-app:bundleReleaseLocalLintAar
+> Task :capacitor-filesystem:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-filesystem:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-filesystem:extractDeepLinksForAarRelease
+> Task :capacitor-filesystem:extractReleaseAnnotations
+> Task :capacitor-filesystem:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-filesystem:mergeReleaseConsumerProguardFiles
+> Task :capacitor-share:checkReleaseAarMetadata
+> Task :capacitor-filesystem:mergeReleaseJavaResource
+> Task :capacitor-share:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-filesystem:syncReleaseLibJars
+> Task :capacitor-filesystem:bundleReleaseLocalLintAar
+> Task :capacitor-share:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-share:extractDeepLinksForAarRelease
+> Task :capacitor-share:extractReleaseAnnotations
+> Task :capacitor-share:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-share:mergeReleaseConsumerProguardFiles
+> Task :capacitor-share:mergeReleaseJavaResource
+> Task :capacitor-splash-screen:checkReleaseAarMetadata
+> Task :capacitor-share:syncReleaseLibJars
+> Task :capacitor-share:bundleReleaseLocalLintAar
+> Task :capacitor-splash-screen:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-splash-screen:extractDeepLinksForAarRelease
+> Task :capacitor-splash-screen:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-splash-screen:extractReleaseAnnotations
+> Task :capacitor-splash-screen:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-splash-screen:mergeReleaseConsumerProguardFiles
+> Task :capacitor-splash-screen:mergeReleaseJavaResource
+> Task :capacitor-status-bar:checkReleaseAarMetadata
+> Task :capacitor-splash-screen:syncReleaseLibJars
+> Task :capacitor-splash-screen:bundleReleaseLocalLintAar
+> Task :capacitor-status-bar:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-status-bar:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-status-bar:extractDeepLinksForAarRelease
+> Task :capacitor-status-bar:extractReleaseAnnotations
+> Task :capacitor-status-bar:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-status-bar:mergeReleaseConsumerProguardFiles
+> Task :capacitor-status-bar:mergeReleaseJavaResource
+> Task :capacitor-text-zoom:checkReleaseAarMetadata
+> Task :capacitor-status-bar:syncReleaseLibJars
+> Task :capacitor-status-bar:bundleReleaseLocalLintAar
+> Task :capacitor-text-zoom:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-text-zoom:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-text-zoom:extractDeepLinksForAarRelease
+> Task :capacitor-text-zoom:extractReleaseAnnotations
+> Task :capacitor-text-zoom:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-text-zoom:mergeReleaseConsumerProguardFiles
+> Task :capacitor-text-zoom:mergeReleaseJavaResource
+> Task :capawesome-capacitor-age-signals:checkReleaseAarMetadata
+> Task :capacitor-text-zoom:syncReleaseLibJars
+> Task :capacitor-text-zoom:bundleReleaseLocalLintAar
+> Task :capawesome-capacitor-age-signals:stripReleaseDebugSymbols NO-SOURCE
+> Task :capawesome-capacitor-age-signals:copyReleaseJniLibsProjectAndLocalJars
+> Task :capawesome-capacitor-age-signals:extractDeepLinksForAarRelease
+> Task :capawesome-capacitor-age-signals:extractReleaseAnnotations
+> Task :capawesome-capacitor-age-signals:mergeReleaseGeneratedProguardFiles
+> Task :capawesome-capacitor-age-signals:mergeReleaseConsumerProguardFiles
+> Task :capawesome-capacitor-age-signals:mergeReleaseJavaResource
+> Task :capgo-capacitor-native-biometric:checkReleaseAarMetadata
+> Task :capawesome-capacitor-age-signals:syncReleaseLibJars
+> Task :capawesome-capacitor-age-signals:bundleReleaseLocalLintAar
+> Task :capgo-capacitor-native-biometric:stripReleaseDebugSymbols NO-SOURCE
+> Task :capgo-capacitor-native-biometric:copyReleaseJniLibsProjectAndLocalJars
+> Task :capgo-capacitor-native-biometric:extractDeepLinksForAarRelease
+> Task :capgo-capacitor-native-biometric:extractReleaseAnnotations
+> Task :capgo-capacitor-native-biometric:mergeReleaseGeneratedProguardFiles
+> Task :capgo-capacitor-native-biometric:mergeReleaseConsumerProguardFiles
+> Task :capgo-capacitor-native-biometric:mergeReleaseJavaResource
+> Task :ebarooni-capacitor-calendar:checkReleaseAarMetadata
+> Task :capgo-capacitor-native-biometric:syncReleaseLibJars
+> Task :capgo-capacitor-native-biometric:bundleReleaseLocalLintAar
+> Task :ebarooni-capacitor-calendar:stripReleaseDebugSymbols NO-SOURCE
+> Task :ebarooni-capacitor-calendar:copyReleaseJniLibsProjectAndLocalJars
+> Task :ebarooni-capacitor-calendar:extractDeepLinksForAarRelease
+> Task :ebarooni-capacitor-calendar:extractReleaseAnnotations
+> Task :ebarooni-capacitor-calendar:mergeReleaseGeneratedProguardFiles
+> Task :ebarooni-capacitor-calendar:mergeReleaseConsumerProguardFiles
+> Task :capacitor-android:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-android:checkReleaseAarMetadata
+> Task :capacitor-android:extractDeepLinksForAarRelease
+> Task :capacitor-android:copyReleaseJniLibsProjectAndLocalJars
+> Task :ebarooni-capacitor-calendar:mergeReleaseJavaResource
+> Task :capacitor-android:extractReleaseAnnotations
+> Task :ebarooni-capacitor-calendar:syncReleaseLibJars
+> Task :ebarooni-capacitor-calendar:bundleReleaseLocalLintAar
+> Task :capacitor-android:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-android:mergeReleaseConsumerProguardFiles
+> Task :capacitor-android:mergeReleaseJavaResource
+> Task :capacitor-android:syncReleaseLibJars
+> Task :capacitor-android:bundleReleaseLocalLintAar
+> Task :capacitor-cordova-android-plugins:checkReleaseAarMetadata
+> Task :capacitor-cordova-android-plugins:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-cordova-android-plugins:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-cordova-android-plugins:extractDeepLinksForAarRelease
+> Task :capacitor-cordova-android-plugins:extractReleaseAnnotations
+> Task :capacitor-cordova-android-plugins:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-cordova-android-plugins:mergeReleaseConsumerProguardFiles
+> Task :capacitor-cordova-android-plugins:mergeReleaseJavaResource
+> Task :capacitor-cordova-android-plugins:syncReleaseLibJars
+> Task :capacitor-cordova-android-plugins:bundleReleaseLocalLintAar
+> Task :capacitor-android:writeReleaseLintModelMetadata
+> Task :capacitor-app:writeReleaseLintModelMetadata
+> Task :capacitor-cordova-android-plugins:writeReleaseLintModelMetadata
+> Task :capacitor-filesystem:writeReleaseLintModelMetadata
+> Task :capacitor-share:writeReleaseLintModelMetadata
+> Task :capacitor-splash-screen:writeReleaseLintModelMetadata
+> Task :capacitor-status-bar:writeReleaseLintModelMetadata
+> Task :capacitor-text-zoom:writeReleaseLintModelMetadata
+> Task :capawesome-capacitor-age-signals:writeReleaseLintModelMetadata
+> Task :capgo-capacitor-native-biometric:writeReleaseLintModelMetadata
+> Task :ebarooni-capacitor-calendar:writeReleaseLintModelMetadata
+> Task :capacitor-android:generateReleaseLintVitalModel
+> Task :capacitor-app:generateReleaseLintVitalModel
+> Task :capacitor-cordova-android-plugins:generateReleaseLintVitalModel
+> Task :capacitor-filesystem:generateReleaseLintVitalModel
+> Task :capacitor-share:generateReleaseLintVitalModel
+> Task :capacitor-splash-screen:generateReleaseLintVitalModel
+> Task :app:mergeDexRelease
+> Task :capacitor-status-bar:generateReleaseLintVitalModel
+> Task :app:buildReleasePreBundle
+> Task :capacitor-text-zoom:generateReleaseLintVitalModel
+> Task :capawesome-capacitor-age-signals:generateReleaseLintVitalModel
+> Task :capgo-capacitor-native-biometric:generateReleaseLintVitalModel
+> Task :ebarooni-capacitor-calendar:generateReleaseLintVitalModel
+> Task :app:parseReleaseIntegrityConfig
+> Task :app:validateSigningRelease
+> Task :app:compileReleaseArtProfile
+> Task :capacitor-app:lintVitalAnalyzeRelease
+> Task :capacitor-cordova-android-plugins:lintVitalAnalyzeRelease
+> Task :capacitor-android:lintVitalAnalyzeRelease
+> Task :capacitor-share:lintVitalAnalyzeRelease
+> Task :capacitor-splash-screen:lintVitalAnalyzeRelease
+> Task :capacitor-status-bar:lintVitalAnalyzeRelease
+> Task :capacitor-text-zoom:lintVitalAnalyzeRelease
+> Task :capacitor-filesystem:lintVitalAnalyzeRelease
+> Task :capawesome-capacitor-age-signals:lintVitalAnalyzeRelease
+> Task :capgo-capacitor-native-biometric:lintVitalAnalyzeRelease
+> Task :ebarooni-capacitor-calendar:lintVitalAnalyzeRelease
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:packageReleaseBundle
+> Task :app:signReleaseBundle
+> Task :app:produceReleaseBundleIdeListingFile
+> Task :app:createReleaseBundleListingFileRedirect
+> Task :app:bundleRelease
+w: Detected multiple Kotlin daemon sessions at 
+
+[Incubating] Problems report is available at: file:///home/runner/work/stormfile/stormfile/native/android/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 1m 36s
+445 actionable tasks: 434 executed, 11 up-to-date
+total 18252
+drwxr-xr-x  2 runner runner     4096 Nov 28 01:21 .
+drwxr-xr-x 11 runner runner     4096 Nov 28 01:20 ..
+-rw-r--r--  1 runner runner  7997456 Nov 28 01:21 StormFile-store.aab
+-rw-r--r--  1 runner runner 10680128 Nov 28 01:20 StormFile-test.apk
