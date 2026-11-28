@@ -32,10 +32,16 @@ BUILD=$((100 + ${GITHUB_RUN_NUMBER:-1}))
 AUTH=(-allowProvisioningUpdates -authenticationKeyPath "$KEY" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID")
 read -r -a T < .xcode-target
 cd ios/App
-xcodebuild "${T[@]}" -scheme App -configuration Release -destination 'generic/platform=iOS' \
+# Sign the archive for App Store distribution (a development profile would need a registered iPhone on the team).
+# If Xcode won't sign that way, archive unsigned and let the export step do the App Store signing.
+archive() { xcodebuild "${T[@]}" -scheme App -configuration Release -destination 'generic/platform=iOS' \
   -archivePath "$RUNNER_TEMP/StormFile.xcarchive" archive \
-  DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
-  MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD" "${AUTH[@]}" -quiet
+  DEVELOPMENT_TEAM="$APPLE_TEAM_ID" MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$BUILD" "$@" -quiet; }
+if ! archive CODE_SIGN_STYLE=Automatic CODE_SIGN_IDENTITY="Apple Distribution" "${AUTH[@]}"; then
+  echo "Distribution-signed archive failed; trying an unsigned archive signed at export"
+  rm -rf "$RUNNER_TEMP/StormFile.xcarchive"
+  archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+fi
 cat > "$RUNNER_TEMP/export.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
