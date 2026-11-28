@@ -1,0 +1,48 @@
+11-28 01:28:24.897   486  1558 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.coastlinecode.stormfile/.MainActivity} from uid 2000
+11-28 01:28:24.947   486   536 I ActivityManager: Start proc 8572:com.coastlinecode.stormfile/u0a177 for next-top-activity {com.coastlinecode.stormfile/com.coastlinecode.stormfile.MainActivity}
+11-28 01:28:24.969  8572  8572 I ecode.stormfile: Using CollectorTypeCC GC.
+11-28 01:28:24.991   486  1558 D CoreBackPreview: Window{35d02f5 u0 Splash Screen com.coastlinecode.stormfile}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@1d3aefb, mPriority=0}
+11-28 01:28:24.991  8572  8572 W ecode.stormfile: Unexpected CPU variant for x86: x86_64.
+11-28 01:28:24.991  8572  8572 W ecode.stormfile: Known variants: atom, sandybridge, silvermont, kabylake, default
+11-28 01:28:25.355  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /system_ext/framework/androidx.window.extensions.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.coastlinecode.stormfile
+11-28 01:28:25.356  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /system_ext/framework/androidx.window.sidecar.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.coastlinecode.stormfile
+11-28 01:28:25.359  8572  8572 W ziparchive: Unable to open '/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.en.dm': No such file or directory
+11-28 01:28:25.360  8572  8572 W ziparchive: Unable to open '/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.en.dm': No such file or directory
+11-28 01:28:25.360  8572  8572 W ecode.stormfile: Entry not found
+11-28 01:28:25.361  8572  8572 W ziparchive: Unable to open '/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.xxhdpi.dm': No such file or directory
+11-28 01:28:25.361  8572  8572 W ziparchive: Unable to open '/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.xxhdpi.dm': No such file or directory
+11-28 01:28:25.361  8572  8572 W ecode.stormfile: Entry not found
+11-28 01:28:25.361  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/base.apk:/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.en.apk:/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.xxhdpi.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.coastlinecode.stormfile
+11-28 01:28:25.365  8572  8572 W ecode.stormfile: JIT profile information will not be recorded: profile file does not exist.
+11-28 01:28:25.365  8572  8572 W ecode.stormfile: JIT profile information will not be recorded: profile file does not exist.
+11-28 01:28:25.371  8572  8572 V GraphicsEnvironment: ANGLE Developer option for 'com.coastlinecode.stormfile' set to: 'default'
+11-28 01:28:25.371  8572  8572 V GraphicsEnvironment: ANGLE GameManagerService for com.coastlinecode.stormfile: false
+11-28 01:28:25.408  8572  8572 I WebViewFactory: Loading com.google.android.webview version 109.0.5414.123 (code 541412337)
+11-28 01:28:25.414  8572  8572 W ecode.stormfile: Entry not found
+11-28 01:28:25.419  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /data/app/~~8bEiE3ulrD2bnnvL5bJQkA==/com.google.android.trichromelibrary_541412337-0WkV8A5GnudJ6SXkZ2u6oA==/TrichromeLibrary.apk. target_sdk_version=33, uses_libraries=ALL, library_path=/data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/lib/x86_64:/data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~8bEiE3ulrD2bnnvL5bJQkA==/com.google.android.trichromelibrary_541412337-0WkV8A5GnudJ6SXkZ2u6oA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+11-28 01:28:25.430  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/WebViewGoogle.apk. target_sdk_version=33, uses_libraries=, library_path=/data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/lib/x86_64:/data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~8bEiE3ulrD2bnnvL5bJQkA==/com.google.android.trichromelibrary_541412337-0WkV8A5GnudJ6SXkZ2u6oA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+11-28 01:28:25.484  8572  8592 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed_new"
+11-28 01:28:25.485  8572  8592 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed"
+11-28 01:28:25.501   486   536 I ActivityManager: Start proc 8594:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i8 for  {com.coastlinecode.stormfile/org.chromium.content.app.SandboxedProcessService0:0}
+11-28 01:28:25.547  8572  8609 W chromium: [WARNING:dns_config_service_android.cc(115)] Failed to read DnsConfig.
+11-28 01:28:25.552  8594  8594 I cr_WebViewApkApp: Launched version=109.0.5414.123 minSdkVersion=29 isBundle=false processName=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+11-28 01:28:25.693  8572  8572 D Capacitor: Starting BridgeActivity
+11-28 01:28:25.788  8571  8571 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:28:25.791  8571  8571 I AndroidRuntime: Using default boot image
+11-28 01:28:25.791  8571  8571 I AndroidRuntime: Leaving lock profiling enabled
+11-28 01:28:25.794   486  1558 D BiometricService/PreAuthInfo: Package: com.coastlinecode.stormfile Sensor ID: 0 Modality: 2 Status: 7
+11-28 01:28:25.801   486  1795 D BiometricService/PreAuthInfo: Package: com.coastlinecode.stormfile Sensor ID: 0 Modality: 2 Status: 7
+11-28 01:28:25.847   486  2093 D CoreBackPreview: Window{b16ef4e u0 com.coastlinecode.stormfile/com.coastlinecode.stormfile.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@795297c, mPriority=0}
+11-28 01:28:25.951  8571  8571 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:28:26.149   486   524 I ActivityTaskManager: Displayed com.coastlinecode.stormfile/.MainActivity: +1s240ms
+11-28 01:28:26.170   486  1558 D CoreBackPreview: Window{35d02f5 u0 Splash Screen com.coastlinecode.stormfile EXITING}: Setting back callback null
+11-28 01:28:26.170   486  1558 W InputManager-JNI: Input channel object '35d02f5 Splash Screen com.coastlinecode.stormfile (client)' was disposed without first being removed with the input manager!
+11-28 01:28:26.299  1522  1522 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x12000000 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=com.coastlinecode.stormfile fieldId=2131296765 fieldName=null extras=null}, false)
+11-28 01:28:26.607   486  1795 D BiometricService/PreAuthInfo: Package: com.coastlinecode.stormfile Sensor ID: 0 Modality: 2 Status: 7
+11-28 01:28:26.607   486  1795 D BiometricService/PreAuthInfo: Package: com.coastlinecode.stormfile Sensor ID: 0 Modality: 2 Status: 7
+11-28 01:28:27.317  8571  8571 D AndroidRuntime: Shutting down VM
+11-28 01:28:28.703  8676  8676 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:28:28.710  8676  8676 I AndroidRuntime: Using default boot image
+11-28 01:28:28.710  8676  8676 I AndroidRuntime: Leaving lock profiling enabled
+11-28 01:28:28.777  8676  8676 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:28:29.793  8676  8676 D AndroidRuntime: Shutting down VM

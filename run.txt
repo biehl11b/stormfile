@@ -1,0 +1,18 @@
+info phone  → Android API 33, x86_64, screen 1080x2400, WebView 109.0.5414.123
+info first frame on screen (Android's launch time)  → 2617 ms
+info app in front  → topResumedActivity=ActivityRecord{1df2b94 u0 com.coastlinecode.stormfile/.MainActivity} t9}
+ok   start screen shows (I agree button on screen)  → after 11.3 s from tapping the icon (test phones are slower than real ones)
+ok   loads in a reasonable time  → 11.3 s
+info screen start-ups during first open  → web viewer ready before the first screen / onCreate restored=false / screen started
+/home/runner/work/stormfile/stormfile/tests/android/store-check.py:143: DeprecationWarning: Testing an element's truth value will always return True in future versions.  Use specific 'len(elem)' or 'elem is not None' test instead.
+  root = clear_anr(dump()); n2 = agree_box(root) or n
+ok   I agree opens the first setup screen  → StormFile | STORMFILE | Settings | PROPERTY My home · Home | HOME · ADD YOUR CITY | MY HOME | ABOUT THIS PROPERTY | Name | My home | Type | Type | City | State | State | Your state sets which storm an
+ok   Policy tab opens  → StormFile | STORMFILE | Settings | ← Home | PROPERTY My home · Home | MY HOME | ADD THE POLICY | Grab your declarations page. It’s the 1–3 page summary your ins
+ok   Claim tab opens  → StormFile | STORMFILE | Settings | ← Home | PROPERTY My home · Home | MY HOME · CLAIM MODE | THE CLAIM | HAD STORM DAMAGE? | Start here. StormFile walks you thr
+ok   app still running  → pid 4237
+ok   first open after a fresh install, 3 more times  → 4.2s, 4.7s, 5.7s
+ok   opens every time (5 more cold starts)  → 7.8s, 6.5s, 8.1s, 6.2s, 6.1s
+info cold start, slowest / typical  → 8.1 s / 6.5 s
+ok   no crashes
+ok   no script errors
+Store version on Android API 33 (1080x2400): 10 passed, 0 failed

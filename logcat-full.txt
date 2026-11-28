@@ -1,0 +1,441 @@
+--------- beginning of system
+11-28 01:28:24.897   486  1558 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.coastlinecode.stormfile/.MainActivity} from uid 2000
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 265464455; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 265452344; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 266124927; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 265451093; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 265456536; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 255940284; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 236283604; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 263959004; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 264304459; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 264301586; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 254631730; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 273509367; UID 10177; state: DISABLED
+11-28 01:28:24.899   486  1558 D CompatibilityChangeReporter: Compat change id reported: 263259275; UID 10177; state: DISABLED
+11-28 01:28:24.900   486  1558 D CompatibilityChangeReporter: Compat change id reported: 194480991; UID 10177; state: ENABLED
+11-28 01:28:24.900   486  1558 D CompatibilityChangeReporter: Compat change id reported: 174042980; UID 10177; state: DISABLED
+11-28 01:28:24.901   486  1558 D CompatibilityChangeReporter: Compat change id reported: 184838306; UID 10177; state: DISABLED
+11-28 01:28:24.901   486  1558 D CompatibilityChangeReporter: Compat change id reported: 185004937; UID 10177; state: DISABLED
+11-28 01:28:24.901   486  1558 D CompatibilityChangeReporter: Compat change id reported: 181136395; UID 10177; state: DISABLED
+11-28 01:28:24.901   486  1558 D CompatibilityChangeReporter: Compat change id reported: 174042936; UID 10177; state: DISABLED
+11-28 01:28:24.901   486  1558 D CompatibilityChangeReporter: Compat change id reported: 197654537; UID 10177; state: ENABLED
+11-28 01:28:24.902   486  1558 D CompatibilityChangeReporter: Compat change id reported: 205907456; UID 10177; state: ENABLED
+11-28 01:28:24.905   486  1558 D CompatibilityChangeReporter: Compat change id reported: 194833441; UID 10177; state: ENABLED
+11-28 01:28:24.910   486   527 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 10177; state: DISABLED
+11-28 01:28:24.910   486   527 D CompatibilityChangeReporter: Compat change id reported: 177438394; UID 10177; state: DISABLED
+11-28 01:28:24.910   486   527 D CompatibilityChangeReporter: Compat change id reported: 135772972; UID 10177; state: DISABLED
+11-28 01:28:24.910   486   527 D CompatibilityChangeReporter: Compat change id reported: 135754954; UID 10177; state: ENABLED
+11-28 01:28:24.911   486   536 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10177; state: ENABLED
+--------- beginning of main
+11-28 01:28:24.920  1035  1035 D MainContentCaptureSession: Flushing 1 event(s) for act:com.google.android.apps.nexuslauncher/.NexusLauncherActivity [state=2 (ACTIVE), disabled=false], reason=FULL
+11-28 01:28:24.935   288   288 D Zygote  : Forked child process 8572
+11-28 01:28:24.947   486   536 I ActivityManager: Start proc 8572:com.coastlinecode.stormfile/u0a177 for next-top-activity {com.coastlinecode.stormfile/com.coastlinecode.stormfile.MainActivity}
+11-28 01:28:24.950   486  1558 W Binder  : Caught a RuntimeException from the binder stub implementation.
+11-28 01:28:24.950   486  1558 W Binder  : java.lang.ArrayIndexOutOfBoundsException: Array index out of range: 0
+11-28 01:28:24.950   486  1558 W Binder  : 	at android.util.ArraySet.valueAt(ArraySet.java:422)
+11-28 01:28:24.950   486  1558 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.updateContentCaptureOptions(ContentCapturePerUserService.java:733)
+11-28 01:28:24.950   486  1558 W Binder  : 	at com.android.server.contentcapture.ContentCapturePerUserService$ContentCaptureServiceRemoteCallback.setContentCaptureWhitelist(ContentCapturePerUserService.java:646)
+11-28 01:28:24.950   486  1558 W Binder  : 	at android.service.contentcapture.IContentCaptureServiceCallback$Stub.onTransact(IContentCaptureServiceCallback.java:115)
+11-28 01:28:24.950   486  1558 W Binder  : 	at android.os.Binder.execTransactInternal(Binder.java:1285)
+11-28 01:28:24.950   486  1558 W Binder  : 	at android.os.Binder.execTransact(Binder.java:1244)
+11-28 01:28:24.953   773   826 W Parcel  : Expecting binder but got null!
+11-28 01:28:24.963   773   817 D SplashScreenView: Build android.window.SplashScreenView{e4c75c6 V.E...... ......ID 0,0-0,0}
+11-28 01:28:24.963   773   817 D SplashScreenView: Icon: view: android.widget.ImageView{f94a987 V.ED..... ......I. 0,0-0,0 #10204dd android:id/splashscreen_icon_view} drawable: com.android.wm.shell.startingsurface.SplashscreenIconDrawableFactory$ImmobileIconDrawable@35d80b4 size: 420
+11-28 01:28:24.963   773   817 D SplashScreenView: Branding: view: android.view.View{b3ed4dd G.ED..... ......I. 0,0-0,0 #10204dc android:id/splashscreen_branding_view} drawable: null size w: 0 h: 0
+11-28 01:28:24.969  8572  8572 I ecode.stormfile: Using CollectorTypeCC GC.
+11-28 01:28:24.991   486  1558 D CoreBackPreview: Window{35d02f5 u0 Splash Screen com.coastlinecode.stormfile}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@1d3aefb, mPriority=0}
+11-28 01:28:24.991  8572  8572 W ecode.stormfile: Unexpected CPU variant for x86: x86_64.
+11-28 01:28:24.991  8572  8572 W ecode.stormfile: Known variants: atom, sandybridge, silvermont, kabylake, default
+11-28 01:28:25.003  1035  1869 D EGL_emulation: app_time_stats: avg=1023.08ms min=156.72ms max=1889.45ms count=2
+11-28 01:28:25.029   486  1558 W ActivityTaskManager: takeTaskSnapshot: taskId=17 not found or not visible
+11-28 01:28:25.138   376   406 I adbd    : jdwp connection from 8572
+11-28 01:28:25.139   361   377 W TransactionTracing: Could not find layer handle 0x700b573abdf0
+11-28 01:28:25.139   361   377 W TransactionTracing: Could not find layer handle 0x700b573adef0
+11-28 01:28:25.139   361   377 W TransactionTracing: Could not find layer handle 0x700b573adef0
+11-28 01:28:25.139   361   377 W TransactionTracing: Could not find layer handle 0x700b573abdf0
+11-28 01:28:25.145  8572  8572 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 10177; state: ENABLED
+11-28 01:28:25.189  1035  1035 D MainContentCaptureSession: Flushing 2 event(s) for act:com.google.android.apps.nexuslauncher/.NexusLauncherActivity [state=2 (ACTIVE), disabled=false], reason=VIEW_TREE_APPEARING
+11-28 01:28:25.190  1035  1035 D MainContentCaptureSession: Flushing 2 event(s) for act:com.google.android.apps.nexuslauncher/.NexusLauncherActivity [state=2 (ACTIVE), disabled=false], reason=VIEW_TREE_APPEARED
+11-28 01:28:25.355  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /system_ext/framework/androidx.window.extensions.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.coastlinecode.stormfile
+11-28 01:28:25.356  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /system_ext/framework/androidx.window.sidecar.jar. target_sdk_version=36, uses_libraries=ALL, library_path=/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.coastlinecode.stormfile
+11-28 01:28:25.359  8572  8572 W ziparchive: Unable to open '/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.en.dm': No such file or directory
+11-28 01:28:25.360  8572  8572 W ziparchive: Unable to open '/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.en.dm': No such file or directory
+11-28 01:28:25.360  8572  8572 W ecode.stormfile: Entry not found
+11-28 01:28:25.361  8572  8572 W ziparchive: Unable to open '/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.xxhdpi.dm': No such file or directory
+11-28 01:28:25.361  8572  8572 W ziparchive: Unable to open '/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.xxhdpi.dm': No such file or directory
+11-28 01:28:25.361  8572  8572 W ecode.stormfile: Entry not found
+11-28 01:28:25.361  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/base.apk:/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.en.apk:/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/split_config.xxhdpi.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~8dS-MxHq76x05gBFA6Jkzw==/com.coastlinecode.stormfile-FuoEFLDO2xuJJhVFnBanCA==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/com.coastlinecode.stormfile
+11-28 01:28:25.365  8572  8572 W ecode.stormfile: JIT profile information will not be recorded: profile file does not exist.
+11-28 01:28:25.365  8572  8572 W ecode.stormfile: JIT profile information will not be recorded: profile file does not exist.
+11-28 01:28:25.371  8572  8572 V GraphicsEnvironment: ANGLE Developer option for 'com.coastlinecode.stormfile' set to: 'default'
+11-28 01:28:25.371  8572  8572 V GraphicsEnvironment: ANGLE GameManagerService for com.coastlinecode.stormfile: false
+11-28 01:28:25.371  8572  8572 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+11-28 01:28:25.377  8572  8572 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+11-28 01:28:25.377  8572  8572 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+11-28 01:28:25.383   773   826 D EGL_emulation: app_time_stats: avg=4266.34ms min=4266.34ms max=4266.34ms count=1
+11-28 01:28:25.408  8572  8572 I WebViewFactory: Loading com.google.android.webview version 109.0.5414.123 (code 541412337)
+11-28 01:28:25.414  8572  8572 W ziparchive: Unable to open '/data/app/~~8bEiE3ulrD2bnnvL5bJQkA==/com.google.android.trichromelibrary_541412337-0WkV8A5GnudJ6SXkZ2u6oA==/TrichromeLibrary.dm': No such file or directory
+11-28 01:28:25.414  8572  8572 W ziparchive: Unable to open '/data/app/~~8bEiE3ulrD2bnnvL5bJQkA==/com.google.android.trichromelibrary_541412337-0WkV8A5GnudJ6SXkZ2u6oA==/TrichromeLibrary.dm': No such file or directory
+11-28 01:28:25.414  8572  8572 W ecode.stormfile: Entry not found
+11-28 01:28:25.419  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /data/app/~~8bEiE3ulrD2bnnvL5bJQkA==/com.google.android.trichromelibrary_541412337-0WkV8A5GnudJ6SXkZ2u6oA==/TrichromeLibrary.apk. target_sdk_version=33, uses_libraries=ALL, library_path=/data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/lib/x86_64:/data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~8bEiE3ulrD2bnnvL5bJQkA==/com.google.android.trichromelibrary_541412337-0WkV8A5GnudJ6SXkZ2u6oA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+11-28 01:28:25.430  8572  8572 D nativeloader: Configuring classloader-namespace for other apk /data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/WebViewGoogle.apk. target_sdk_version=33, uses_libraries=, library_path=/data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/lib/x86_64:/data/app/~~wlzZr9o6w5_v38lyJOxePg==/com.google.android.webview-zOsk4VoW7u7H6eYoHlfh7A==/WebViewGoogle.apk!/lib/x86_64:/data/app/~~8bEiE3ulrD2bnnvL5bJQkA==/com.google.android.trichromelibrary_541412337-0WkV8A5GnudJ6SXkZ2u6oA==/TrichromeLibrary.apk!/lib/x86_64, permitted_path=/data:/mnt/expand
+11-28 01:28:25.477  8572  8572 I cr_WVCFactoryProvider: Loaded version=109.0.5414.123 minSdkVersion=29 isBundle=false multiprocess=true packageId=2
+11-28 01:28:25.483  8572  8572 I cr_LibraryLoader: Successfully loaded native library
+11-28 01:28:25.483  8572  8572 I cr_CachingUmaRecorder: Flushed 9 samples from 9 histograms.
+11-28 01:28:25.484  8572  8592 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed_new"
+11-28 01:28:25.485  8572  8592 I cr_VariationsUtils: Failed reading seed file "/data/user/0/com.coastlinecode.stormfile/app_webview/variations_seed"
+11-28 01:28:25.485  8572  8592 I cr_VariationsUtils: Requesting new seed from IVariationsSeedServer
+11-28 01:28:25.494   486  1558 D CompatibilityChangeReporter: Compat change id reported: 135634846; UID 99008; state: DISABLED
+11-28 01:28:25.494   486   536 D CompatibilityChangeReporter: Compat change id reported: 143937733; UID 10177; state: ENABLED
+11-28 01:28:25.499   933   933 D Zygote  : Forked child process 8594
+11-28 01:28:25.501   486   536 I ActivityManager: Start proc 8594:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0i8 for  {com.coastlinecode.stormfile/org.chromium.content.app.SandboxedProcessService0:0}
+11-28 01:28:25.505  8594  8594 I ocessService0:0: Using CollectorTypeCC GC.
+11-28 01:28:25.506  8594  8594 W ocessService0:0: Unexpected CPU variant for x86: x86_64.
+11-28 01:28:25.506  8594  8594 W ocessService0:0: Known variants: atom, sandybridge, silvermont, kabylake, default
+11-28 01:28:25.512   486  2093 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10177; state: DISABLED
+11-28 01:28:25.524  8572  8572 D CompatibilityChangeReporter: Compat change id reported: 183155436; UID 10177; state: ENABLED
+11-28 01:28:25.533   376   406 I adbd    : jdwp connection from 8594
+11-28 01:28:25.539  8594  8594 D CompatibilityChangeReporter: Compat change id reported: 171979766; UID 99008; state: ENABLED
+11-28 01:28:25.546  8594  8594 I LoadedApk: No resource references to update in package com.google.android.trichromelibrary
+11-28 01:28:25.547  8572  8609 W chromium: [WARNING:dns_config_service_android.cc(115)] Failed to read DnsConfig.
+11-28 01:28:25.549   361   377 W TransactionTracing: Could not find layer handle 0x700b573ac8d0
+11-28 01:28:25.550  8594  8594 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+11-28 01:28:25.551  8594  8594 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+11-28 01:28:25.552  8594  8594 I cr_WebViewApkApp: Launched version=109.0.5414.123 minSdkVersion=29 isBundle=false processName=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+11-28 01:28:25.568  8594  8594 I cr_ChildProcessService: Creating new ChildProcessService pid=8594
+11-28 01:28:25.592  8572  8572 D CompatibilityChangeReporter: Compat change id reported: 214741472; UID 10177; state: ENABLED
+11-28 01:28:25.620  8572  8572 D CompatibilityChangeReporter: Compat change id reported: 171228096; UID 10177; state: ENABLED
+11-28 01:28:25.641  8572  8572 I SF_LIFE : web viewer ready before the first screen
+11-28 01:28:25.650  8572  8572 D AppCompatDelegate: Checking for metadata for AppLocalesMetadataHolderService : Service not found
+11-28 01:28:25.654  8572  8572 I SF_LIFE : onCreate restored=false
+11-28 01:28:25.673  8572  8636 D libEGL  : loaded /vendor/lib64/egl/libEGL_emulation.so
+11-28 01:28:25.676  8572  8636 D libEGL  : loaded /vendor/lib64/egl/libGLESv1_CM_emulation.so
+11-28 01:28:25.678  8572  8636 D libEGL  : loaded /vendor/lib64/egl/libGLESv2_emulation.so
+11-28 01:28:25.690  8572  8572 D AutofillManager: Fill dialog is enabled:false, hints=[password, passwordAuto, creditCardNumber, creditCardSecurityCode, creditCardExpirationDate]
+11-28 01:28:25.693  8572  8572 D Capacitor: Starting BridgeActivity
+11-28 01:28:25.750  8572  8614 W cr_media: BLUETOOTH_CONNECT permission is missing.
+11-28 01:28:25.750  8572  8614 W cr_media: registerBluetoothIntentsIfNeeded: Requires BLUETOOTH permission
+11-28 01:28:25.755  8594  8624 I cr_LibraryLoader: Successfully loaded native library
+11-28 01:28:25.755  8594  8624 I cr_CachingUmaRecorder: Flushed 3 samples from 3 histograms.
+11-28 01:28:25.757  8594  8624 W SystemServiceRegistry: No service published for: uimode
+11-28 01:28:25.762  8572  8633 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs ANDROID_EMU_hwc_color_transform ANDROID_EMU_hwc_display_power_mode GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0 
+11-28 01:28:25.768  8572  8633 D EGL_emulation: eglCreateContext: 0x7b99de41ebd0: maj 3 min 0 rcv 3
+11-28 01:28:25.773  8572  8572 I SF_LIFE : screen started
+11-28 01:28:25.780  8572  8633 D EGL_emulation: eglMakeCurrent: 0x7b99de41ebd0: ver 3 0 (tinfo 0x7b9c029ec080) (first time)
+11-28 01:28:25.785  8572  8572 W OnBackInvokedCallback: OnBackInvokedCallback is not enabled for the application.
+11-28 01:28:25.785  8572  8572 W OnBackInvokedCallback: Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+11-28 01:28:25.788  8571  8571 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:28:25.791  8571  8571 I AndroidRuntime: Using default boot image
+11-28 01:28:25.791  8571  8571 I AndroidRuntime: Leaving lock profiling enabled
+11-28 01:28:25.794  8571  8571 I app_process: Core platform API reporting enabled, enforcing=false
+11-28 01:28:25.794  8571  8571 I app_process: Using CollectorTypeCC GC.
+11-28 01:28:25.794   486  1558 D BiometricService: canAuthenticate: User=0, Caller=0, Authenticators=15
+11-28 01:28:25.794   486  1558 D BiometricService/PreAuthInfo: Package: com.coastlinecode.stormfile Sensor ID: 0 Modality: 2 Status: 7
+11-28 01:28:25.794   486  1558 D BiometricService/PreAuthInfo: getCanAuthenticateInternal Modality: 2 AuthenticatorStatus: 7
+11-28 01:28:25.795   486  1558 D AuthService: canAuthenticate, userId: 0, callingUserId: 0, authenticators: 15, result: 11
+11-28 01:28:25.796  6057  6411 I FontLog : Received query name=Google Sans&weight=700&besteffort=false, URI content://com.google.android.gms.fonts [CONTEXT service_id=132 ]
+11-28 01:28:25.796  6057  6411 I FontLog : Query [name=Google Sans&weight=700&besteffort=false] resolved to {Google Sans, wdth 100.0, wght 700, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+11-28 01:28:25.801   486  1795 D BiometricService: canAuthenticate: User=0, Caller=0, Authenticators=255
+11-28 01:28:25.801   486  1795 D BiometricService/PreAuthInfo: Package: com.coastlinecode.stormfile Sensor ID: 0 Modality: 2 Status: 7
+11-28 01:28:25.801   486  1795 D BiometricService/PreAuthInfo: getCanAuthenticateInternal Modality: 2 AuthenticatorStatus: 7
+11-28 01:28:25.801   486  1795 D AuthService: canAuthenticate, userId: 0, callingUserId: 0, authenticators: 255, result: 11
+11-28 01:28:25.802  6057  6411 I FontLog : Fetch {Google Sans, wdth 100.0, wght 700, ital 0.0, bestEffort false} end status Status{statusCode=SUCCESS, resolution=null} [CONTEXT service_id=132 ]
+11-28 01:28:25.833  8572  8572 D CompatibilityChangeReporter: Compat change id reported: 237531167; UID 10177; state: DISABLED
+11-28 01:28:25.834  6057  6692 I FontLog : Pulling font file for id = 36, cache size = 36 [CONTEXT service_id=132 ]
+11-28 01:28:25.841  8572  8634 W Parcel  : Expecting binder but got null!
+11-28 01:28:25.841  6057  6092 I FontLog : Received query name=Noto Color Emoji Compat&weight=400&besteffort=false, URI content://com.google.android.gms.fonts [CONTEXT service_id=132 ]
+11-28 01:28:25.841  6057  6092 I FontLog : Query [name=Noto Color Emoji Compat&weight=400&besteffort=false] resolved to {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+11-28 01:28:25.845  6057  6092 I FontLog : Fetch {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} end status Status{statusCode=SUCCESS, resolution=null} [CONTEXT service_id=132 ]
+11-28 01:28:25.847   486  2093 D CoreBackPreview: Window{b16ef4e u0 com.coastlinecode.stormfile/com.coastlinecode.stormfile.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@795297c, mPriority=0}
+11-28 01:28:25.873  6057  6092 I FontLog : Pulling font file for id = 37, cache size = 35 [CONTEXT service_id=132 ]
+11-28 01:28:25.883  6057  6092 I FontLog : Received query name=Google Sans&weight=400&besteffort=false, URI content://com.google.android.gms.fonts [CONTEXT service_id=132 ]
+11-28 01:28:25.883  6057  6092 I FontLog : Query [name=Google Sans&weight=400&besteffort=false] resolved to {Google Sans, wdth 100.0, wght 400, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+11-28 01:28:25.884  6057  6092 I FontLog : Font PFD returned from cache for {Google Sans, wdth 100.0, wght 400, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+11-28 01:28:25.884  6057  6092 I FontLog : Fetch {Google Sans, wdth 100.0, wght 400, ital 0.0, bestEffort false} end status Status{statusCode=SUCCESS, resolution=null} [CONTEXT service_id=132 ]
+11-28 01:28:25.888  8571  8571 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+11-28 01:28:25.888  8571  8571 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt70l.dat
+11-28 01:28:25.889  6057  6092 I FontLog : Pulling font file for id = 38, cache size = 36 [CONTEXT service_id=132 ]
+11-28 01:28:25.891  6057  6092 I FontLog : Received query name=Google Sans&weight=500&besteffort=false, URI content://com.google.android.gms.fonts [CONTEXT service_id=132 ]
+11-28 01:28:25.891  6057  6092 I FontLog : Query [name=Google Sans&weight=500&besteffort=false] resolved to {Google Sans, wdth 100.0, wght 500, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+11-28 01:28:25.892  6057  6092 I FontLog : Font PFD returned from cache for {Google Sans, wdth 100.0, wght 500, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+11-28 01:28:25.892  6057  6092 I FontLog : Fetch {Google Sans, wdth 100.0, wght 500, ital 0.0, bestEffort false} end status Status{statusCode=SUCCESS, resolution=null} [CONTEXT service_id=132 ]
+11-28 01:28:25.896  8572  8572 D CompatibilityChangeReporter: Compat change id reported: 193247900; UID 10177; state: ENABLED
+11-28 01:28:25.899  8571  8571 W app_process: Unexpected CPU variant for x86: x86_64.
+11-28 01:28:25.899  8571  8571 W app_process: Known variants: atom, sandybridge, silvermont, kabylake, default
+11-28 01:28:25.902  8572  8633 D EGL_emulation: eglCreateContext: 0x7b99de41ebd0: maj 3 min 0 rcv 3
+11-28 01:28:25.903  6057  7916 I SQLiteConnectionPool: The connection pool for /data/user/0/com.google.android.gms/databases/metadata.db has been closed but there are still 1 connections in use.  They will be closed as they are released back to the pool.
+11-28 01:28:25.903  8571  8571 W app_process: ClassLoaderContext classpath size mismatch. expected=0, found=1 (PCL[] | PCL[/system/framework/android.test.runner.jar*2649186567])
+11-28 01:28:25.903  6057  6610 W FontLog : Error updating last accessed time for {Google Sans, wdth 100.0, wght 500, ital 0.0, bestEffort false}. [CONTEXT service_id=132 ]
+11-28 01:28:25.903  6057  6610 W FontLog : java.lang.IllegalStateException: Cannot perform this operation because the connection pool has been closed.
+11-28 01:28:25.903  6057  6610 W FontLog : 	at android.database.sqlite.SQLiteConnectionPool.throwIfClosedLocked(SQLiteConnectionPool.java:1078)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at android.database.sqlite.SQLiteConnectionPool.waitForConnection(SQLiteConnectionPool.java:771)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at android.database.sqlite.SQLiteConnectionPool.acquireConnection(SQLiteConnectionPool.java:387)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at android.database.sqlite.SQLiteSession.acquireConnection(SQLiteSession.java:896)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at android.database.sqlite.SQLiteSession.executeForChangedRowCount(SQLiteSession.java:754)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at android.database.sqlite.SQLiteStatement.executeUpdateDelete(SQLiteStatement.java:67)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at android.database.sqlite.SQLiteDatabase.executeSql(SQLiteDatabase.java:2087)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at android.database.sqlite.SQLiteDatabase.execSQL(SQLiteDatabase.java:2064)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at anyn.run(:com.google.android.gms@231818047@23.18.18 (190800-535401451):6)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at aced.c(:com.google.android.gms@231818047@23.18.18 (190800-535401451):6)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at aced.run(:com.google.android.gms@231818047@23.18.18 (190800-535401451):7)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at acjn.run(:com.google.android.gms@231818047@23.18.18 (190800-535401451):0)
+11-28 01:28:25.903  6057  6610 W FontLog : 	at java.lang.Thread.run(Thread.java:1012)
+11-28 01:28:25.910  6057  6092 I FontLog : Pulling font file for id = 39, cache size = 35 [CONTEXT service_id=132 ]
+11-28 01:28:25.911   361   606 W ServiceManager: Permission failure: android.permission.ACCESS_SURFACE_FLINGER from uid=10177 pid=0
+11-28 01:28:25.911   361   606 D PermissionCache: checking android.permission.ACCESS_SURFACE_FLINGER for uid=10177 => denied (199 us)
+11-28 01:28:25.911   361   606 W ServiceManager: Permission failure: android.permission.ROTATE_SURFACE_FLINGER from uid=10177 pid=0
+11-28 01:28:25.911   361   606 D PermissionCache: checking android.permission.ROTATE_SURFACE_FLINGER for uid=10177 => denied (91 us)
+11-28 01:28:25.911   361   606 W ServiceManager: Permission failure: android.permission.INTERNAL_SYSTEM_WINDOW from uid=10177 pid=0
+11-28 01:28:25.911   361   606 D PermissionCache: checking android.permission.INTERNAL_SYSTEM_WINDOW for uid=10177 => denied (96 us)
+11-28 01:28:25.946   773   826 D EGL_emulation: app_time_stats: avg=5087.07ms min=5087.07ms max=5087.07ms count=1
+11-28 01:28:25.949  8572  8634 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs ANDROID_EMU_hwc_color_transform ANDROID_EMU_hwc_display_power_mode GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0 
+11-28 01:28:25.951  8571  8571 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:28:25.952  8572  8634 W OpenGLRenderer: Failed to initialize 101010-2 format, error = EGL_SUCCESS
+11-28 01:28:25.953  8572  8634 D EGL_emulation: eglCreateContext: 0x7b99de41cdd0: maj 3 min 0 rcv 3
+11-28 01:28:25.956  8572  8634 D EGL_emulation: eglMakeCurrent: 0x7b99de41cdd0: ver 3 0 (tinfo 0x7b9c029ec100) (first time)
+11-28 01:28:25.966  1610  3359 I AiAiEcho: Settings cha with uri: content://settings/secure/accessibility_enabled
+11-28 01:28:25.966   486   486 D BatterySaverPolicy: accessibility changed to true, updating policy.
+11-28 01:28:25.967  8571  8664 V UiAutomation: Init UiAutomation@f1ec078[id=25, flags=0]
+11-28 01:28:25.969  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:25.969  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:25.969  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:25.969  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:25.969  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:25.969  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:25.969  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:25.970  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:25.971  1708  2138 I A       : NGA disabled due to not being eligible.
+11-28 01:28:25.972  1610  4453 I AiAiEcho: Settings cha with uri: content://settings/secure/accessibility_enabled
+11-28 01:28:25.974  5006  5006 V SafetyCenterAccessibilityListener: accessibility event occurred, safety center feature not enabled.
+11-28 01:28:25.974  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:25.974  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:25.974  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:25.974  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:25.975  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:25.977  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:25.978  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:25.978  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:25.989   361   377 W TransactionTracing: Could not find layer handle 0x700b573a9cf0
+11-28 01:28:25.996   126   126 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device VINTF manifest.
+11-28 01:28:25.996  8572  8634 I Gralloc4: mapper 4.x is not supported
+11-28 01:28:26.013   126   126 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.allocator@4.0::IAllocator/default in either framework or device VINTF manifest.
+11-28 01:28:26.014   125   125 I servicemanager: Could not find android.hardware.graphics.allocator.IAllocator/default in the VINTF manifest.
+11-28 01:28:26.014  8572  8634 W Gralloc4: allocator 4.x is not supported
+11-28 01:28:26.020  8572  8634 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs ANDROID_EMU_hwc_color_transform ANDROID_EMU_hwc_display_power_mode GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object GL_KHR_texture_compression_astc_ldr ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_0 
+11-28 01:28:26.131  2669  2826 I cr_VariationsUtils: Throttling seed download job
+11-28 01:28:26.131  2669  2826 I cr_VariationsUtils: Writing new seed to app's data directory
+11-28 01:28:26.144  8572  8586 I OpenGLRenderer: Davey! duration=735ms; Flags=1, FrameTimelineVsyncId=14968, IntendedVsync=176206460656, Vsync=176673127304, InputEventId=0, HandleInputStart=176686479037, AnimationStart=176686479848, PerformTraversalsStart=176687207816, DrawStart=176842627326, FrameDeadline=176223127322, FrameInterval=176686474800, FrameStartTime=16666666, SyncQueued=176843505156, SyncStart=176843708286, IssueDrawCommandsStart=176843813512, SwapBuffers=176872772423, FrameCompleted=176942023451, DequeueBufferDuration=3285, QueueBufferDuration=2664394, GpuCompleted=176942023451, SwapBuffersCompleted=176939377133, DisplayPresentTime=0, CommandSubmissionCompleted=176872772423, 
+11-28 01:28:26.149   486   524 I ActivityTaskManager: Displayed com.coastlinecode.stormfile/.MainActivity: +1s240ms
+11-28 01:28:26.149  8572  8633 D EGL_emulation: eglCreateContext: 0x7b99de41c590: maj 3 min 0 rcv 3
+11-28 01:28:26.170   486  1558 D CoreBackPreview: Window{35d02f5 u0 Splash Screen com.coastlinecode.stormfile EXITING}: Setting back callback null
+11-28 01:28:26.170   486  1558 W InputManager-JNI: Input channel object '35d02f5 Splash Screen com.coastlinecode.stormfile (client)' was disposed without first being removed with the input manager!
+11-28 01:28:26.177  1035  2053 D OneSearchSuggestProvider: Shut down the binder channel
+11-28 01:28:26.178  1035  2932 I s.nexuslauncher: oneway function results for code 2 on binder at 0x7b996e467e00 will be dropped but finished with status UNKNOWN_TRANSACTION
+11-28 01:28:26.226  1708  2292 I PBSessionCacheImpl: Deleted sessionId[7513659270132384] from persistence.
+11-28 01:28:26.226   361   377 W TransactionTracing: Could not find layer handle 0x700b573ad830
+11-28 01:28:26.226   361   377 W TransactionTracing: Could not find layer handle 0x700b573ac3f0
+11-28 01:28:26.226   361   377 W TransactionTracing: Could not find layer handle 0x700b573ac2d0
+11-28 01:28:26.229   361   377 W TransactionTracing: Could not find layer handle 0x700b573ac2d0
+11-28 01:28:26.229   361   377 W TransactionTracing: Could not find layer handle 0x700b573ac3f0
+11-28 01:28:26.229   361   377 W TransactionTracing: Could not find layer handle 0x700b573ad650
+11-28 01:28:26.229   361   377 W TransactionTracing: Could not find layer handle 0x700b573ad050
+11-28 01:28:26.278  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:26.278  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:26.278  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:26.278  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:26.288   486  1795 D CompatibilityChangeReporter: Compat change id reported: 214016041; UID 10177; state: ENABLED
+11-28 01:28:26.289  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:26.289  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:26.289  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:26.298  1522  1522 I GoogleInputMethodService: GoogleInputMethodService.onFinishInput():3227 
+11-28 01:28:26.299  1522  1522 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2087 repeatCheckTimes = 0, unlocked = true
+11-28 01:28:26.299  1522  1522 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1877 onStartInput(EditorInfo{inputType=0x0(NULL) imeOptions=0x12000000 privateImeOptions=null actionName=UNSPECIFIED actionLabel=null actionId=0 initialSelStart=-1 initialSelEnd=-1 initialCapsMode=0x0 hintText=null label=null packageName=com.coastlinecode.stormfile fieldId=2131296765 fieldName=null extras=null}, false)
+11-28 01:28:26.299  1522  1522 I GoogleInputMethodService: GoogleInputMethodService.shouldHideHeaderOnInitialState():4008 ShouldHideHeaderOnInitialState = false
+11-28 01:28:26.299  1522  1522 I GoogleInputMethodService: GoogleInputMethodService.updateDeviceLockedStatus():2087 repeatCheckTimes = 2, unlocked = true
+11-28 01:28:26.305   361   377 W TransactionTracing: Could not find layer handle 0x700b573adf50
+11-28 01:28:26.309   486   522 D CompatibilityChangeReporter: Compat change id reported: 181136395; UID 10177; state: DISABLED
+11-28 01:28:26.309   486   522 D CompatibilityChangeReporter: Compat change id reported: 174042936; UID 10177; state: DISABLED
+11-28 01:28:26.386  6057  6692 I FontLog : Received query Noto Color Emoji Compat, URI content://com.google.android.gms.fonts [CONTEXT service_id=132 ]
+11-28 01:28:26.387  6057  6692 I FontLog : Query [emojicompat-emoji-font] resolved to {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} [CONTEXT service_id=132 ]
+11-28 01:28:26.388  6057  6692 I FontLog : Fetch {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} end status Status{statusCode=SUCCESS, resolution=null} [CONTEXT service_id=132 ]
+11-28 01:28:26.391  6057  6692 I FontLog : Pulling font file for id = 40, cache size = 35 [CONTEXT service_id=132 ]
+11-28 01:28:26.411  6057  6692 I FontLog : Pulling font file for id = 40, cache size = 35 [CONTEXT service_id=132 ]
+11-28 01:28:26.607   486  1795 D BiometricService: canAuthenticate: User=0, Caller=0, Authenticators=15
+11-28 01:28:26.607   486  1795 D BiometricService/PreAuthInfo: Package: com.coastlinecode.stormfile Sensor ID: 0 Modality: 2 Status: 7
+11-28 01:28:26.607   486  1795 D BiometricService/PreAuthInfo: getCanAuthenticateInternal Modality: 2 AuthenticatorStatus: 7
+11-28 01:28:26.607   486  1795 D AuthService: canAuthenticate, userId: 0, callingUserId: 0, authenticators: 15, result: 11
+11-28 01:28:26.607   486  1795 D BiometricService: canAuthenticate: User=0, Caller=0, Authenticators=255
+11-28 01:28:26.607   486  1795 D BiometricService/PreAuthInfo: Package: com.coastlinecode.stormfile Sensor ID: 0 Modality: 2 Status: 7
+11-28 01:28:26.607   486  1795 D BiometricService/PreAuthInfo: getCanAuthenticateInternal Modality: 2 AuthenticatorStatus: 7
+11-28 01:28:26.607   486  1795 D AuthService: canAuthenticate, userId: 0, callingUserId: 0, authenticators: 255, result: 11
+11-28 01:28:27.309   486  1795 D CompatibilityChangeReporter: Compat change id reported: 161145287; UID 10177; state: DISABLED
+11-28 01:28:27.311  8571  8571 W AccessibilityNodeInfoDumper: Fetch time: 1ms
+11-28 01:28:27.313   486   486 D BatterySaverPolicy: accessibility changed to false, updating policy.
+11-28 01:28:27.313  1610  4453 I AiAiEcho: Settings cha with uri: content://settings/secure/accessibility_enabled
+11-28 01:28:27.316  1708  2138 I A       : NGA disabled due to not being eligible.
+11-28 01:28:27.316  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:27.316  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:27.317  8571  8571 D AndroidRuntime: Shutting down VM
+11-28 01:28:27.317  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:27.317  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:27.317  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:27.317  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:27.318  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:27.318  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:27.327  8572  8634 D EGL_emulation: app_time_stats: avg=301.84ms min=102.01ms max=716.67ms count=4
+11-28 01:28:27.339   361   377 W TransactionTracing: Could not find layer handle 0x700b573ac810
+11-28 01:28:27.975  1708  2177 W A       : Batch timed out; batchId=1 taskId=-1000006
+11-28 01:28:27.988  1708  2179 I A       : NGA Sync: MDD Task: MDD.CHARGING.PERIODIC.TASK done.
+11-28 01:28:27.988  1708  2179 I A       : NGA Sync: isNgaSyncEnabled: false; enableFileGroupPopulator: false; requiresMddAssets: false
+11-28 01:28:27.989  1708  7684 D t       : Starting download: https://www.gstatic.com/federated_assistant/policy_config_federated_hotword-v610555528.binarypb
+11-28 01:28:27.989  1708  7684 V t       : Is http uri, downloading (uri: https://www.gstatic.com/federated_assistant/policy_config_federated_hotword-v610555528.binarypb)
+11-28 01:28:27.989  1708  2165 I A       : Refresh account policy.
+11-28 01:28:27.990  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:27.990  1708  2298 W SearchServiceCore: Abort, client detached.
+11-28 01:28:28.009  1708  7684 E MDD     : DownloadProgressMonitor: Can't find file group for uri: android://com.google.android.googlequicksearchbox/files/datadownload/shared/public/datadownloadfile_1795829244735
+11-28 01:28:28.013  1708  7674 E SingleDataFileGroupPop: Failed to add file group 
+11-28 01:28:28.014  1708  7674 E PhFileGroupPop: Failed to add file group 
+11-28 01:28:28.014  1708  7674 E PhFileGroupPop: Failed to add file group 
+11-28 01:28:28.014  1708  7674 E PhFileGroupPop: Failed to add file group 
+11-28 01:28:28.014  1708  7674 E PhFileGroupPop: Failed to add file group 
+11-28 01:28:28.014  1708  7674 E PhFileGroupPop: Failed to add file group 
+11-28 01:28:28.015  1708  7674 E d       : RuntimeException while executing runnable cb{com.google.apps.tiktok.tracing.ej@77546b} with executor MoreExecutors.directExecutor()
+11-28 01:28:28.015  1708  7674 E d       : java.lang.NullPointerException: Attempt to read from field 'java.lang.String com.google.android.libraries.mdi.download.ae.b' on a null object reference in method 'void com.google.android.libraries.mdi.download.h.bq.gH(java.lang.Object)'
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.android.libraries.mdi.download.h.bq.gH(PG:2)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.apps.tiktok.tracing.ej.gH(PG:2)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.common.util.concurrent.cb.run(PG:7)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.common.util.concurrent.bf.execute(PG:1)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.common.util.concurrent.d.i(PG:1)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.common.util.concurrent.d.iq(PG:5)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.common.util.concurrent.ci.t(PG:1)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.android.libraries.mdi.download.h.bu.b(PG:26)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.android.libraries.mdi.download.gs.p(PG:3)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.android.libraries.mdi.download.gf.apply(Unknown Source:4)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.apps.tiktok.tracing.eo.apply(PG:2)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.common.util.concurrent.h.e(PG:2)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.common.util.concurrent.j.run(PG:9)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.common.util.concurrent.do.run(PG:4)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.android.libraries.i.ae.run(PG:1)
+11-28 01:28:28.015  1708  7674 E d       : 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1137)
+11-28 01:28:28.015  1708  7674 E d       : 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:637)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.android.libraries.i.i.run(PG:2)
+11-28 01:28:28.015  1708  7674 E d       : 	at com.google.android.libraries.i.p.run(PG:4)
+11-28 01:28:28.015  1708  7674 E d       : 	at java.lang.Thread.run(Thread.java:1012)
+11-28 01:28:28.015  1708  7674 E PhFileGroupPop: Failed to add file group 
+11-28 01:28:28.015  1708  7674 E PhFileGroupPop: Failed to add file group 
+11-28 01:28:28.015  1708  7674 E PhFileGroupPop: Failed to add file group 
+11-28 01:28:28.015  1708  7684 I A       : Starting new batch; batchId=3 corpus=1004
+11-28 01:28:28.017  1708  7662 I A       : Joining existing batch; batchId=3 corpus=1008
+11-28 01:28:28.017  1708  7674 I A       : Download file group for language pack: en-US
+11-28 01:28:28.017  1708  7674 W A       : Locale en-US is not compatible, please check manifest exists
+11-28 01:28:28.017  1708  2416 I A       : Joining existing batch; batchId=3 corpus=1014
+11-28 01:28:28.017  1708  7670 I A       : Joining existing batch; batchId=3 corpus=1015
+11-28 01:28:28.017  1708  7674 I A       : Using proto config with mendel
+11-28 01:28:28.017  1708  7674 I A       : Using proto config with mendel
+11-28 01:28:28.017  1708  7674 I A       : Using proto config with mendel
+11-28 01:28:28.017  1708  7674 I A       : Merging legacy hotword config map with new proto.
+11-28 01:28:28.017  1708  7674 I A       : Adding from config to map. Locale: cmn-Hant-TW modelPrefix: x_google Location:4e7cae00daee30ec565c34e3aa67a51f isSpeakerIdSupported: true
+11-28 01:28:28.018  1708  7674 I A       : Adding from config to map. Locale: id-ID modelPrefix: x_google Location:cfffcc1a4c1c084c003c8eb27f73d770 isSpeakerIdSupported: true
+11-28 01:28:28.018  1708  7674 I A       : Adding from config to map. Locale: ko-KR modelPrefix: x_google Location:0b132163a2eb2c1194b202067475724b isSpeakerIdSupported: true
+11-28 01:28:28.018  1708  7674 I A       : Skipping. Expected model: 2 Found: 1
+11-28 01:28:28.018  1708  7674 I A       : Adding from config to map. Locale: zh-TW modelPrefix: x_google Location:4e7cae00daee30ec565c34e3aa67a51f isSpeakerIdSupported: true
+11-28 01:28:28.018  1708  7674 I HotwordModelPopulator: #updateHotwordFileGroup group name: hotword_model_en-US_okhey, raw locale: en-US, locale: en-US
+11-28 01:28:28.018  1708  7674 I A       : Using proto config with mendel
+11-28 01:28:28.018  1708  7674 I A       : Using proto config with mendel
+11-28 01:28:28.018  1708  7674 I A       : Merging legacy hotword config map with new proto.
+11-28 01:28:28.018  1708  7674 I A       : Adding from config to map. Locale: cmn-Hant-TW modelPrefix: x_google Location:4e7cae00daee30ec565c34e3aa67a51f isSpeakerIdSupported: true
+11-28 01:28:28.018  1708  7674 I A       : Adding from config to map. Locale: id-ID modelPrefix: x_google Location:cfffcc1a4c1c084c003c8eb27f73d770 isSpeakerIdSupported: true
+11-28 01:28:28.018  1708  7674 I A       : Adding from config to map. Locale: ko-KR modelPrefix: x_google Location:0b132163a2eb2c1194b202067475724b isSpeakerIdSupported: true
+11-28 01:28:28.018  1708  7674 I A       : Skipping. Expected model: 2 Found: 1
+11-28 01:28:28.018  1708  7674 I A       : Adding from config to map. Locale: zh-TW modelPrefix: x_google Location:4e7cae00daee30ec565c34e3aa67a51f isSpeakerIdSupported: true
+11-28 01:28:28.018  1708  7674 I HotwordModelPopulator: #updateHotwordFileGroup group name: hotword_model_en-US_okhey, raw locale: en-US, locale: en-US
+11-28 01:28:28.019  1708  7674 I A       : Using proto config with mendel
+11-28 01:28:28.019  1708  7674 I A       : Merging legacy hotword config map with new proto.
+11-28 01:28:28.019  1708  7674 I A       : Adding from config to map. Locale: cmn-Hant-TW modelPrefix: x_google Location:4e7cae00daee30ec565c34e3aa67a51f isSpeakerIdSupported: true
+11-28 01:28:28.019  1708  7674 I A       : Adding from config to map. Locale: id-ID modelPrefix: x_google Location:cfffcc1a4c1c084c003c8eb27f73d770 isSpeakerIdSupported: true
+11-28 01:28:28.019  1708  7674 I A       : Adding from config to map. Locale: ko-KR modelPrefix: x_google Location:0b132163a2eb2c1194b202067475724b isSpeakerIdSupported: true
+11-28 01:28:28.019  1708  7674 I A       : Skipping. Expected model: 2 Found: 1
+11-28 01:28:28.019  1708  7674 I A       : Adding from config to map. Locale: zh-TW modelPrefix: x_google Location:4e7cae00daee30ec565c34e3aa67a51f isSpeakerIdSupported: true
+11-28 01:28:28.019  1708  7674 I HotwordModelPopulator: #updateHotwordFileGroup group name: hotword_model_en-US_okhey, raw locale: en-US, locale: en-US
+11-28 01:28:28.019  1708  7674 D PhFileGroupPop: Added file groups assistant_appintegration_appactions_config
+11-28 01:28:28.020  1708  7674 D PhFileGroupPop: Added file groups fedass_policy_config_group
+11-28 01:28:28.020  1708  7674 D PhFileGroupPop: Added file groups tapas_cortex
+11-28 01:28:28.021  1708  2165 I MicroModelsUtil: #getHotwordModelFromMobstore [mobstoreUri: android://com.google.android.googlequicksearchbox/files/datadownload/shared/public/datadownloadfile_1795829244732]
+11-28 01:28:28.021  1708  2138 I MicroModelsUtil: #getHotwordModelFromMobstore [mobstoreUri: android://com.google.android.googlequicksearchbox/files/datadownload/shared/public/datadownloadfile_1795829244732]
+11-28 01:28:28.021  1708  2171 I MicroModelsUtil: #getHotwordModelFromMobstore [mobstoreUri: android://com.google.android.googlequicksearchbox/files/datadownload/shared/public/datadownloadfile_1795829244732]
+11-28 01:28:28.022  1708  2165 I HotwordModelPopulator: Updated file group for locale 'hotword_model_en-US_okhey' from location: https://www.gstatic.com/android-search/hotword/x_google/975058821313279e27b2c3f04de0beef/hotword.data. Download already finished.
+11-28 01:28:28.022  1708  2171 I HotwordModelPopulator: Updated file group for locale 'hotword_model_en-US_okhey' from location: https://www.gstatic.com/android-search/hotword/x_google/975058821313279e27b2c3f04de0beef/hotword.data. Download already finished.
+11-28 01:28:28.022  1708  2138 I HotwordModelPopulator: Updated file group for locale 'hotword_model_en-US_okhey' from location: https://www.gstatic.com/android-search/hotword/x_google/975058821313279e27b2c3f04de0beef/hotword.data. Download already finished.
+11-28 01:28:28.241  1904  1904 V ContactsProvider: Scheduled notifyChange started.
+11-28 01:28:28.243   968   968 D BluetoothPbapService:  onChange on contact uri 
+11-28 01:28:28.248   968  8675 D BluetoothPbapUtils: primaryVersionCounter = 0, secondaryVersionCounter=0
+11-28 01:28:28.259  6057  6610 I NetworkScheduler.Stats: Task com.google.android.gms/com.google.android.gms.icing.proxy.IcingInternalCorporaUpdateService started execution. cause:9 exec_start_elapsed_seconds: 179 [CONTEXT service_id=218 ]
+11-28 01:28:28.260  6057  7916 I NetworkScheduler.Stats: Task com.google.android.gms/com.google.android.gms.icing.proxy.IcingInternalCorporaUpdateService finished executing. cause:9 result: 1 elapsed_millis: 5 uptime_millis: 5 exec_start_elapsed_seconds: 179 [CONTEXT service_id=218 ]
+11-28 01:28:28.703  8676  8676 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-28 01:28:28.710  8676  8676 I AndroidRuntime: Using default boot image
+11-28 01:28:28.710  8676  8676 I AndroidRuntime: Leaving lock profiling enabled
+11-28 01:28:28.711  8676  8676 I app_process: Core platform API reporting enabled, enforcing=false
+11-28 01:28:28.711  8676  8676 I app_process: Using CollectorTypeCC GC.
+11-28 01:28:28.761  8676  8676 D app_process: Time zone APEX ICU file found: /apex/com.android.tzdata/etc/icu/icu_tzdata.dat
+11-28 01:28:28.761  8676  8676 D app_process: I18n APEX ICU file found: /apex/com.android.i18n/etc/icu/icudt70l.dat
+11-28 01:28:28.764  8676  8676 W app_process: Unexpected CPU variant for x86: x86_64.
+11-28 01:28:28.764  8676  8676 W app_process: Known variants: atom, sandybridge, silvermont, kabylake, default
+11-28 01:28:28.767  8676  8676 W app_process: ClassLoaderContext classpath size mismatch. expected=0, found=1 (PCL[] | PCL[/system/framework/android.test.runner.jar*2649186567])
+11-28 01:28:28.777  8676  8676 D AndroidRuntime: Calling main entry com.android.commands.uiautomator.Launcher
+11-28 01:28:28.781  1610  3359 I AiAiEcho: Settings cha with uri: content://settings/secure/accessibility_enabled
+11-28 01:28:28.781   486   486 D BatterySaverPolicy: accessibility changed to true, updating policy.
+11-28 01:28:28.782  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:28.782  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:28.782  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:28.783  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:28.783  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:28.783  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:28.783  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:28.783  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:28.785  1708  2165 I A       : NGA disabled due to not being eligible.
+11-28 01:28:28.787  8676  8690 V UiAutomation: Init UiAutomation@7068fb3[id=26, flags=0]
+11-28 01:28:28.790  5006  5006 V SafetyCenterAccessibilityListener: accessibility event occurred, safety center feature not enabled.
+11-28 01:28:28.793  1610  3359 I AiAiEcho: Settings cha with uri: content://settings/secure/accessibility_enabled
+11-28 01:28:28.794  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:28.794  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:28.794  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:28.794  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:28.794  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:28.794  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:28.795  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:28.795  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:28.867  3710  3710 I ProvidersCache: Updating roots due to change on user 0at content://com.android.externalstorage.documents/
+11-28 01:28:28.873  3710  8695 I ProvidersCache: Provider returned no roots. Possibly naughty: com.google.android.apps.docs.storage
+11-28 01:28:29.019  1708  7674 I A       : Scheduled one-off task for batch; batchId=3 taskId=-1000009 corpora=[1004,1008,1014,1015]
+11-28 01:28:29.019  1708  7674 I A       : Pending callbacks: 2
+11-28 01:28:29.020   486  1064 W JobScheduler: Job didn't exist in JobStore: cad61d1 #u0a119/-1000007 com.google.android.googlequicksearchbox/com.google.android.apps.gsa.tasks.BackgroundTasksJobService
+11-28 01:28:29.085   486  1064 D OomAdjuster: Not killing cached processes
+11-28 01:28:29.249   486  1064 W JobScheduler: Job didn't exist in JobStore: bc3386b #u0a121/7 com.google.android.contacts/com.google.android.apps.contacts.shortcut.ShortcutJobService
+11-28 01:28:29.299  6033  8699 I ChimeraConfigurator: Starting update, reason: 4 urgentFeatures: vision.ocr:-1
+11-28 01:28:29.307  6033  8699 I ChimeraConfigurator: Detected pending changes for urgent request: [vision.ocr]. Pending module sets: container:2318189190800+mlkit.ocr.common,tflite_dynamite:2640104055100800+tflite_dynamite,vision_ocr:2316024025100000+vision.ocr
+11-28 01:28:29.312  6033  8699 I GmsDebugLogger: [73] 1801
+11-28 01:28:29.313  6033  8699 W ZappDownloader: No successful module downloads for requested features [vision.ocr].
+11-28 01:28:29.314  6033  8699 I GmsDebugLogger: [30] [VisionOcrDynamite.integ:231602402100000],[TfliteDynamiteDynamite.integ:264010405100800],[MlkitOcrCommon.optional:231818100800]
+11-28 01:28:29.316  6033  8699 W ChimeraConfigService: Retry attempt was throttled. [CONTEXT service_id=264 ]
+11-28 01:28:29.316  6033  8699 I GmsDebugLogger: [83] 1 [vision.ocr]
+11-28 01:28:29.318  6033  8698 W Vision  : Request for optional module download of ocr failed. Request again.
+11-28 01:28:29.318  6033  8698 W Vision  : Would have logged:
+11-28 01:28:29.318  6033  8698 W Vision  : # dsae@37884fe7
+11-28 01:28:29.318  6033  8698 I Vision  : Schedule retrying download ocr at 180137 with backoff 20 seconds
+11-28 01:28:29.791  8676  8676 W AccessibilityNodeInfoDumper: Fetch time: 4ms
+11-28 01:28:29.792   486   486 D BatterySaverPolicy: accessibility changed to false, updating policy.
+11-28 01:28:29.793  1610  8103 I AiAiEcho: Settings cha with uri: content://settings/secure/accessibility_enabled
+11-28 01:28:29.793  8676  8676 D AndroidRuntime: Shutting down VM
+11-28 01:28:29.795  1708  2138 I A       : NGA disabled due to not being eligible.
+11-28 01:28:29.797  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:29.797  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:29.797  1610  1945 I AiAiEcho: Predicting[0]: 
+11-28 01:28:29.797  1610  1945 I AiAiEcho: Ranked targets strategy: SORT, count: 0, ranking metadata: 
+11-28 01:28:29.798  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:29.798  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:29.798  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface lockscreen with targets# 0
+11-28 01:28:29.798  1610  1945 I AiAiEcho: #postPredictionTargets: Sending updates to UISurface home with targets# 0
+11-28 01:28:29.820   361   377 W TransactionTracing: Could not find layer handle 0x700b573acb10
